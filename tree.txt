@@ -1,0 +1,52 @@
+Data-Dashboard/
+├── .angular/
+│   └── ...
+├── assets/
+│   ├── readme-header.svg
+│   └── workflow.svg
+├── Entwurf/
+│   ├── ChatGPT Image 12. Juni 2026, 09_08_44.png
+│   ├── ChatGPT Image 12. Juni 2026, 09_08_48.png
+│   ├── ChatGPT Image 12. Juni 2026, 09_08_51.png
+│   ├── ChatGPT Image 12. Juni 2026, 09_08_54.png
+│   ├── DESIGN.md
+│   ├── desktop.ini
+│   ├── screen.png
+│   ├── screen_.png
+│   ├── screen__.png
+│   └── screen___.png
+├── node_modules/
+│   └── ...
+├── src/
+│   ├── app/
+│   │   ├── app.component.html
+│   │   ├── app.component.scss
+│   │   ├── app.component.ts
+│   │   ├── app.config.ts
+│   │   └── app.routes.ts
+│   ├── assets/
+│   │   └── fonts/
+│   │       ├── .gitkeep
+│   │       ├── inter-variable.ttf
+│   │       ├── material-symbols-outlined-latin-fill-normal.woff2
+│   │       └── README.md
+│   ├── styles/
+│   │   ├── base.scss
+│   │   ├── tokens.scss
+│   │   └── utilities.scss
+│   ├── index.html
+│   ├── main.ts
+│   ├── robots.txt
+│   └── styles.scss
+├── .editorconfig
+├── .gitignore
+├── angular.json
+├── Featureliste_Daten_Dashboards.docx
+├── make-tree.ps1
+├── package.json
+├── package-lock.json
+├── README.md
+├── tools.md
+├── tsconfig.app.json
+├── tsconfig.json
+└── tsconfig.spec.json

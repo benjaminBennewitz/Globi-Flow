@@ -1,0 +1,42 @@
+# Angular / Build
+/dist
+/.angular
+/.cache
+/out-tsc
+/tmp
+
+# Dependencies
+/node_modules
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / Coverage
+/coverage
+/.nyc_output
+
+# Assets + Drafts
+Featureliste_Daten_Dashboards.docx
+/Entwurf

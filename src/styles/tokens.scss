@@ -1,0 +1,149 @@
+/*###############################
+###
+###     tokens.scss
+###     Daten Dashboards
+###     BASED ON: Angular 21, SCSS
+###     AUTHOR: Benjamin Bennewitz
+###
+###
+###       ██████╗  ▀█
+###       ██╔══██╗ █▄
+###       ██████╦╝
+###       ██╔══██╗
+###       ██████╦╝
+###       ╚═════╝
+###
+###
+#################################*/
+
+/* ========================================================================== 
+   INHALTSVERZEICHNIS
+
+   01   Font Face
+   02   Basis-Tokens
+   03   Neomorphismus
+   04   Statusfarben
+   05   Material Icons
+   06   Datentypografie
+   ========================================================================== */
+
+/* ========================================================================== 
+   01   Font Face
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/assets/fonts/inter-variable.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url('/assets/fonts/material-symbols-outlined-latin-fill-normal.woff2') format('woff2');
+}
+
+/* ========================================================================== 
+   02   Basis-Tokens
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+  --dd-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dd-font-mono: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dd-font-data: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dd-color-bg: #f9f9ff;
+  --dd-color-bg-deep: #ecedf6;
+  --dd-color-surface: #f2f3fb;
+  --dd-color-surface-high: #ffffff;
+  --dd-color-surface-low: #e7e8f0;
+  --dd-color-text: #191c21;
+  --dd-color-text-muted: #424752;
+  --dd-color-text-soft: #727783;
+  --dd-color-border: #c2c6d4;
+  --dd-color-primary: #00478d;
+  --dd-color-primary-strong: #00366d;
+  --dd-color-primary-soft: #d6e3ff;
+  --dd-color-secondary: #575f67;
+  --dd-color-secondary-soft: #d8e1ea;
+  --dd-color-tertiary: #793100;
+  --dd-color-tertiary-soft: #ffdbcb;
+  --dd-radius-sm: 0.5rem;
+  --dd-radius-md: 0.75rem;
+  --dd-radius-lg: 1rem;
+  --dd-radius-xl: 1.5rem;
+  --dd-radius-2xl: 2rem;
+  --dd-radius-pill: 9999px;
+  --dd-space-1: 0.25rem;
+  --dd-space-2: 0.5rem;
+  --dd-space-3: 0.75rem;
+  --dd-space-4: 1.5rem;
+  --dd-space-5: 2.5rem;
+  --dd-space-6: 4rem;
+  --dd-max-width: 1680px;
+  --dd-header-height: 76px;
+}
+
+/* ========================================================================== 
+   03   Neomorphismus
+   ========================================================================== */
+
+:root {
+  --dd-shadow-light: -10px -10px 24px rgba(255, 255, 255, 0.95);
+  --dd-shadow-dark: 12px 12px 28px rgba(209, 217, 230, 0.95);
+  --dd-shadow-raised: var(--dd-shadow-light), var(--dd-shadow-dark);
+  --dd-shadow-soft: -6px -6px 16px rgba(255, 255, 255, 0.9), 8px 8px 18px rgba(209, 217, 230, 0.8);
+  --dd-shadow-inset: inset -6px -6px 14px rgba(255, 255, 255, 0.95), inset 6px 6px 14px rgba(209, 217, 230, 0.92);
+  --dd-gradient-page: radial-gradient(circle at 12% 16%, rgba(214, 227, 255, 0.72), transparent 34%), radial-gradient(circle at 86% 12%, rgba(255, 219, 203, 0.52), transparent 28%), linear-gradient(135deg, #f9f9ff 0%, #ecedf6 100%);
+}
+
+/* ========================================================================== 
+   04   Statusfarben
+   ========================================================================== */
+
+:root {
+  --dd-color-success: #1f7a4d;
+  --dd-color-success-soft: #dff2e6;
+  --dd-color-warning: #9f5f00;
+  --dd-color-warning-soft: #fff1d1;
+  --dd-color-danger: #ba1a1a;
+  --dd-color-danger-soft: #ffdad6;
+  --dd-color-low: #4457a6;
+  --dd-color-low-soft: #e8eaf8;
+}
+
+/* ========================================================================== 
+   05   Material Icons
+   ========================================================================== */
+
+.material-symbols-outlined {
+  direction: ltr;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: 'Material Symbols Outlined';
+  font-feature-settings: 'liga';
+  font-size: 1.35em;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+
+/* ==========================================================================
+   06   Datentypografie
+   ========================================================================== */
+
+.dd-data-text {
+  font-family: var(--dd-font-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}

@@ -1,0 +1,158 @@
+/*###############################
+###
+###     utilities.scss
+###     Daten Dashboards
+###     BASED ON: Angular 21, SCSS
+###     AUTHOR: Benjamin Bennewitz
+###
+###
+###       ██████╗  ▀█
+###       ██╔══██╗ █▄
+###       ██████╦╝
+###       ██╔══██╗
+###       ██████╦╝
+###       ╚═════╝
+###
+###
+#################################*/
+
+/* ========================================================================== 
+   INHALTSVERZEICHNIS
+
+   01   Layout
+   02   Neomorphismus
+   03   Buttons
+   04   Chips
+   05   Datensätze
+   ========================================================================== */
+
+/* ========================================================================== 
+   01   Layout
+   ========================================================================== */
+
+.dd-container {
+  width: min(100%, var(--dd-max-width));
+  margin-inline: auto;
+}
+
+.dd-grid-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  gap: var(--dd-space-5);
+}
+
+.dd-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: var(--dd-radius-pill);
+  padding: 0.5rem 0.85rem;
+  background: var(--dd-color-primary-soft);
+  color: var(--dd-color-primary-strong);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ========================================================================== 
+   02   Neomorphismus
+   ========================================================================== */
+
+.dd-neu-card {
+  border-radius: var(--dd-radius-2xl);
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-raised);
+}
+
+.dd-neu-inset {
+  border-radius: var(--dd-radius-xl);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+/* ========================================================================== 
+   03   Buttons
+   ========================================================================== */
+
+.dd-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dd-space-2);
+  border-radius: var(--dd-radius-pill);
+  padding: 0.75rem 1.15rem;
+  cursor: pointer;
+  font-weight: 800;
+  transition: box-shadow 160ms ease, transform 160ms ease, background-color 160ms ease;
+}
+
+.dd-button:hover {
+  transform: translateY(-1px);
+}
+
+.dd-button:active {
+  box-shadow: var(--dd-shadow-inset);
+  transform: translateY(0);
+}
+
+.dd-button--primary {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-button--secondary {
+  background: var(--dd-color-surface);
+  color: var(--dd-color-text);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+/* ========================================================================== 
+   04   Chips
+   ========================================================================== */
+
+.dd-chip {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  border-radius: var(--dd-radius-pill);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.dd-chip--success {
+  background: var(--dd-color-success-soft);
+  color: var(--dd-color-success);
+}
+
+.dd-chip--warning {
+  background: var(--dd-color-warning-soft);
+  color: var(--dd-color-warning);
+}
+
+.dd-chip--danger {
+  background: var(--dd-color-danger-soft);
+  color: var(--dd-color-danger);
+}
+
+/* ========================================================================== 
+   05   Datensätze
+   ========================================================================== */
+
+.dd-dataset {
+  overflow: hidden;
+  max-height: 72px;
+  border-radius: var(--dd-radius-xl);
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-soft);
+  transition: max-height 220ms ease, box-shadow 220ms ease;
+}
+
+.dd-dataset:hover,
+.dd-dataset:focus-within,
+.dd-dataset.is-open {
+  max-height: 520px;
+  box-shadow: var(--dd-shadow-raised);
+}
