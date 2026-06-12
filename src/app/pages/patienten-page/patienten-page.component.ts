@@ -8,8 +8,9 @@
 import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NeuerPatientInput, Patient, PatientGeschlecht, PatientQuelle, PatientStatus } from '../../core/models/patient.model';
-import { normalisiereSichereSuche } from '../../core/security/sichere-suche.util';
 import { PatientContextService } from '../../core/services/patient-context.service';
+import { IconActionComponent } from '../../shared/components/icon-action/icon-action.component';
+import { SecureSearchComponent } from '../../shared/components/secure-search/secure-search.component';
 
 /** Sortieroptionen der Patientenliste. */
 type PatientenSortierung = 'aktualisiert' | 'review' | 'name';
@@ -17,7 +18,7 @@ type PatientenSortierung = 'aktualisiert' | 'review' | 'name';
 /** Route `/patienten` für Testpersonen, Befunde und globale Auswahl. */
 @Component({
   selector: 'dd-patienten-page',
-  imports: [RouterLink],
+  imports: [IconActionComponent, RouterLink, SecureSearchComponent],
   templateUrl: './patienten-page.component.html',
   styleUrl: './patienten-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -53,9 +54,6 @@ export class PatientenPageComponent {
   /** Eingabe Lebensstil. */
   public readonly neuerLebensstil: WritableSignal<string> = signal('');
 
-  /** Rückmeldung zur sicheren Suche. */
-  public readonly suchFeedback: WritableSignal<string> = signal('');
-
   /** Eingabe Geschlecht. */
   public readonly neuesGeschlecht: WritableSignal<PatientGeschlecht> = signal('unbekannt');
 
@@ -89,14 +87,9 @@ export class PatientenPageComponent {
     this.modalOffen.set(false);
   }
 
-  /** Aktualisiert die globale Patientensuche mit der zentralen Sicherheitsnormalisierung. */
-  public sucheAendern(event: Event): void {
-    const eingabe = event.target as HTMLInputElement;
-    const ergebnis = normalisiereSichereSuche(eingabe.value);
-
-    this.patientContext.patientenSucheSetzen(ergebnis.wert);
-    this.suchFeedback.set(ergebnis.meldung ?? '');
-    eingabe.value = this.patientContext.patientenSuche();
+  /** Aktualisiert die globale Patientensuche. */
+  public sucheSetzen(wert: string): void {
+    this.patientContext.patientenSucheSetzen(wert);
   }
 
   /** Setzt den Quellenfilter. */
@@ -245,4 +238,3 @@ export class PatientenPageComponent {
     return eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '');
   }
 }
-

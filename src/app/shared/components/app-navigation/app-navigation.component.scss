@@ -192,111 +192,6 @@
   outline: none;
 }
 
-.dd-topbar__search {
-  display: flex;
-  width: 100%;
-  height: 52px;
-  align-items: center;
-  gap: var(--dd-space-2);
-  border-radius: var(--dd-radius-pill);
-  padding: 0 1rem;
-  background: var(--dd-color-bg);
-  color: var(--dd-color-text-soft);
-  box-shadow: var(--dd-shadow-inset);
-  transition: box-shadow 180ms ease, transform 180ms ease;
-}
-
-.dd-topbar__search:focus-within {
-  box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.14), var(--dd-shadow-inset);
-  transform: translateY(-1px);
-}
-
-.dd-topbar__search.has-error,
-.dd-topbar__search.has-error:focus-within {
-  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.15), var(--dd-shadow-inset);
-}
-
-.dd-topbar__search input {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  border-radius: var(--dd-radius-pill);
-  background: transparent;
-  color: var(--dd-color-text);
-  outline: none;
-  box-shadow: none;
-  appearance: none;
-}
-
-.dd-topbar__search input:focus,
-.dd-topbar__search input:focus-visible,
-.dd-topbar__search input:active {
-  border: 0;
-  outline: none;
-  box-shadow: none;
-}
-
-.dd-topbar__search input::-webkit-search-decoration,
-.dd-topbar__search input::-webkit-search-cancel-button,
-.dd-topbar__search input::-webkit-search-results-button,
-.dd-topbar__search input::-webkit-search-results-decoration {
-  appearance: none;
-}
-
-.dd-topbar__search input::placeholder {
-  color: var(--dd-color-text-soft);
-  opacity: 1;
-}
-
-.dd-topbar__search-message {
-  position: absolute;
-  top: calc(100% + var(--dd-space-2));
-  left: var(--dd-space-3);
-  z-index: 5;
-  max-width: min(620px, calc(100vw - var(--dd-space-5)));
-  margin: 0;
-  border-radius: var(--dd-radius-lg);
-  padding: 0.55rem 0.78rem;
-  background: var(--dd-color-surface-high);
-  color: var(--dd-color-primary);
-  font-size: 0.76rem;
-  font-weight: 850;
-  line-height: 1.42;
-  box-shadow: 0 10px 22px rgba(25, 28, 33, 0.12);
-}
-
-.dd-topbar__search-message.has-error {
-  color: var(--dd-color-danger);
-}
-
-.dd-topbar__search-message.is-hint {
-  color: var(--dd-color-text-muted);
-}
-
-.dd-topbar__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--dd-space-3);
-}
-
-.dd-topbar__icon {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border-radius: var(--dd-radius-lg);
-  cursor: pointer;
-  background: var(--dd-color-bg);
-  color: var(--dd-color-primary);
-  box-shadow: var(--dd-shadow-soft);
-  transition: box-shadow 180ms ease, transform 180ms ease;
-}
-
-.dd-topbar__icon:hover {
-  box-shadow: var(--dd-shadow-raised);
-  transform: translateY(-1px);
-}
-
 .dd-topbar__patient {
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr);
@@ -365,26 +260,10 @@
   width: min(520px, calc(100vw - var(--dd-space-4)));
 }
 
-.dd-header-modal__close {
+.dd-header-modal > dd-icon-action {
   position: absolute;
-  z-index: 2;
   top: var(--dd-space-3);
   right: var(--dd-space-3);
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: var(--dd-radius-md);
-  cursor: pointer;
-  background: var(--dd-color-bg);
-  color: var(--dd-color-primary);
-  box-shadow: var(--dd-shadow-soft);
-  transition: background-color 180ms ease, transform 180ms ease;
-}
-
-.dd-header-modal__close:hover {
-  background: var(--dd-color-primary-soft);
-  transform: translateY(-1px);
 }
 
 .dd-header-modal header {
@@ -530,28 +409,8 @@
   box-shadow: var(--dd-focus-ring), var(--dd-shadow-inset);
 }
 
-.dd-header-modal__patient-search {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: var(--dd-space-2);
-  align-items: center;
-  border-radius: var(--dd-radius-lg);
-  padding: 0.62rem 0.8rem;
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-inset);
-}
-
-.dd-header-modal__patient-search span {
-  color: var(--dd-color-primary);
-}
-
-.dd-header-modal__patient-search input {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--dd-color-text);
-  font: inherit;
+dd-secure-search {
+  display: block;
 }
 
 .dd-header-modal__patient-filters {
@@ -680,4 +539,66 @@
   .dd-topbar__actions .dd-button {
     flex: 1;
   }
-}
+}
+/* ==========================================================================
+   08   Topbar-Aktionsbuttons
+   ========================================================================== */
+
+.dd-topbar__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--dd-space-3);
+  margin-left: var(--dd-space-2);
+}
+
+.dd-topbar__actions button {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: var(--dd-radius-lg);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+  transition: transform 160ms var(--dd-ease-out), box-shadow 160ms var(--dd-ease-out), background 160ms var(--dd-ease-out), color 160ms var(--dd-ease-out);
+}
+
+.dd-topbar__actions button .material-symbols-outlined {
+  font-size: 1.34rem;
+  line-height: 1;
+}
+
+.dd-topbar__actions button:hover,
+.dd-topbar__actions button:focus-visible,
+.dd-topbar__actions button.is-active {
+  background: var(--dd-color-surface);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
+.dd-topbar__actions button:focus-visible {
+  outline: 3px solid rgba(0, 94, 184, 0.16);
+  outline-offset: 3px;
+}
+
+.dd-topbar__actions button.is-active {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+}
+
+.dd-topbar__actions button.is-active:hover,
+.dd-topbar__actions button.is-active:focus-visible {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+}
+
+@media (max-width: 720px) {
+  .dd-topbar__actions {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+}

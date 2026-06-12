@@ -1,0 +1,12 @@
+<!-- src/app/shared/components/secure-search/secure-search.component.html -->
+
+<div class="dd-secure-search">
+  <label [class.has-error]="feedback()">
+    <span class="material-symbols-outlined" aria-hidden="true">search</span>
+    <input type="search" autocomplete="off" autocapitalize="none" spellcheck="false" [attr.aria-label]="label" [attr.aria-invalid]="!!feedback()" [placeholder]="placeholder" [value]="value" (input)="sucheAendern($event)">
+  </label>
+
+  @if (feedback()) {
+    <p>{{ feedback() }}</p>
+  }
+</div>

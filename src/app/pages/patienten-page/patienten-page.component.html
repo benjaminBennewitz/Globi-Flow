@@ -33,15 +33,7 @@
   </section>
 
   <section class="dd-patienten-route__toolbar dd-neu-card" aria-label="Patientenfilter">
-    <div class="dd-patienten-route__search-wrap">
-      <label class="dd-patienten-route__search">
-        <span class="material-symbols-outlined" aria-hidden="true">search</span>
-        <input type="search" placeholder="Name, ID, Lebensstil oder Befundstatus suchen" [value]="patientContext.patientenSuche()" (input)="sucheAendern($event)">
-      </label>
-      @if (suchFeedback()) {
-        <p>{{ suchFeedback() }}</p>
-      }
-    </div>
+    <dd-secure-search label="Patienten durchsuchen" placeholder="Name, ID, Lebensstil oder Befundstatus suchen" [value]="patientContext.patientenSuche()" (valueChange)="sucheSetzen($event)"></dd-secure-search>
 
     <div class="dd-patienten-route__chips" aria-label="Filter">
       @for (filter of filterOptionen; track filter.key) {
@@ -112,9 +104,7 @@
           <h2 id="patient-modal-title">Testperson anlegen</h2>
           <p>Neue lokale Testperson für Import, Review und Auswertung vorbereiten.</p>
         </div>
-        <button type="button" aria-label="Modal schließen" (click)="modalSchliessen()">
-          <span class="material-symbols-outlined" aria-hidden="true">close</span>
-        </button>
+        <dd-icon-action icon="close" label="Modal schließen" tone="danger" (action)="modalSchliessen()"></dd-icon-action>
       </header>
 
       <div class="dd-patienten-route__form">
@@ -168,4 +158,4 @@
       </footer>
     </div>
   </section>
-}
+}

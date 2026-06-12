@@ -114,41 +114,8 @@
   padding: var(--dd-space-4);
 }
 
-.dd-patienten-route__search-wrap {
-  display: grid;
-  gap: var(--dd-space-2);
-}
-
-.dd-patienten-route__search-wrap p {
-  margin: 0;
-  color: var(--dd-color-danger);
-  font-size: 0.78rem;
-  font-weight: 820;
-}
-
-.dd-patienten-route__search {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: var(--dd-space-2);
-  align-items: center;
-  min-height: 54px;
-  border-radius: var(--dd-radius-pill);
-  padding: 0.72rem 1rem;
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-inset);
-}
-
-.dd-patienten-route__search span {
-  color: var(--dd-color-primary);
-}
-
-.dd-patienten-route__search input {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--dd-color-text);
-  font: inherit;
+dd-secure-search {
+  display: block;
 }
 
 .dd-patienten-route__chips,
@@ -353,16 +320,8 @@
   color: var(--dd-color-text);
 }
 
-.dd-patienten-route__modal-card header button {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border-radius: var(--dd-radius-md);
-  cursor: pointer;
-  background: var(--dd-color-bg);
-  color: var(--dd-color-primary);
-  box-shadow: var(--dd-shadow-soft);
+.dd-patienten-route__modal-card header dd-icon-action {
+  flex: 0 0 auto;
 }
 
 .dd-patienten-route__form {
@@ -447,4 +406,4 @@
   .dd-patienten-route__form {
     grid-template-columns: 1fr;
   }
-}
+}

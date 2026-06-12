@@ -1,0 +1,5 @@
+<!-- src/app/shared/components/icon-action/icon-action.component.html -->
+
+<button class="dd-icon-action is-{{ tone }}" type="button" [class.is-close]="icon === 'close'" [class.is-delete]="icon === 'delete'" [attr.aria-label]="label" [title]="label" (click)="ausloesen()">
+  <span class="material-symbols-outlined" aria-hidden="true">{{ icon }}</span>
+</button>

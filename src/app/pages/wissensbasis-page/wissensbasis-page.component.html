@@ -1,5 +1,300 @@
 <!-- src/app/pages/wissensbasis-page/wissensbasis-page.component.html -->
 
-@if (wissenseintraege$ | async; as wissenseintraege) {
-  <dd-wissens-editor [wissenseintraege]="wissenseintraege" />
+<section class="dd-wissensbasis-route" aria-labelledby="wissensbasis-title">
+  <header class="dd-wissensbasis-route__headline">
+    <div>
+      <span class="dd-eyebrow">Kontrollierte Inhalte</span>
+      <h1 id="wissensbasis-title">Wissensbasis</h1>
+      <p>Laborwert-Erklärungen, Quellen, Versionen und Freigaben für Auswertung und Patientenbericht pflegen.</p>
+    </div>
+
+    <button class="dd-button dd-button--secondary" type="button" (click)="quellenindexUmschalten()">
+      <span class="material-symbols-outlined" aria-hidden="true">library_books</span>
+      Quellenindex
+    </button>
+  </header>
+
+  <section class="dd-wissensbasis-route__kpis" aria-label="Wissensbasis-Kennzahlen">
+    <article>
+      <span>Gesamt</span>
+      <strong>{{ kennzahl('alle') }}</strong>
+      <small>Einträge</small>
+    </article>
+    <article>
+      <span>Freigegeben</span>
+      <strong>{{ kennzahl('freigegeben') }}</strong>
+      <small>berichtsfähig</small>
+    </article>
+    <article>
+      <span>Entwurf</span>
+      <strong>{{ kennzahl('entwurf') }}</strong>
+      <small>in Bearbeitung</small>
+    </article>
+    <article>
+      <span>Qualität</span>
+      <strong>{{ qualitaetsprobleme() }}</strong>
+      <small>mit offenen Checks</small>
+    </article>
+  </section>
+
+  <section class="dd-wissensbasis-route__toolbar dd-neu-card" aria-label="Wissensbasis-Filter">
+    <dd-secure-search label="Wissensbasis durchsuchen" placeholder="Laborwert, Kategorie, Text oder Quelle suchen" [value]="suche()" (valueChange)="sucheSetzen($event)"></dd-secure-search>
+
+    <div class="dd-wissensbasis-route__chips" aria-label="Statusfilter">
+      @for (status of statusOptionen; track status.key) {
+        <button type="button" [class.is-active]="statusFilter() === status.key" (click)="statusFilterSetzen(status.key)">{{ status.label }}</button>
+      }
+    </div>
+
+    <div class="dd-wissensbasis-route__chips" aria-label="Kategorienfilter">
+      @for (kategorie of kategorien(); track kategorie) {
+        <button type="button" [class.is-active]="kategorieFilter() === kategorie" (click)="kategorieFilterSetzen(kategorie)">{{ kategorie }}</button>
+      }
+    </div>
+  </section>
+
+  <div class="dd-wissensbasis-route__workspace">
+    <section class="dd-wissensbasis-route__list dd-neu-card" aria-labelledby="wissensliste-title">
+      <header>
+        <div>
+          <h2 id="wissensliste-title">Wissenseinträge</h2>
+          <p>{{ sichtbareEintraege().length }} Einträge passend zur Filterung.</p>
+        </div>
+      </header>
+
+      <div class="dd-wissensbasis-route__entries">
+        <button class="dd-wissensbasis-route__create-entry" type="button" (click)="anlageModalOeffnen()">
+          <span class="material-symbols-outlined" aria-hidden="true">add_notes</span>
+          <strong>Neue Wissenskarte</strong>
+          <small>Basisdaten erfassen und danach im Editor ausarbeiten.</small>
+        </button>
+
+        @for (eintrag of sichtbareEintraege(); track eintrag.id) {
+          <article class="dd-wissensbasis-route__entry" [class.is-active]="eintrag.id === aktiverEintrag().id">
+            <button type="button" class="dd-wissensbasis-route__entry-main" (click)="eintragAuswaehlen(eintrag)">
+              <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</span>
+              <strong>{{ eintrag.anzeigename }}</strong>
+              <small>{{ eintrag.laborwertKey }} · {{ eintrag.kategorie }}</small>
+              <i>v{{ eintrag.version }} · {{ eintrag.quellen.length }} Quellen</i>
+            </button>
+
+            <div class="dd-wissensbasis-route__entry-actions">
+              <dd-icon-action icon="edit" label="Eintrag bearbeiten" tone="primary" (action)="eintragAuswaehlen(eintrag)"></dd-icon-action>
+              <dd-icon-action icon="rule_settings" label="Zur Prüfung markieren" tone="warning" (action)="eintragStatusSetzen(eintrag.id, 'pruefung')"></dd-icon-action>
+              <dd-icon-action icon="verified" label="Eintrag freigeben" tone="success" (action)="eintragStatusSetzen(eintrag.id, 'freigegeben')"></dd-icon-action>
+              <dd-icon-action icon="delete" label="Eintrag löschen" tone="danger" (action)="loeschDialogOeffnen(eintrag.id)"></dd-icon-action>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="dd-wissensbasis-route__editor dd-neu-card" aria-labelledby="editor-title">
+      @let form = formular();
+
+      <header>
+        <div>
+          <span class="dd-chip {{ statusKlasse(form.status) }}">{{ statusLabel(form.status) }}</span>
+          <h2 id="editor-title">{{ form.anzeigename }}</h2>
+          <p>{{ form.laborwertKey }} · Version {{ form.version }}</p>
+        </div>
+
+        <div class="dd-wissensbasis-route__editor-actions">
+          <button class="dd-button dd-button--danger" type="button" (click)="eintragLoeschen()">Löschen</button>
+          <button class="dd-button dd-button--secondary" type="button" (click)="statusSetzenUndSpeichern('pruefung')">Zur Prüfung</button>
+          <button class="dd-button dd-button--secondary" type="button" (click)="statusSetzenUndSpeichern('freigegeben')">Freigeben</button>
+          <button class="dd-button dd-button--primary" type="button" (click)="entwurfSpeichern()">Änderungen speichern</button>
+        </div>
+      </header>
+
+      <div class="dd-wissensbasis-route__editor-scroll">
+        <form class="dd-wissensbasis-route__form">
+          <label>
+            <span>Laborwert-Key</span>
+            <input type="text" [value]="form.laborwertKey" (input)="formularfeldSetzen('laborwertKey', $event)">
+          </label>
+          <label>
+            <span>Anzeigename</span>
+            <input type="text" [value]="form.anzeigename" (input)="formularfeldSetzen('anzeigename', $event)">
+          </label>
+          <label>
+            <span>Kategorie</span>
+            <input type="text" [value]="form.kategorie" (input)="formularfeldSetzen('kategorie', $event)">
+          </label>
+          <label>
+            <span>Status</span>
+            <select [value]="form.status" (change)="formularfeldSetzen('status', $event)">
+              <option value="entwurf">Entwurf</option>
+              <option value="pruefung">Prüfung</option>
+              <option value="freigegeben">Freigegeben</option>
+            </select>
+          </label>
+
+          <label class="is-wide">
+            <span>Patientenerklärung kurz</span>
+            <textarea rows="3" [value]="form.patientKurztext" (input)="formularfeldSetzen('patientKurztext', $event)"></textarea>
+          </label>
+          <label class="is-wide">
+            <span>Patientenerklärung ausführlich</span>
+            <textarea rows="5" [value]="form.patientLangtext" (input)="formularfeldSetzen('patientLangtext', $event)"></textarea>
+          </label>
+          <label class="is-wide">
+            <span>Arztinformation</span>
+            <textarea rows="3" [value]="form.arztinformation" (input)="formularfeldSetzen('arztinformation', $event)"></textarea>
+          </label>
+          <label>
+            <span>Ursachen niedrig</span>
+            <textarea rows="4" [value]="form.ursachenNiedrig" (input)="formularfeldSetzen('ursachenNiedrig', $event)"></textarea>
+          </label>
+          <label>
+            <span>Ursachen hoch</span>
+            <textarea rows="4" [value]="form.ursachenHoch" (input)="formularfeldSetzen('ursachenHoch', $event)"></textarea>
+          </label>
+          <label>
+            <span>Einflussfaktoren</span>
+            <textarea rows="4" [value]="form.einflussfaktoren" (input)="formularfeldSetzen('einflussfaktoren', $event)"></textarea>
+          </label>
+          <label>
+            <span>Hinweise</span>
+            <textarea rows="4" [value]="form.hinweise" (input)="formularfeldSetzen('hinweise', $event)"></textarea>
+          </label>
+          <label class="is-wide">
+            <span>Disclaimer</span>
+            <textarea rows="3" [value]="form.disclaimer" (input)="formularfeldSetzen('disclaimer', $event)"></textarea>
+          </label>
+          <label class="is-wide">
+            <span>Änderungsnotiz</span>
+            <input type="text" placeholder="z. B. Patiententext vereinfacht" [value]="form.aenderungsnotiz" (input)="formularfeldSetzen('aenderungsnotiz', $event)">
+          </label>
+        </form>
+
+        <section class="dd-wissensbasis-route__quality" aria-labelledby="quality-title">
+          <h3 id="quality-title">Qualitätschecks</h3>
+          <div>
+            @for (check of qualitaetsChecks(aktiverEintrag()); track check.label) {
+              <article [class.is-ok]="check.ok">
+                <span class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error' }}</span>
+                <strong>{{ check.label }}</strong>
+              </article>
+            }
+          </div>
+        </section>
+
+        <section class="dd-wissensbasis-route__sources" aria-labelledby="sources-title">
+          <header>
+            <div>
+              <h3 id="sources-title">Quellen</h3>
+              <p>{{ form.quellen.length }} Quellen diesem Eintrag zugeordnet.</p>
+            </div>
+          </header>
+
+          <div class="dd-wissensbasis-route__source-list">
+            @for (quelle of form.quellen; track quelle.id) {
+              <article>
+                <span>{{ quelle.typ }}</span>
+                <strong>{{ quelle.titel }}</strong>
+                <small>{{ quelle.stand }} · {{ quelle.referenz }}</small>
+                <dd-icon-action icon="close" label="Quelle entfernen" tone="danger" (action)="quelleEntfernen(quelle.id)"></dd-icon-action>
+              </article>
+            } @empty {
+              <p>Noch keine Quelle zugeordnet.</p>
+            }
+          </div>
+
+          <div class="dd-wissensbasis-route__source-form">
+            <input type="text" placeholder="Quellentitel" [value]="quellenTitel()" (input)="quellenFeldSetzen('titel', $event)">
+            <select [value]="quellenTyp()" (change)="quellenTypSetzen($event)">
+              @for (typ of quellenTypen; track typ.key) {
+                <option [value]="typ.key">{{ typ.label }}</option>
+              }
+            </select>
+            <input type="text" placeholder="Stand" [value]="quellenStand()" (input)="quellenFeldSetzen('stand', $event)">
+            <input type="text" placeholder="Referenz oder URL" [value]="quellenReferenz()" (input)="quellenFeldSetzen('referenz', $event)">
+            <input type="text" placeholder="Interner Hinweis" [value]="quellenHinweis()" (input)="quellenFeldSetzen('hinweis', $event)">
+            <button class="dd-button dd-button--secondary" type="button" (click)="quelleHinzufuegen()">Quelle hinzufügen</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+</section>
+
+@if (quellenindexOffen()) {
+  <section class="dd-wissensbasis-route__source-index" role="dialog" aria-modal="false" aria-labelledby="source-index-title">
+    <div class="dd-wissensbasis-route__source-index-card">
+      <header>
+        <div>
+          <h2 id="source-index-title">Quellenindex</h2>
+          <p>Alle in der Wissensbasis hinterlegten Quellen und ihre Zuordnung.</p>
+        </div>
+        <dd-icon-action icon="close" label="Quellenindex schließen" tone="danger" (action)="quellenindexUmschalten()"></dd-icon-action>
+      </header>
+
+      <div class="dd-wissensbasis-route__source-index-list">
+        @for (quelle of quellenindex(); track quelle.id + quelle.laborwertKey) {
+          <article>
+            <span>{{ quelle.typ }}</span>
+            <strong>{{ quelle.titel }}</strong>
+            <p>{{ quelle.eintrag }} · {{ quelle.laborwertKey }} · {{ quelle.stand }}</p>
+            <small>{{ quelle.referenz || quelle.hinweis }}</small>
+          </article>
+        } @empty {
+          <p>Keine Quellen hinterlegt.</p>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+@if (anlageModalOffen()) {
+  <section class="dd-wissensbasis-route__create-modal" role="dialog" aria-modal="true" aria-labelledby="create-wissen-title">
+    <div class="dd-wissensbasis-route__create-card">
+      <header>
+        <div>
+          <h2 id="create-wissen-title">Wissenseintrag anlegen</h2>
+          <p>Basisdaten erfassen, danach direkt im Editor die Texte und Quellen pflegen.</p>
+        </div>
+        <dd-icon-action icon="close" label="Anlage schließen" tone="danger" (action)="anlageModalSchliessen()"></dd-icon-action>
+      </header>
+
+      <div class="dd-wissensbasis-route__create-form">
+        <label>
+          <span>Laborwert-Key</span>
+          <input type="text" placeholder="z. B. ldl_cholesterin" [value]="neuerLaborwertKey()" (input)="anlageFeldSetzen('laborwertKey', $event)">
+        </label>
+        <label>
+          <span>Anzeigename</span>
+          <input type="text" placeholder="z. B. LDL-Cholesterin" [value]="neuerAnzeigename()" (input)="anlageFeldSetzen('anzeigename', $event)">
+        </label>
+        <label>
+          <span>Kategorie</span>
+          <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()" (input)="anlageFeldSetzen('kategorie', $event)">
+        </label>
+      </div>
+
+      <footer>
+        <button class="dd-button dd-button--secondary" type="button" (click)="anlageModalSchliessen()">Abbrechen</button>
+        <button class="dd-button dd-button--primary" type="button" (click)="eintragAnlegen()">Anlegen und bearbeiten</button>
+      </footer>
+    </div>
+  </section>
+}
+
+@if (loeschDialogEintrag(); as loeschEintrag) {
+  <section class="dd-wissensbasis-route__delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-wissen-title">
+    <div class="dd-wissensbasis-route__delete-card">
+      <header>
+        <div>
+          <h2 id="delete-wissen-title">Wissenskarte wirklich löschen?</h2>
+          <p>{{ loeschEintrag.anzeigename }} wird aus der lokalen Wissensbasis entfernt.</p>
+        </div>
+        <dd-icon-action icon="close" label="Löschdialog schließen" tone="danger" (action)="loeschDialogSchliessen()"></dd-icon-action>
+      </header>
+
+      <footer>
+        <button class="dd-button dd-button--secondary" type="button" (click)="loeschDialogSchliessen()">Abbrechen</button>
+        <button class="dd-button dd-button--danger" type="button" (click)="eintragWirklichLoeschen()">Wirklich löschen</button>
+      </footer>
+    </div>
+  </section>
 }

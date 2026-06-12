@@ -53,14 +53,7 @@
 
 <header class="dd-topbar" aria-label="Kopfleiste">
   <form class="dd-topbar__search-wrap" role="search" (submit)="sucheAbsenden($event)">
-    <label class="dd-topbar__search" [class.has-error]="sucheBlockiert()">
-      <span class="material-symbols-outlined" aria-hidden="true">search</span>
-      <input type="search" placeholder="Patient suchen (ID, Name, Geb.-Datum) ..." aria-label="Patient suchen" autocomplete="off" autocapitalize="none" spellcheck="false" [attr.maxlength]="suchMaxLaenge" [value]="suchbegriff()" [attr.aria-invalid]="sucheBlockiert()" aria-describedby="topbar-search-message" (input)="suchwertAendern($event)">
-    </label>
-
-    @if (suchMeldung(); as meldung) {
-      <p class="dd-topbar__search-message" id="topbar-search-message" [class.has-error]="sucheBlockiert()">{{ meldung }}</p>
-    }
+    <dd-secure-search label="Patient suchen" placeholder="Patient suchen (ID, Name, Geb.-Datum) ..." [value]="suchbegriff()" (valueChange)="suchwertSetzen($event)"></dd-secure-search>
   </form>
 
   <button class="dd-topbar__patient" type="button" [class.has-patient]="patientContext.aktiverPatient()" aria-label="Aktiven Patienten wechseln" (click)="modalOeffnen('patient')">
@@ -85,9 +78,7 @@
 
 @if (aktivesModal) {
   <section class="dd-header-modal" [class.is-patient]="aktivesModal === 'patient'" role="dialog" aria-modal="false" [attr.aria-labelledby]="aktivesModal === 'alarm' ? 'alarm-title' : aktivesModal === 'settings' ? 'settings-title' : 'patient-title'">
-    <button class="dd-header-modal__close" type="button" aria-label="Overlay schließen" (click)="modalSchliessen()">
-      <span class="material-symbols-outlined" aria-hidden="true">close</span>
-    </button>
+    <dd-icon-action icon="close" label="Overlay schließen" tone="danger" (action)="modalSchliessen()"></dd-icon-action>
 
     @if (aktivesModal === 'patient') {
       <header>
@@ -98,10 +89,7 @@
         </div>
       </header>
 
-      <label class="dd-header-modal__patient-search">
-        <span class="material-symbols-outlined" aria-hidden="true">search</span>
-        <input type="search" autocomplete="off" placeholder="Name, ID oder Kontext suchen" [value]="patientContext.patientenSuche()" (input)="patientSucheAendern($event)">
-      </label>
+      <dd-secure-search label="Patientenliste durchsuchen" placeholder="Name, ID oder Kontext suchen" [value]="patientContext.patientenSuche()" (valueChange)="patientSucheSetzen($event)"></dd-secure-search>
 
       <div class="dd-header-modal__patient-filters">
         <button type="button" [class.is-active]="patientContext.patientenFilter() === 'alle'" (click)="patientFilterSetzen('alle')">Alle</button>
@@ -175,4 +163,4 @@
       </div>
     }
   </section>
-}
+}

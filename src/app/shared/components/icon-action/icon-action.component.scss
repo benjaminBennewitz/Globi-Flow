@@ -1,0 +1,64 @@
+/* ==========================================================================
+   INHALTSVERZEICHNIS
+
+   01   Icon-Aktion
+   ========================================================================== */
+
+/* ==========================================================================
+   01   Icon-Aktion
+   ========================================================================== */
+
+.dd-icon-action {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: var(--dd-radius-md);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-soft);
+  transition: transform 160ms var(--dd-ease-out), box-shadow 160ms var(--dd-ease-out), background 160ms var(--dd-ease-out);
+}
+
+.dd-icon-action span {
+  font-size: 1.25rem;
+  transition: transform 160ms var(--dd-ease-out);
+}
+
+.dd-icon-action.is-danger span {
+  color: var(--dd-color-danger);
+}
+
+.dd-icon-action.is-primary span {
+  color: var(--dd-color-primary);
+}
+
+.dd-icon-action.is-muted span {
+  color: var(--dd-color-text-muted);
+}
+
+.dd-icon-action.is-success span {
+  color: var(--dd-color-success);
+}
+
+.dd-icon-action.is-warning span {
+  color: var(--dd-color-warning);
+}
+
+.dd-icon-action:hover {
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
+.dd-icon-action:hover span {
+  transform: scale(1.08);
+}
+
+.dd-icon-action.is-close:hover span {
+  transform: rotate(90deg) scale(1.04);
+}
+
+.dd-icon-action.is-delete:hover span {
+  transform: scale(1.08);
+}

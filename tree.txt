@@ -105,11 +105,25 @@ Data-Dashboard/
 │   │   │       ├── wissensbasis-page.component.scss
 │   │   │       └── wissensbasis-page.component.ts
 │   │   ├── shared/
-│   │   │   └── components/
-│   │   │       └── app-navigation/
-│   │   │           ├── app-navigation.component.html
-│   │   │           ├── app-navigation.component.scss
-│   │   │           └── app-navigation.component.ts
+│   │   │   ├── components/
+│   │   │   │   ├── app-navigation/
+│   │   │   │   │   ├── app-navigation.component.html
+│   │   │   │   │   ├── app-navigation.component.scss
+│   │   │   │   │   └── app-navigation.component.ts
+│   │   │   │   ├── icon-action/
+│   │   │   │   │   ├── icon-action.component.html
+│   │   │   │   │   ├── icon-action.component.scss
+│   │   │   │   │   └── icon-action.component.ts
+│   │   │   │   ├── secure-search/
+│   │   │   │   │   ├── secure-search.component.html
+│   │   │   │   │   ├── secure-search.component.scss
+│   │   │   │   │   └── secure-search.component.ts
+│   │   │   │   └── toast-container/
+│   │   │   │       ├── toast-container.component.html
+│   │   │   │       ├── toast-container.component.scss
+│   │   │   │       └── toast-container.component.ts
+│   │   │   └── services/
+│   │   │       └── toast.service.ts
 │   │   ├── app.component.html
 │   │   ├── app.component.scss
 │   │   ├── app.component.ts
