@@ -1,5 +1,221 @@
 <!-- src/app/pages/berichte-page/berichte-page.component.html -->
 
-@if (patientenbericht$ | async; as patientenbericht) {
-  <dd-patientenbericht [bericht]="patientenbericht" />
-}
+<section class="dd-berichte-route" aria-labelledby="berichte-title">
+  @let aktiverPatient = patient();
+  @let aktiverBefund = befund();
+  @let daten = bericht();
+
+  <header class="dd-berichte-route__headline">
+    <div>
+      <span class="dd-eyebrow">Druckfertiger Patientenbericht</span>
+      <h1 id="berichte-title">DIN-A4 Berichtsvorschau</h1>
+      <p>Freigegebene Laborwerte, Stammdaten, Wissensbasis-Texte und Hinweise als lesbarer Patientenbericht.</p>
+    </div>
+
+    <div class="dd-berichte-route__headline-actions">
+      <button class="dd-button dd-button--secondary" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+        Vorschau aktualisieren
+      </button>
+      <button class="dd-button dd-button--primary" type="button" (click)="drucken()">
+        <span class="material-symbols-outlined" aria-hidden="true">print</span>
+        Drucken
+      </button>
+    </div>
+  </header>
+
+  <aside class="dd-berichte-route__controls dd-neu-card" aria-label="Berichtssteuerung">
+    <article>
+      <span>Patient</span>
+      <strong>{{ aktiverPatient.name }}</strong>
+      <small>{{ aktiverPatient.nummer }} · {{ aktiverPatient.geburtsdatum }}</small>
+    </article>
+    <article>
+      <span>Befund</span>
+      <strong>{{ aktiverBefund?.datum || 'kein Datum' }}</strong>
+      <small>{{ befundName(aktiverBefund) }}</small>
+    </article>
+    <article>
+      <span>Bericht</span>
+      <strong>{{ daten.version }}</strong>
+      <small>{{ daten.berichtsdatum }} · {{ daten.gesamtstatus }}</small>
+    </article>
+    <section>
+      <h2>Freigabecheck</h2>
+      <div class="dd-berichte-route__checks">
+        @for (check of freigabeChecks(); track check.label) {
+          <span [class.is-ok]="check.ok">
+            <i class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error' }}</i>
+            {{ check.label }}
+          </span>
+        }
+      </div>
+    </section>
+  </aside>
+
+  <section class="dd-berichte-route__preview" aria-label="Druckvorschau">
+    <article class="dd-berichte-route__page">
+      <header class="dd-berichte-route__report-header">
+        <div>
+          <span>Patientenbericht</span>
+          <h2>Blutwerte verständlich zusammengefasst</h2>
+          <p>Bericht {{ daten.version }} · erstellt am {{ daten.berichtsdatum }}</p>
+        </div>
+        <strong>Daten Dashboards</strong>
+      </header>
+
+      <section class="dd-berichte-route__patient-grid">
+        <article>
+          <span>Patient</span>
+          <strong>{{ aktiverPatient.name }}</strong>
+          <small>{{ aktiverPatient.nummer }}</small>
+        </article>
+        <article>
+          <span>Geburtsdatum / Alter</span>
+          <strong>{{ aktiverPatient.geburtsdatum }}</strong>
+          <small>{{ alter(aktiverPatient) }} Jahre</small>
+        </article>
+        <article>
+          <span>Körperdaten</span>
+          <strong>{{ aktiverPatient.groesseCm || '–' }} cm · {{ aktiverPatient.gewichtKg || '–' }} kg</strong>
+          <small>BMI {{ bmi(aktiverPatient) }}</small>
+        </article>
+        <article>
+          <span>Befund</span>
+          <strong>{{ aktiverBefund?.datum || '–' }}</strong>
+          <small>{{ befundName(aktiverBefund) }}</small>
+        </article>
+      </section>
+
+      <section class="dd-berichte-route__summary">
+        <div>
+          <span>Gesamtüberblick</span>
+          <h3>{{ daten.gesamtstatus }}</h3>
+          <p>{{ daten.gesamttext }}</p>
+        </div>
+        <aside>
+          <strong>{{ daten.normaleWerte }}</strong>
+          <span>unauffällig</span>
+          <strong>{{ daten.auffaelligeWerte }}</strong>
+          <span>auffällig</span>
+          <strong>{{ daten.reviewWerte }}</strong>
+          <span>zu prüfen</span>
+        </aside>
+      </section>
+
+      <section class="dd-berichte-route__category-chart">
+        <h3>Wertgruppen im Überblick</h3>
+        @for (kategorie of daten.kategorien; track kategorie.name) {
+          @let gesamt = kategorieGesamt(kategorie);
+          <article>
+            <header>
+              <strong>{{ kategorie.name }}</strong>
+              <small>{{ gesamt }} Werte</small>
+            </header>
+            <div>
+              <span class="is-normal" [style.width.%]="kategorieAnteil(kategorie.normal, gesamt)"></span>
+              <span class="is-alert" [style.width.%]="kategorieAnteil(kategorie.auffaellig, gesamt)"></span>
+              <span class="is-review" [style.width.%]="kategorieAnteil(kategorie.review, gesamt)"></span>
+            </div>
+          </article>
+        }
+      </section>
+
+      <section class="dd-berichte-route__recommendations">
+        <h3>Empfehlungen und Hinweise</h3>
+        @for (empfehlung of daten.empfehlungen; track empfehlung.id) {
+          <article class="is-{{ empfehlung.prioritaet }}">
+            <span>{{ empfehlung.prioritaet }}</span>
+            <strong>{{ empfehlung.titel }}</strong>
+            <p>{{ empfehlung.text }}</p>
+          </article>
+        }
+      </section>
+    </article>
+
+    <article class="dd-berichte-route__page">
+      <header class="dd-berichte-route__page-title">
+        <span>Ergebnisse</span>
+        <h2>Laborwerte in verständlicher Form</h2>
+        <p>Die Marker zeigen das Ergebnis im Verhältnis zum jeweiligen Referenzbereich.</p>
+      </header>
+
+      <section class="dd-berichte-route__value-list">
+        @for (wert of druckWerte(); track wert.key) {
+          <article class="dd-berichte-route__value-card">
+            <header>
+              <div>
+                <span>{{ wert.gruppe }}</span>
+                <h3>{{ wert.name }}</h3>
+              </div>
+              <strong class="{{ statusKlasse(wert.status) }}">{{ statusLabel(wert.status) }}</strong>
+            </header>
+
+            <div class="dd-berichte-route__value-main">
+              <strong>{{ wert.wert }} {{ wert.einheit }}</strong>
+              <small>Referenz: {{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
+            </div>
+
+            <div class="dd-berichte-route__range" aria-hidden="true">
+              <span class="dd-berichte-route__range-ref" [style.left.%]="referenzStart(wert)" [style.width.%]="referenzBreite(wert)"></span>
+              <i [style.left.%]="markerPosition(wert)"></i>
+            </div>
+
+            <p>{{ wert.erklaerung }}</p>
+            <small>{{ wert.hinweis }}</small>
+          </article>
+        }
+      </section>
+    </article>
+
+    <article class="dd-berichte-route__page">
+      <header class="dd-berichte-route__page-title">
+        <span>Verlauf und Gesprächsvorbereitung</span>
+        <h2>Trends, Fragen und Quellen</h2>
+        <p>Verlaufsgrafiken zeigen die Entwicklung in den hinterlegten Testbefunden.</p>
+      </header>
+
+      <section class="dd-berichte-route__trend-grid">
+        @for (wert of auffaelligeWerte(); track wert.key) {
+          <article>
+            <header>
+              <strong>{{ wert.name }}</strong>
+              <span>{{ wert.trend }}</span>
+            </header>
+            <svg viewBox="0 0 100 38" role="img" [attr.aria-label]="'Verlauf von ' + wert.name">
+              <polyline [attr.points]="sparklinePunkte(wert)"></polyline>
+            </svg>
+            <p>{{ wert.hinweis }}</p>
+          </article>
+        }
+      </section>
+
+      <section class="dd-berichte-route__questions">
+        <h3>Fragen für das Arztgespräch</h3>
+        <ol>
+          @for (frage of daten.fragen; track frage) {
+            <li>{{ frage }}</li>
+          }
+        </ol>
+      </section>
+
+      <section class="dd-berichte-route__sources">
+        <h3>Quellen und Wissensbasis</h3>
+        <div>
+          @for (quelle of daten.quellen; track quelle.id) {
+            <article>
+              <span>{{ quelle.bereich }}</span>
+              <strong>{{ quelle.titel }}</strong>
+              <small>Stand {{ quelle.stand }}</small>
+            </article>
+          }
+        </div>
+      </section>
+
+      <footer class="dd-berichte-route__disclaimer">
+        <strong>Wichtiger Hinweis</strong>
+        <p>{{ daten.disclaimer }}</p>
+      </footer>
+    </article>
+  </section>
+</section>
