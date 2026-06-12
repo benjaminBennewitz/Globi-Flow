@@ -7,7 +7,6 @@
 
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { ReviewCheckStatus, ReviewKandidat, ReviewKennzahl, ReviewStatus, ReviewViewModel } from '../../core/models/review.model';
 import { DatenDashboardApiService } from '../../core/services/daten-dashboard-api.service';
 import { PatientBefund } from '../../core/models/patient.model';
@@ -19,7 +18,7 @@ type ReviewFilter = ReviewStatus | 'alle';
 /** Route `/review` für ärztliche Qualitätssicherung. */
 @Component({
   selector: 'dd-review-page',
-  imports: [AsyncPipe, RouterLink],
+  imports: [AsyncPipe],
   templateUrl: './review-page.component.html',
   styleUrl: './review-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
