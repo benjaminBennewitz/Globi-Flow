@@ -10,6 +10,7 @@ import { MOCK_BERICHT } from '../../core/mocks/berichte.mock';
 import { BerichtLaborwert, BerichtViewModel, BerichtWertStatus } from '../../core/models/bericht.model';
 import { Patient, PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 /** Route `/berichte` für Berichtsvorschau und Printansicht. */
 @Component({
@@ -24,6 +25,9 @@ export class BerichtePageComponent {
   /** Globaler Arbeitskontext für Patient und Befund. */
   public readonly patientContext = inject(PatientContextService);
 
+  /** Toast-Service für Freigabehinweise. */
+  private readonly toastService = inject(ToastService);
+
   /** Druckfertiger Mockbericht bis zur API-Anbindung. */
   public readonly bericht = signal<BerichtViewModel>(MOCK_BERICHT);
 
@@ -33,26 +37,40 @@ export class BerichtePageComponent {
   /** Aktiver Befund. */
   public readonly befund = computed(() => this.patientContext.aktiverBefund());
 
-  /** Auffällige oder prüfpflichtige Werte für die Kurzsicht. */
+  /** Auffällige oder prüfpflichtige Werte für die interne Kurzsicht. */
   public readonly auffaelligeWerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status !== 'normal'));
+
+  /** Noch nicht druckfreigegebene Werte. */
+  public readonly offenePruefwerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status === 'review'));
+
+  /** Druckfähige Werte ohne offene Reviewwerte. */
+  public readonly freigegebeneWerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status !== 'review'));
+
+  /** Auffällige druckfähige Werte für Verlaufsgrafiken. */
+  public readonly trendWerte = computed(() => this.freigegebeneWerte().filter((wert: BerichtLaborwert) => wert.status !== 'normal'));
 
   /** Normale Werte für die kompakte Ergebnissicht. */
   public readonly normaleWerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status === 'normal'));
 
   /** Druckfertige Werte für die Ergebnistabelle. */
-  public readonly druckWerte = computed(() => [...this.auffaelligeWerte(), ...this.normaleWerte()].slice(0, 10));
+  public readonly druckWerte = computed(() => [...this.freigegebeneWerte().filter((wert: BerichtLaborwert) => wert.status !== 'normal'), ...this.normaleWerte()].slice(0, 10));
 
   /** Prüfpunkte vor Druck oder Export. */
   public readonly freigabeChecks = computed(() => [
     { label: 'Patient gewählt', ok: !!this.patient() },
     { label: 'Befund gewählt', ok: !!this.befund() },
-    { label: 'Review abgeschlossen', ok: this.bericht().reviewWerte <= 2 },
+    { label: 'Keine offenen Reviewwerte im Druck', ok: this.offenePruefwerte().length === 0 },
     { label: 'Wissensbasis-Texte vorhanden', ok: this.bericht().werte.every((wert: BerichtLaborwert) => !!wert.erklaerung) },
     { label: 'Disclaimer vorhanden', ok: !!this.bericht().disclaimer }
   ]);
 
-  /** Öffnet den nativen Druckdialog. */
+  /** Öffnet den nativen Druckdialog, wenn der Bericht druckfähig ist. */
   public drucken(): void {
+    if (this.offenePruefwerte().length > 0) {
+      this.toastService.zeige('Druck blockiert', 'Offene Reviewwerte müssen vor dem finalen Patientenbericht freigegeben oder entfernt werden.', 'warning');
+      return;
+    }
+
     window.print();
   }
 

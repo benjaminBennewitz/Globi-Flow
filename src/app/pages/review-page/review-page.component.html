@@ -1,208 +1,207 @@
 <!-- src/app/pages/review-page/review-page.component.html -->
 
-@if (review$ | async; as ansicht) {
-  @let patient = patientContext.aktiverPatient();
-  @let befund = patientContext.aktiverBefund();
-  @let kandidat = aktiverKandidat(ansicht);
-  @let sichtbare = sichtbareKandidaten(ansicht);
+@let ansicht = review();
+@let patient = patientContext.aktiverPatient();
+@let befund = patientContext.aktiverBefund();
+@let kandidat = aktiverKandidat(ansicht);
+@let sichtbare = sichtbareKandidaten(ansicht);
 
-  <section class="dd-review-route" aria-labelledby="review-title">
-    <header class="dd-review-route__headline">
-      <div>
-        <span class="dd-eyebrow">Ärztliche Prüfschleuse</span>
-        <h1 id="review-title">Review</h1>
-        <p>Erkannte Laborwerte prüfen, korrigieren und eindeutig dem global ausgewählten Patienten zuordnen.</p>
-      </div>
-
-      <aside class="dd-review-route__assignment" aria-label="Aktuelle Patientenzuordnung">
-        <span>Aktiver globaler Kontext</span>
-        <strong>{{ patient.name }}</strong>
-        <small>{{ befund?.datum || 'kein Befund' }} · {{ befund?.name || 'noch keine Datei' }}</small>
-      </aside>
-    </header>
-
-    <section class="dd-review-route__context dd-neu-card" aria-label="Review-Kontext">
-      <div class="dd-review-route__patient-locked">
-        <span>Patient / Testperson</span>
-        <strong>{{ patient.name }}</strong>
-        <small>{{ patient.nummer }} · Wechsel über Topbar oder Patientenroute</small>
-      </div>
-
-      <div class="dd-review-route__befund">
-        <span>Befund / Importjob</span>
-        <div>
-          @for (eintrag of patient.befundListe; track eintrag.id) {
-            <button type="button" [class.is-active]="eintrag.id === befund?.id" (click)="befundSetzen(eintrag)">
-              <strong>{{ eintrag.datum }}</strong>
-              <small>{{ eintrag.offeneReviews }} offen</small>
-            </button>
-          } @empty {
-            <button type="button" class="is-empty">Noch kein Befund</button>
-          }
-        </div>
-      </div>
-
-      <div class="dd-review-route__progress">
-        <span>Fortschritt</span>
-        <strong>{{ fortschritt(ansicht) }}%</strong>
-        <i><b [style.width.%]="fortschritt(ansicht)"></b></i>
-      </div>
-    </section>
-
-    <div class="dd-review-route__kpis">
-      @for (kennzahl of kennzahlen(ansicht); track kennzahl.label) {
-        <article class="dd-review-route__kpi is-{{ kennzahl.status }}" tabindex="0">
-          <span>{{ kennzahl.label }}</span>
-          <strong>{{ kennzahl.wert }}</strong>
-          <small>{{ kennzahl.hinweis }}</small>
-          <i class="material-symbols-outlined" aria-hidden="true">{{ kennzahl.icon }}</i>
-        </article>
-      }
+<section class="dd-review-route" aria-labelledby="review-title">
+  <header class="dd-review-route__headline">
+    <div>
+      <span class="dd-eyebrow">Ärztliche Prüfschleuse</span>
+      <h1 id="review-title">Review</h1>
+      <p>Erkannte Laborwerte prüfen, korrigieren und eindeutig dem global ausgewählten Patienten zuordnen.</p>
     </div>
 
-    <section class="dd-review-route__filters dd-neu-card" aria-label="Review-Filter">
-      <nav>
-        @for (filter of filterOptionen; track filter.key) {
-          <button type="button" [class.is-active]="aktiverFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
+    <aside class="dd-review-route__assignment" aria-label="Aktuelle Patientenzuordnung">
+      <span>Aktiver globaler Kontext</span>
+      <strong>{{ patient.name }}</strong>
+      <small>{{ befund?.datum || 'kein Befund' }} · {{ befund?.name || 'noch keine Datei' }}</small>
+    </aside>
+  </header>
+
+  <section class="dd-review-route__context dd-neu-card" aria-label="Review-Kontext">
+    <div class="dd-review-route__patient-locked">
+      <span>Patient / Testperson</span>
+      <strong>{{ patient.name }}</strong>
+      <small>{{ patient.nummer }} · Wechsel über Topbar oder Patientenroute</small>
+    </div>
+
+    <div class="dd-review-route__befund">
+      <span>Befund / Importjob</span>
+      <div>
+        @for (eintrag of patient.befundListe; track eintrag.id) {
+          <button type="button" [class.is-active]="eintrag.id === befund?.id" (click)="befundSetzen(eintrag)">
+            <strong>{{ eintrag.datum }}</strong>
+            <small>{{ eintrag.offeneReviews }} offen</small>
+          </button>
+        } @empty {
+          <button type="button" class="is-empty">Noch kein Befund</button>
         }
-      </nav>
-
-      <div class="dd-review-route__bulk">
-        <button class="dd-button dd-button--secondary" type="button">Sichere Werte bestätigen</button>
-        <button class="dd-button dd-button--primary" type="button">Geprüfte übernehmen</button>
       </div>
-    </section>
+    </div>
 
-    @if (kandidat) {
-      <div class="dd-review-route__workspace">
-        <section class="dd-review-route__queue dd-neu-card" aria-labelledby="queue-title">
-          <header>
-            <div>
-              <h2 id="queue-title">Review-Warteschlange</h2>
-              <p>{{ sichtbare.length }} Werte für {{ patient.name }} · {{ befund?.datum || 'kein Befund' }}</p>
-            </div>
-          </header>
-
-          <div class="dd-review-route__queue-list">
-            @for (eintrag of sichtbare; track eintrag.id) {
-              <button class="dd-review-route__queue-item {{ statusKlasse(eintrag.status) }}" [class.is-active]="eintrag.id === kandidat.id" type="button" (click)="kandidatSetzen(eintrag)">
-                <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
-                <strong>{{ eintrag.anzeigename }}</strong>
-                <small>{{ eintrag.erkannterWert }} {{ eintrag.erkannteEinheit }} · {{ eintrag.confidence }}%</small>
-                <i>{{ quelleLabel(eintrag) }}</i>
-              </button>
-            }
-          </div>
-        </section>
-
-        <section class="dd-review-route__original dd-neu-card" aria-labelledby="original-title">
-          <header>
-            <div>
-              <h2 id="original-title">Originalausschnitt</h2>
-              <p>{{ kandidat.originalLabel }}</p>
-            </div>
-            <div class="dd-review-route__zoom">
-              <button type="button" aria-label="Zoom verringern" (click)="zoomRaus()">−</button>
-              <span>{{ (originalZoom() * 100).toFixed(0) }}%</span>
-              <button type="button" aria-label="Zoom erhöhen" (click)="zoomRein()">+</button>
-            </div>
-          </header>
-
-          <div class="dd-review-route__paper" [style.--review-zoom]="originalZoom()">
-            <div>
-              <span>Laborwert</span>
-              <span>Ergebnis</span>
-              <span>Referenz</span>
-            </div>
-            <p>
-              <mark>{{ kandidat.erkannterName }}</mark>
-              <mark>{{ kandidat.erkannterWert }} {{ kandidat.erkannteEinheit }}</mark>
-              <mark>{{ kandidat.referenzMin }} – {{ kandidat.referenzMax }}</mark>
-            </p>
-            <small>{{ kandidat.originalText }}</small>
-          </div>
-
-          <article class="dd-review-route__raw">
-            <span>Rohtext</span>
-            <p>{{ kandidat.originalText }}</p>
-          </article>
-        </section>
-
-        <aside class="dd-review-route__form dd-neu-card" aria-labelledby="form-title">
-          <header>
-            <div>
-              <span class="dd-chip {{ statusKlasse(kandidat.status) }}">{{ kandidat.status }}</span>
-              <h2 id="form-title">Korrekturformular</h2>
-              <p>{{ patient.name }} · {{ befund?.datum || 'kein Befund' }}</p>
-            </div>
-            <strong>{{ kandidat.confidence }}%</strong>
-          </header>
-
-          <div class="dd-review-route__form-grid">
-            <label>
-              <span>Laborwert-Key</span>
-              <input type="text" [value]="kandidat.laborwertKey">
-            </label>
-            <label>
-              <span>Anzeigename</span>
-              <input type="text" [value]="kandidat.anzeigename">
-            </label>
-            <label>
-              <span>Ergebnis</span>
-              <input type="text" [value]="korrigierterMesswert(kandidat)">
-            </label>
-            <label>
-              <span>Einheit</span>
-              <input type="text" [value]="kandidat.korrigierteEinheit">
-            </label>
-            <label>
-              <span>Referenz min</span>
-              <input type="text" [value]="kandidat.referenzMin">
-            </label>
-            <label>
-              <span>Referenz max</span>
-              <input type="text" [value]="kandidat.referenzMax">
-            </label>
-          </div>
-
-          <label class="dd-review-route__comment">
-            <span>Kommentar</span>
-            <textarea rows="3" [value]="kandidat.kommentar" placeholder="Ärztlichen Review-Kommentar ergänzen"></textarea>
-          </label>
-
-          <section class="dd-review-route__checks" aria-label="Plausibilitätschecks">
-            <h3>Plausibilitätschecks</h3>
-            @for (check of kandidat.checks; track check.id) {
-              <article class="{{ statusKlasse(check.status) }}">
-                <span></span>
-                <div>
-                  <strong>{{ check.titel }}</strong>
-                  <p>{{ check.beschreibung }}</p>
-                </div>
-              </article>
-            }
-          </section>
-
-          <section class="dd-review-route__parser" aria-label="Parserhinweise">
-            <h3>Parserhinweise</h3>
-            @for (hinweis of kandidat.parserHinweise; track hinweis) {
-              <p>{{ hinweis }}</p>
-            }
-          </section>
-
-          <div class="dd-review-route__actions">
-            <button class="dd-button dd-button--secondary" type="button">Zurückstellen</button>
-            <button class="dd-button dd-button--secondary" type="button">Korrektur speichern</button>
-            <button class="dd-button dd-button--primary" type="button">Speichern und weiter</button>
-          </div>
-        </aside>
-      </div>
-    } @else {
-      <section class="dd-review-route__empty dd-neu-card">
-        <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
-        <h2>Keine Reviewwerte im aktuellen Kontext</h2>
-        <p>Wähle über die Topbar oder die Patientenroute eine andere Testperson oder einen anderen Befund.</p>
-      </section>
-    }
+    <div class="dd-review-route__progress">
+      <span>Fortschritt</span>
+      <strong>{{ fortschritt(ansicht) }}%</strong>
+      <i><b [style.width.%]="fortschritt(ansicht)"></b></i>
+    </div>
   </section>
-}
+
+  <div class="dd-review-route__kpis">
+    @for (kennzahl of kennzahlen(ansicht); track kennzahl.label) {
+      <article class="dd-review-route__kpi is-{{ kennzahl.status }}" tabindex="0">
+        <span>{{ kennzahl.label }}</span>
+        <strong>{{ kennzahl.wert }}</strong>
+        <small>{{ kennzahl.hinweis }}</small>
+        <i class="material-symbols-outlined" aria-hidden="true">{{ kennzahl.icon }}</i>
+      </article>
+    }
+  </div>
+
+  <section class="dd-review-route__filters dd-neu-card" aria-label="Review-Filter">
+    <nav>
+      @for (filter of filterOptionen; track filter.key) {
+        <button type="button" [class.is-active]="aktiverFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
+      }
+    </nav>
+
+    <div class="dd-review-route__bulk">
+      <button class="dd-button dd-button--secondary" type="button" (click)="sichereWerteBestaetigen()">Sichere Werte bestätigen</button>
+      <button class="dd-button dd-button--primary" type="button" (click)="gepruefteUebernehmen()">Geprüfte übernehmen</button>
+    </div>
+  </section>
+
+  @if (kandidat) {
+    <div class="dd-review-route__workspace">
+      <section class="dd-review-route__queue dd-neu-card" aria-labelledby="queue-title">
+        <header>
+          <div>
+            <h2 id="queue-title">Review-Warteschlange</h2>
+            <p>{{ sichtbare.length }} Werte für {{ patient.name }} · {{ befund?.datum || 'kein Befund' }}</p>
+          </div>
+        </header>
+
+        <div class="dd-review-route__queue-list">
+          @for (eintrag of sichtbare; track eintrag.id) {
+            <button class="dd-review-route__queue-item {{ statusKlasse(eintrag.status) }}" [class.is-active]="eintrag.id === kandidat.id" type="button" (click)="kandidatSetzen(eintrag)">
+              <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</span>
+              <strong>{{ eintrag.anzeigename }}</strong>
+              <small>{{ eintrag.erkannterWert }} {{ eintrag.erkannteEinheit }} · {{ eintrag.confidence }}%</small>
+              <i>{{ quelleLabel(eintrag) }}</i>
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="dd-review-route__original dd-neu-card" aria-labelledby="original-title">
+        <header>
+          <div>
+            <h2 id="original-title">Originalausschnitt</h2>
+            <p>{{ kandidat.originalLabel }}</p>
+          </div>
+          <div class="dd-review-route__zoom">
+            <button type="button" aria-label="Zoom verringern" (click)="zoomRaus()">−</button>
+            <span>{{ (originalZoom() * 100).toFixed(0) }}%</span>
+            <button type="button" aria-label="Zoom erhöhen" (click)="zoomRein()">+</button>
+          </div>
+        </header>
+
+        <div class="dd-review-route__paper" [style.--review-zoom]="originalZoom()">
+          <div>
+            <span>Laborwert</span>
+            <span>Ergebnis</span>
+            <span>Referenz</span>
+          </div>
+          <p>
+            <mark>{{ kandidat.erkannterName }}</mark>
+            <mark>{{ kandidat.erkannterWert }} {{ kandidat.erkannteEinheit }}</mark>
+            <mark>{{ kandidat.referenzMin }} – {{ kandidat.referenzMax }}</mark>
+          </p>
+          <small>{{ kandidat.originalText }}</small>
+        </div>
+
+        <article class="dd-review-route__raw">
+          <span>Rohtext</span>
+          <p>{{ kandidat.originalText }}</p>
+        </article>
+      </section>
+
+      <aside class="dd-review-route__form dd-neu-card" aria-labelledby="form-title">
+        <header>
+          <div>
+            <span class="dd-chip {{ statusKlasse(kandidat.status) }}">{{ statusLabel(kandidat.status) }}</span>
+            <h2 id="form-title">Korrekturformular</h2>
+            <p>{{ patient.name }} · {{ befund?.datum || 'kein Befund' }}</p>
+          </div>
+          <strong>{{ kandidat.confidence }}%</strong>
+        </header>
+
+        <div class="dd-review-route__form-grid">
+          <label>
+            <span>Laborwert-Key</span>
+            <input type="text" [value]="kandidat.laborwertKey" (input)="textfeldSetzen(kandidat.id, 'laborwertKey', $event)">
+          </label>
+          <label>
+            <span>Anzeigename</span>
+            <input type="text" [value]="kandidat.anzeigename" (input)="textfeldSetzen(kandidat.id, 'anzeigename', $event)">
+          </label>
+          <label>
+            <span>Ergebnis</span>
+            <input type="text" [value]="kandidat.korrigierterWert" (input)="zahlenfeldSetzen(kandidat.id, 'korrigierterWert', $event)">
+          </label>
+          <label>
+            <span>Einheit</span>
+            <input type="text" [value]="kandidat.korrigierteEinheit" (input)="textfeldSetzen(kandidat.id, 'korrigierteEinheit', $event)">
+          </label>
+          <label>
+            <span>Referenz min</span>
+            <input type="text" [value]="kandidat.referenzMin" (input)="zahlenfeldSetzen(kandidat.id, 'referenzMin', $event)">
+          </label>
+          <label>
+            <span>Referenz max</span>
+            <input type="text" [value]="kandidat.referenzMax" (input)="zahlenfeldSetzen(kandidat.id, 'referenzMax', $event)">
+          </label>
+        </div>
+
+        <label class="dd-review-route__comment">
+          <span>Kommentar</span>
+          <textarea rows="3" [value]="kandidat.kommentar" placeholder="Ärztlichen Review-Kommentar ergänzen" (input)="textfeldSetzen(kandidat.id, 'kommentar', $event)"></textarea>
+        </label>
+
+        <section class="dd-review-route__checks" aria-label="Plausibilitätschecks">
+          <h3>Plausibilitätschecks</h3>
+          @for (check of kandidat.checks; track check.id) {
+            <article class="{{ statusKlasse(check.status) }}">
+              <span></span>
+              <div>
+                <strong>{{ check.titel }}</strong>
+                <p>{{ check.beschreibung }}</p>
+              </div>
+            </article>
+          }
+        </section>
+
+        <section class="dd-review-route__parser" aria-label="Parserhinweise">
+          <h3>Parserhinweise</h3>
+          @for (hinweis of kandidat.parserHinweise; track hinweis) {
+            <p>{{ hinweis }}</p>
+          }
+        </section>
+
+        <div class="dd-review-route__actions">
+          <button class="dd-button dd-button--secondary" type="button" (click)="kandidatZurueckstellen(kandidat)">Zurückstellen</button>
+          <button class="dd-button dd-button--secondary" type="button" (click)="korrekturSpeichern(kandidat)">Korrektur speichern</button>
+          <button class="dd-button dd-button--primary" type="button" (click)="speichernUndWeiter(kandidat)">Speichern und weiter</button>
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <section class="dd-review-route__empty dd-neu-card">
+      <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
+      <h2>Keine Reviewwerte im aktuellen Kontext</h2>
+      <p>Wähle über die Topbar oder die Patientenroute eine andere Testperson oder einen anderen Befund.</p>
+    </section>
+  }
+</section>

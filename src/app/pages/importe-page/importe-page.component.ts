@@ -5,12 +5,12 @@
  * @module ImportePageComponent
  */
 
-import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Importjob, ImportjobDataset, ImportjobOcrStatus, ImportjobSchrittStatus, ImportjobStatus } from '../../core/models/importjob.model';
+import { MOCK_IMPORTJOBS } from '../../core/mocks/importjobs.mock';
+import { Importjob, ImportjobAnalyseArt, ImportjobDataset, ImportjobOcrStatus, ImportjobSchrittStatus, ImportjobStatus } from '../../core/models/importjob.model';
 import { pruefeSicherePdfDatei, SICHERE_DATEI_MAX_LABEL } from '../../core/security/sichere-datei.util';
-import { DatenDashboardApiService } from '../../core/services/daten-dashboard-api.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 /** Importlistenfilter für Statusgruppen. */
 type ImportFilter = 'alle' | 'aktiv' | 'review' | 'ocr' | 'fehler' | 'abgeschlossen';
@@ -36,17 +36,17 @@ interface ImportKennzahl {
 /** Route `/importe` für Upload, Pipeline-Status und Importhistorie. */
 @Component({
   selector: 'dd-importe-page',
-  imports: [AsyncPipe, RouterLink],
+  imports: [RouterLink],
   templateUrl: './importe-page.component.html',
   styleUrl: './importe-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportePageComponent {
-  /** API-bereiter Datenservice. */
-  private readonly datenDashboardApi = inject(DatenDashboardApiService);
-
   /** Aktuelle Route mit optionalem Upload-Fokus. */
   private readonly route = inject(ActivatedRoute);
+
+  /** Toast-Service für UI-Rückmeldungen. */
+  private readonly toastService = inject(ToastService);
 
   /** Uploadbereich für automatisches Scrollen. */
   private uploadBereich?: ElementRef<HTMLElement>;
@@ -54,8 +54,8 @@ export class ImportePageComponent {
   /** Verhindert mehrfaches Scrollen innerhalb eines Fokuszyklus. */
   private uploadScrollAusgeführt = false;
 
-  /** Importjobs aus Mockdaten oder später API. */
-  protected readonly importjobs$ = this.datenDashboardApi.ladeImportjobs();
+  /** Importjobs aus lokalen Mockdaten bis zur späteren API-Anbindung. */
+  public readonly importjobs: WritableSignal<Importjob[]> = signal([...MOCK_IMPORTJOBS]);
 
   /** Aktiver Importfilter. */
   public readonly aktiverFilter: WritableSignal<ImportFilter> = signal('alle');
@@ -84,10 +84,28 @@ export class ImportePageComponent {
   /** Aktiviert den animierten Hinweisrahmen für die Upload-Zone. */
   public readonly uploadHinweisAktiv: WritableSignal<boolean> = signal(false);
 
+  /** Sichtbarkeit des manuellen Eingabe-Dialogs. */
+  public readonly manuelleEingabeOffen: WritableSignal<boolean> = signal(false);
+
+  /** Laborwert-Key der manuellen Eingabe. */
+  public readonly manuellLaborwertKey: WritableSignal<string> = signal('crp');
+
+  /** Anzeigename der manuellen Eingabe. */
+  public readonly manuellAnzeigename: WritableSignal<string> = signal('CRP');
+
+  /** Ergebnis der manuellen Eingabe. */
+  public readonly manuellErgebnis: WritableSignal<string> = signal('8,6');
+
+  /** Einheit der manuellen Eingabe. */
+  public readonly manuellEinheit: WritableSignal<string> = signal('mg/l');
+
+  /** Referenzbereich der manuellen Eingabe. */
+  public readonly manuellReferenz: WritableSignal<string> = signal('< 5,0');
+
   /** Lesbares Uploadlimit für die UI. */
   public readonly dateiLimit = SICHERE_DATEI_MAX_LABEL;
 
-  /** Registriert den Uploadbereich, sobald er durch Async-Daten gerendert wurde. */
+  /** Registriert den Uploadbereich, sobald er gerendert wurde. */
   @ViewChild('uploadBereich')
   public set uploadBereichSetzen(element: ElementRef<HTMLElement> | undefined) {
     this.uploadBereich = element;
@@ -191,7 +209,7 @@ export class ImportePageComponent {
 
   /** Gibt ein lesbares Analyse-Label zurück. */
   public analyseLabel(job: Importjob): string {
-    const labels = {
+    const labels: Record<ImportjobAnalyseArt, string> = {
       textschicht: 'Textschicht',
       ocr: 'Lokale OCR',
       demo: 'Demo'
@@ -202,7 +220,7 @@ export class ImportePageComponent {
 
   /** Gibt ein lesbares OCR-Label zurück. */
   public ocrLabel(status: ImportjobOcrStatus): string {
-    const labels = {
+    const labels: Record<ImportjobOcrStatus, string> = {
       nicht_erforderlich: 'Nicht erforderlich',
       erforderlich: 'Erforderlich',
       aktiv: 'Aktiv',
@@ -211,6 +229,88 @@ export class ImportePageComponent {
     };
 
     return labels[status];
+  }
+
+  /** Lädt die optimierte Testdaten-PDF aus den lokalen Assets herunter. */
+  public testdatenPdfHerunterladen(): void {
+    const link = document.createElement('a');
+    link.href = 'assets/testdaten/testdaten-laborbefund-demo.pdf';
+    link.download = 'testdaten-laborbefund-demo.pdf';
+    link.click();
+    this.toastService.zeige('Testdaten-PDF vorbereitet', 'Die lokale Demo-PDF wurde zum Download geöffnet.', 'success');
+  }
+
+  /** Startet eine vollständige Demo-Analyse als lokalen Mockjob. */
+  public demoAnalyseStarten(): void {
+    const job = this.simuliertenJobErstellen('testdaten-laborbefund-demo.pdf', 'Demo Testperson', 'demo', 'review', 100, 92);
+    this.importjobs.update((jobs: Importjob[]) => [job, ...jobs]);
+    this.ausgewaehlterJobId.set(job.id);
+    this.aktiverFilter.set('alle');
+    this.toastService.zeige('Demo-Analyse gestartet', 'Ein vollständiger Importjob wurde lokal simuliert.', 'success');
+  }
+
+  /** Startet einen lokalen Mockimport mit der ausgewählten Datei. */
+  public importStarten(): void {
+    if (!this.dateiName()) {
+      this.dateiBlockieren('Bitte zuerst eine gültige Testdaten-PDF auswählen.');
+      return;
+    }
+
+    const job = this.simuliertenJobErstellen(this.dateiName(), 'Aktive Testperson', 'textschicht', 'analysiert', 68, 84);
+    this.importjobs.update((jobs: Importjob[]) => [job, ...jobs]);
+    this.ausgewaehlterJobId.set(job.id);
+    this.dateiEntfernen();
+    this.toastService.zeige('Importjob angelegt', 'Der lokale Mockjob zeigt Pipeline, Confidence und Reviewbedarf.', 'success');
+  }
+
+  /** Öffnet die manuelle Fallback-Eingabe. */
+  public manuelleEingabeOeffnen(): void {
+    this.manuelleEingabeOffen.set(true);
+  }
+
+  /** Schließt die manuelle Fallback-Eingabe. */
+  public manuelleEingabeSchliessen(): void {
+    this.manuelleEingabeOffen.set(false);
+  }
+
+  /** Aktualisiert ein manuelles Eingabefeld sicher. */
+  public manuellesFeldSetzen(feld: 'key' | 'name' | 'ergebnis' | 'einheit' | 'referenz', event: Event): void {
+    const eingabe = event.target as HTMLInputElement;
+    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '').slice(0, 80);
+
+    if (feld === 'key') {
+      this.manuellLaborwertKey.set(wert);
+    } else if (feld === 'name') {
+      this.manuellAnzeigename.set(wert);
+    } else if (feld === 'ergebnis') {
+      this.manuellErgebnis.set(wert);
+    } else if (feld === 'einheit') {
+      this.manuellEinheit.set(wert);
+    } else {
+      this.manuellReferenz.set(wert);
+    }
+  }
+
+  /** Legt einen manuellen Importjob als Fallback an. */
+  public manuelleEingabeAnlegen(): void {
+    const name = this.manuellAnzeigename().trim() || 'Manueller Laborwert';
+    const job = this.simuliertenJobErstellen('manuelle-erfassung-demo.pdf', 'Manuelle Testperson', 'textschicht', 'review', 100, 76);
+    const angereicherterJob: Importjob = {
+      ...job,
+      dateiname: 'manuelle-erfassung-demo.pdf',
+      pipelineSchritt: 'Manuelle Erfassung für Review vorbereitet',
+      erkannteWerte: 1,
+      unsichereWerte: 1,
+      datasets: [{ id: `dataset-manuell-${Date.now()}`, name, werte: 1, review: 1, confidence: 76, status: 'review' }],
+      logEintraege: [
+        { id: `log-manuell-${Date.now()}-1`, zeitpunkt: this.zeitLabel(), titel: 'Manuelle Eingabe erfasst', beschreibung: `${name} ${this.manuellErgebnis()} ${this.manuellEinheit()} · Referenz ${this.manuellReferenz()}`, status: 'review' }
+      ]
+    };
+
+    this.importjobs.update((jobs: Importjob[]) => [angereicherterJob, ...jobs]);
+    this.ausgewaehlterJobId.set(angereicherterJob.id);
+    this.manuelleEingabeSchliessen();
+    this.toastService.zeige('Manuelle Eingabe angelegt', `${name} wurde als Review-Fallback vorbereitet.`, 'success');
   }
 
   /** Deaktiviert den Upload-Hinweis nach erster bewusster Interaktion. */
@@ -303,6 +403,7 @@ export class ImportePageComponent {
     this.dateiName.set(ergebnis.dateiname);
     this.dateiGroesse.set(ergebnis.groesse);
     this.uploadFehler.set('');
+    this.toastService.zeige('PDF geprüft', 'Die Datei ist bereit für den lokalen Mockimport.', 'success');
   }
 
   /** Entfernt die aktive Datei und zeigt einen Uploadfehler. */
@@ -311,6 +412,49 @@ export class ImportePageComponent {
     this.dateiGroesse.set('');
     this.dateiPruefungAktiv.set(false);
     this.uploadFehler.set(meldung);
+    this.toastService.zeige('Upload blockiert', meldung, 'danger');
+  }
+
+  /** Erstellt einen wiederverwendbaren lokalen Importjob. */
+  private simuliertenJobErstellen(dateiname: string, testperson: string, analyseArt: ImportjobAnalyseArt, status: ImportjobStatus, fortschritt: number, confidence: number): Importjob {
+    const zeit = this.zeitLabel();
+    return {
+      id: `import-local-${Date.now()}`,
+      dateiname,
+      testperson,
+      analyseArt,
+      status,
+      fortschritt,
+      pipelineSchritt: status === 'review' ? 'Review vorbereitet' : 'Tabellenstruktur erkennen',
+      ocrStatus: 'nicht_erforderlich',
+      erkannteWerte: status === 'review' ? 42 : 18,
+      unsichereWerte: status === 'review' ? 5 : 3,
+      confidence,
+      erstelltAm: `12.06.2026 · ${zeit}`,
+      aktualisiertAm: `12.06.2026 · ${zeit}`,
+      schritte: [
+        { key: 'upload', name: 'Upload geprüft', beschreibung: 'Datei wurde im Frontend validiert und lokal simuliert.', status: 'erledigt', abgeschlossen: true },
+        { key: 'text', name: 'Textschicht geprüft', beschreibung: 'Demo-Textschicht für die UI-Simulation vorbereitet.', status: 'erledigt', abgeschlossen: true },
+        { key: 'ocr', name: 'OCR-Fallback geprüft', beschreibung: 'OCR ist in diesem Mockjob nicht erforderlich.', status: 'uebersprungen', abgeschlossen: true },
+        { key: 'table', name: 'Tabellen erkannt', beschreibung: 'Tabellenstruktur wird als Demo-Ergebnis angezeigt.', status: status === 'review' ? 'erledigt' : 'aktiv', abgeschlossen: status === 'review' },
+        { key: 'values', name: 'Werte extrahiert', beschreibung: 'Laborwerte und Referenzbereiche wurden im Mock erzeugt.', status: status === 'review' ? 'erledigt' : 'wartet', abgeschlossen: status === 'review' },
+        { key: 'confidence', name: 'Confidence berechnet', beschreibung: 'Unsichere Werte werden für den Review markiert.', status: status === 'review' ? 'erledigt' : 'wartet', abgeschlossen: status === 'review' }
+      ],
+      datasets: [
+        { id: `dataset-local-blut-${Date.now()}`, name: 'Blutbild', werte: 10, review: 1, confidence: 93, status: 'review' },
+        { id: `dataset-local-fett-${Date.now()}`, name: 'Fettstoffwechsel', werte: 8, review: 2, confidence: 84, status: 'review' },
+        { id: `dataset-local-zucker-${Date.now()}`, name: 'Zuckerstoffwechsel', werte: 6, review: 0, confidence: 95, status: 'normal' }
+      ],
+      logEintraege: [
+        { id: `log-local-${Date.now()}-1`, zeitpunkt: zeit, titel: 'Mockjob angelegt', beschreibung: 'Der Import wurde lokal als Frontend-Simulation angelegt.', status: 'info' },
+        { id: `log-local-${Date.now()}-2`, zeitpunkt: zeit, titel: 'Reviewbedarf markiert', beschreibung: 'Unsichere Werte werden an die Review-Route übergeben.', status: 'review' }
+      ]
+    };
+  }
+
+  /** Gibt eine kompakte Uhrzeit für Mock-Ereignisse zurück. */
+  private zeitLabel(): string {
+    return new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit' }).format(new Date());
   }
 
   /** Berechnet einen gerundeten Durchschnitt. */
@@ -321,4 +465,4 @@ export class ImportePageComponent {
 
     return Math.round(werte.reduce((summe: number, wert: number) => summe + wert, 0) / werte.length);
   }
-}
+}

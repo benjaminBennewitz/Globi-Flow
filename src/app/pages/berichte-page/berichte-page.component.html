@@ -17,12 +17,22 @@
         <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
         Vorschau aktualisieren
       </button>
-      <button class="dd-button dd-button--primary" type="button" (click)="drucken()">
+      <button class="dd-button dd-button--primary" type="button" [disabled]="offenePruefwerte().length > 0" (click)="drucken()">
         <span class="material-symbols-outlined" aria-hidden="true">print</span>
         Drucken
       </button>
     </div>
   </header>
+
+  @if (offenePruefwerte().length > 0) {
+    <section class="dd-berichte-route__review-warning dd-neu-card" role="status">
+      <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+      <div>
+        <strong>Finaler Druck noch gesperrt</strong>
+        <p>{{ offenePruefwerte().length }} Wert(e) sind noch nicht freigegeben. Die Vorschau bleibt sichtbar, der finale Druck wird blockiert.</p>
+      </div>
+    </section>
+  }
 
   <aside class="dd-berichte-route__controls dd-neu-card" aria-label="Berichtssteuerung">
     <article>
@@ -176,7 +186,7 @@
       </header>
 
       <section class="dd-berichte-route__trend-grid">
-        @for (wert of auffaelligeWerte(); track wert.key) {
+        @for (wert of trendWerte(); track wert.key) {
           <article>
             <header>
               <strong>{{ wert.name }}</strong>

@@ -113,6 +113,41 @@
   font-style: normal;
 }
 
+
+
+.dd-berichte-route__headline-actions .dd-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.dd-berichte-route__review-warning {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: var(--dd-space-3);
+  align-items: center;
+  padding: var(--dd-space-4);
+  background: var(--dd-color-error-soft);
+}
+
+.dd-berichte-route__review-warning > span {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: var(--dd-radius-lg);
+  background: var(--dd-color-bg);
+  color: var(--dd-color-danger);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-berichte-route__review-warning strong {
+  color: var(--dd-color-danger);
+}
+
+.dd-berichte-route__review-warning p {
+  margin: 0.2rem 0 0;
+}
+
 /* ==========================================================================
    02   A4-Vorschau
    ========================================================================== */
@@ -495,6 +530,7 @@
   dd-app-navigation,
   dd-toast-container,
   .dd-berichte-route__headline,
+  .dd-berichte-route__review-warning,
   .dd-berichte-route__controls {
     display: none !important;
   }

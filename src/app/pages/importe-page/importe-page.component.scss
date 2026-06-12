@@ -698,8 +698,110 @@
   color: var(--dd-color-danger);
 }
 
+
+
 /* ==========================================================================
-   11   Responsive
+   11   Manuelle Eingabe
+   ========================================================================== */
+
+.dd-import-route__manual-modal {
+  position: fixed;
+  z-index: 140;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--dd-space-4);
+  background: rgba(25, 28, 33, 0.28);
+}
+
+.dd-import-route__manual-card {
+  display: grid;
+  width: min(100%, 720px);
+  gap: var(--dd-space-4);
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-4);
+  background: var(--dd-color-surface-high);
+  box-shadow: 0 28px 72px rgba(25, 28, 33, 0.3);
+}
+
+.dd-import-route__manual-card header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__manual-card h2 {
+  margin: 0;
+  color: var(--dd-color-text);
+}
+
+.dd-import-route__manual-card header p {
+  margin: var(--dd-space-1) 0 0;
+  color: var(--dd-color-text-muted);
+}
+
+.dd-import-route__manual-card header button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: var(--dd-radius-lg);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-danger);
+  box-shadow: var(--dd-shadow-soft);
+  transition: transform 160ms var(--dd-ease-out), box-shadow 160ms var(--dd-ease-out);
+}
+
+.dd-import-route__manual-card header button:hover {
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
+.dd-import-route__manual-card header button:hover span {
+  transform: rotate(90deg);
+}
+
+.dd-import-route__manual-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__manual-form label {
+  display: grid;
+  gap: var(--dd-space-2);
+}
+
+.dd-import-route__manual-form label span {
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-import-route__manual-form input {
+  width: 100%;
+  border: 0;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.78rem 0.9rem;
+  outline: none;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text);
+  box-shadow: var(--dd-shadow-inset);
+  font: inherit;
+}
+
+.dd-import-route__manual-card footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--dd-space-2);
+}
+
+/* ==========================================================================
+   12   Responsive
    ========================================================================== */
 
 @media (max-width: 1450px) {
@@ -744,4 +846,8 @@
   .dd-import-route__dataset-grid {
     grid-template-columns: 1fr;
   }
-}
+}
+
+
+
+

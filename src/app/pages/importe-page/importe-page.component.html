@@ -1,259 +1,303 @@
 <!-- src/app/pages/importe-page/importe-page.component.html -->
 
-@if (importjobs$ | async; as importjobs) {
-  <section class="dd-import-route" aria-labelledby="importe-title">
-    <header class="dd-import-route__headline">
-      <div>
-        <h1 id="importe-title">Importe</h1>
-        <p>Laborbefunde hochladen, lokale Analysejobs prüfen und unsichere Ergebnisse gezielt an den Review übergeben.</p>
-      </div>
+<section class="dd-import-route" aria-labelledby="importe-title">
+  @let importjobsListe = importjobs();
 
-      <div class="dd-import-route__actions">
-        <button class="dd-button dd-button--secondary" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">download</span>
-          Testdaten-PDF
-        </button>
-        <button class="dd-button dd-button--secondary" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">play_circle</span>
-          Demo-Analyse
-        </button>
-        <button class="dd-button dd-button--primary" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">add_notes</span>
-          Manuelle Eingabe
-        </button>
-      </div>
-    </header>
-
-    <div class="dd-import-route__kpis">
-      @for (kennzahl of kennzahlen(importjobs); track kennzahl.label) {
-        <article class="dd-import-route__kpi is-{{ kennzahl.status }}" tabindex="0">
-          <span>{{ kennzahl.label }}</span>
-          <strong>{{ kennzahl.wert }}</strong>
-          <small>{{ kennzahl.hinweis }}</small>
-          <i class="material-symbols-outlined" aria-hidden="true">{{ kennzahl.icon }}</i>
-        </article>
-      }
+  <header class="dd-import-route__headline">
+    <div>
+      <h1 id="importe-title">Importe</h1>
+      <p>Laborbefunde hochladen, lokale Analysejobs prüfen und unsichere Ergebnisse gezielt an den Review übergeben.</p>
     </div>
 
-    <div class="dd-import-route__grid">
-      <section #uploadBereich class="dd-import-route__upload dd-neu-card" [class.is-dragging]="dragAktiv()" [class.has-error]="uploadFehler()" [class.has-route-highlight]="uploadHinweisAktiv()" (click)="uploadHinweisDeaktivieren()" (keydown.enter)="uploadHinweisDeaktivieren()" (keydown.space)="uploadHinweisDeaktivieren()" (dragover)="dateiDragOver($event)" (dragleave)="dateiDragLeave()" (drop)="dateiDrop($event)" aria-labelledby="upload-title" tabindex="0">
-        <input #dateiInput class="dd-import-route__file" type="file" accept="application/pdf,.pdf" (change)="dateiAuswahlAendern($event)">
+    <div class="dd-import-route__actions">
+      <button class="dd-button dd-button--secondary" type="button" (click)="testdatenPdfHerunterladen()">
+        <span class="material-symbols-outlined" aria-hidden="true">download</span>
+        Testdaten-PDF
+      </button>
+      <button class="dd-button dd-button--secondary" type="button" (click)="demoAnalyseStarten()">
+        <span class="material-symbols-outlined" aria-hidden="true">play_circle</span>
+        Demo-Analyse
+      </button>
+      <button class="dd-button dd-button--primary" type="button" (click)="manuelleEingabeOeffnen()">
+        <span class="material-symbols-outlined" aria-hidden="true">add_notes</span>
+        Manuelle Eingabe
+      </button>
+    </div>
+  </header>
 
-        <div class="dd-import-route__upload-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
+  <div class="dd-import-route__kpis">
+    @for (kennzahl of kennzahlen(importjobsListe); track kennzahl.label) {
+      <article class="dd-import-route__kpi is-{{ kennzahl.status }}" tabindex="0">
+        <span>{{ kennzahl.label }}</span>
+        <strong>{{ kennzahl.wert }}</strong>
+        <small>{{ kennzahl.hinweis }}</small>
+        <i class="material-symbols-outlined" aria-hidden="true">{{ kennzahl.icon }}</i>
+      </article>
+    }
+  </div>
+
+  <div class="dd-import-route__grid">
+    <section #uploadBereich class="dd-import-route__upload dd-neu-card" [class.is-dragging]="dragAktiv()" [class.has-error]="uploadFehler()" [class.has-route-highlight]="uploadHinweisAktiv()" (click)="uploadHinweisDeaktivieren()" (keydown.enter)="uploadHinweisDeaktivieren()" (keydown.space)="uploadHinweisDeaktivieren()" (dragover)="dateiDragOver($event)" (dragleave)="dateiDragLeave()" (drop)="dateiDrop($event)" aria-labelledby="upload-title" tabindex="0">
+      <input #dateiInput class="dd-import-route__file" type="file" accept="application/pdf,.pdf" (change)="dateiAuswahlAendern($event)">
+
+      <div class="dd-import-route__upload-icon">
+        <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
+      </div>
+
+      <div>
+        <h2 id="upload-title">Laborbefund hochladen</h2>
+        <p>PDF hier ablegen oder Datei auswählen. Nur künstliche Testdaten verwenden.</p>
+      </div>
+
+      @if (dateiPruefungAktiv()) {
+        <p class="dd-import-route__upload-check" role="status">PDF-Datei wird geprüft.</p>
+      }
+
+      @if (uploadFehler()) {
+        <p class="dd-import-route__upload-error" role="alert">{{ uploadFehler() }}</p>
+      }
+
+      @if (dateiName()) {
+        <article class="dd-import-route__file-preview">
+          <span class="material-symbols-outlined" aria-hidden="true">picture_as_pdf</span>
+          <div>
+            <strong>{{ dateiName() }}</strong>
+            <small>{{ dateiGroesse() }} · bereit für lokalen Import</small>
+          </div>
+          <button type="button" aria-label="Datei entfernen" (click)="dateiEntfernen()">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          </button>
+        </article>
+      }
+
+      <div class="dd-import-route__upload-actions">
+        <button class="dd-button dd-button--secondary" type="button" (click)="dateiInput.click()">Datei auswählen</button>
+        <button class="dd-button dd-button--primary" type="button" [disabled]="!dateiName() || dateiPruefungAktiv()" (click)="importStarten()">Import starten</button>
+      </div>
+
+      <ul class="dd-import-route__rules" aria-label="Upload-Regeln">
+        <li>PDF only</li>
+        <li>PDF-Signatur</li>
+        <li>max. {{ dateiLimit }}</li>
+        <li>lokaler Media-Storage</li>
+        <li>keine echten Patientendaten</li>
+      </ul>
+    </section>
+
+    @if (ausgewaehlterJob(importjobsListe); as job) {
+      <section class="dd-import-route__active dd-neu-card" aria-labelledby="active-title">
+        <header>
+          <div>
+            <span class="dd-import-route__badge {{ statusKlasse(job.status) }}">{{ job.status }}</span>
+            <h2 id="active-title">Aktiver Importjob</h2>
+            <p>{{ job.dateiname }}</p>
+          </div>
+          <strong>{{ job.fortschritt }}%</strong>
+        </header>
+
+        <div class="dd-import-route__progress" aria-label="Importfortschritt">
+          <span [style.width.%]="job.fortschritt"></span>
         </div>
 
-        <div>
-          <h2 id="upload-title">Laborbefund hochladen</h2>
-          <p>PDF hier ablegen oder Datei auswählen. Nur künstliche Testdaten verwenden.</p>
-        </div>
+        <dl class="dd-import-route__active-meta">
+          <div>
+            <dt>Pipeline</dt>
+            <dd>{{ job.pipelineSchritt }}</dd>
+          </div>
+          <div>
+            <dt>Analyse</dt>
+            <dd>{{ analyseLabel(job) }}</dd>
+          </div>
+          <div>
+            <dt>OCR</dt>
+            <dd>{{ ocrLabel(job.ocrStatus) }}</dd>
+          </div>
+          <div>
+            <dt>Confidence</dt>
+            <dd>{{ job.confidence }}%</dd>
+          </div>
+        </dl>
 
-        @if (dateiPruefungAktiv()) {
-          <p class="dd-import-route__upload-check" role="status">PDF-Datei wird geprüft.</p>
+        @if (job.fehlermeldung) {
+          <p class="dd-import-route__error">{{ job.fehlermeldung }}</p>
         }
 
-        @if (uploadFehler()) {
-          <p class="dd-import-route__upload-error" role="alert">{{ uploadFehler() }}</p>
-        }
-
-        @if (dateiName()) {
-          <article class="dd-import-route__file-preview">
-            <span class="material-symbols-outlined" aria-hidden="true">picture_as_pdf</span>
-            <div>
-              <strong>{{ dateiName() }}</strong>
-              <small>{{ dateiGroesse() }} · bereit für lokalen Import</small>
-            </div>
-            <button type="button" aria-label="Datei entfernen" (click)="dateiEntfernen()">
-              <span class="material-symbols-outlined" aria-hidden="true">close</span>
-            </button>
-          </article>
-        }
-
-        <div class="dd-import-route__upload-actions">
-          <button class="dd-button dd-button--secondary" type="button" (click)="dateiInput.click()">Datei auswählen</button>
-          <button class="dd-button dd-button--primary" type="button" [disabled]="!dateiName() || dateiPruefungAktiv()">Import starten</button>
-        </div>
-
-        <ul class="dd-import-route__rules" aria-label="Upload-Regeln">
-          <li>PDF only</li>
-          <li>PDF-Signatur</li>
-          <li>max. {{ dateiLimit }}</li>
-          <li>lokaler Media-Storage</li>
-          <li>keine echten Patientendaten</li>
-        </ul>
+        <ol class="dd-import-route__steps">
+          @for (schritt of job.schritte; track schritt.key) {
+            <li class="{{ schrittKlasse(schritt.status) }}">
+              <span></span>
+              <div>
+                <strong>{{ schritt.name }}</strong>
+                <p>{{ schritt.beschreibung }}</p>
+              </div>
+            </li>
+          }
+        </ol>
       </section>
 
-      @if (ausgewaehlterJob(importjobs); as job) {
-        <section class="dd-import-route__active dd-neu-card" aria-labelledby="active-title">
-          <header>
-            <div>
-              <span class="dd-import-route__badge {{ statusKlasse(job.status) }}">{{ job.status }}</span>
-              <h2 id="active-title">Aktiver Importjob</h2>
-              <p>{{ job.dateiname }}</p>
-            </div>
-            <strong>{{ job.fortschritt }}%</strong>
-          </header>
+      <aside class="dd-import-route__confidence dd-neu-card">
+        <header>
+          <h2>Erkennungsqualität</h2>
+          <strong>{{ job.confidence }}%</strong>
+        </header>
 
-          <div class="dd-import-route__progress" aria-label="Importfortschritt">
-            <span [style.width.%]="job.fortschritt"></span>
+        <div class="dd-import-route__quality">
+          <article>
+            <span>Sehr sicher</span>
+            <strong>{{ job.erkannteWerte - job.unsichereWerte }}</strong>
+          </article>
+          <article>
+            <span>Prüfen empfohlen</span>
+            <strong>{{ job.unsichereWerte }}</strong>
+          </article>
+          <article>
+            <span>Unsicher</span>
+            <strong>{{ job.confidence < 75 ? job.unsichereWerte : 0 }}</strong>
+          </article>
+        </div>
+
+        <a class="dd-button dd-button--secondary" routerLink="/review">
+          <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
+          Review öffnen
+        </a>
+      </aside>
+
+      <section class="dd-import-route__history dd-neu-card">
+        <header>
+          <div>
+            <h2>Importhistorie</h2>
+            <p>Jobs nach Status, OCR-Bedarf und Review-Relevanz filtern.</p>
           </div>
+          <nav aria-label="Importfilter">
+            @for (filter of filterOptionen; track filter.key) {
+              <button type="button" [class.is-active]="aktiverFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
+            }
+          </nav>
+        </header>
 
-          <dl class="dd-import-route__active-meta">
-            <div>
-              <dt>Pipeline</dt>
-              <dd>{{ job.pipelineSchritt }}</dd>
-            </div>
-            <div>
-              <dt>Analyse</dt>
-              <dd>{{ analyseLabel(job) }}</dd>
-            </div>
-            <div>
-              <dt>OCR</dt>
-              <dd>{{ ocrLabel(job.ocrStatus) }}</dd>
-            </div>
-            <div>
-              <dt>Confidence</dt>
-              <dd>{{ job.confidence }}%</dd>
-            </div>
-          </dl>
-
-          @if (job.fehlermeldung) {
-            <p class="dd-import-route__error">{{ job.fehlermeldung }}</p>
+        <div class="dd-import-route__jobs">
+          @for (eintrag of gefilterteJobs(importjobsListe); track eintrag.id) {
+            <button class="dd-import-route__job {{ statusKlasse(eintrag.status) }}" [class.is-active]="istAusgewaehlt(eintrag)" type="button" (click)="jobAuswaehlen(eintrag)">
+              <span class="dd-import-route__badge {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
+              <strong>{{ eintrag.dateiname }}</strong>
+              <small>{{ eintrag.testperson }} · {{ eintrag.aktualisiertAm }}</small>
+              <i>{{ eintrag.confidence }}%</i>
+            </button>
           }
+        </div>
+      </section>
 
-          <ol class="dd-import-route__steps">
-            @for (schritt of job.schritte; track schritt.key) {
-              <li class="{{ schrittKlasse(schritt.status) }}">
-                <span></span>
-                <div>
-                  <strong>{{ schritt.name }}</strong>
-                  <p>{{ schritt.beschreibung }}</p>
-                </div>
-              </li>
-            }
-          </ol>
-        </section>
+      <aside class="dd-import-route__detail dd-neu-card">
+        <header>
+          <h2>Importdetails</h2>
+          <span>{{ job.id }}</span>
+        </header>
 
-        <aside class="dd-import-route__confidence dd-neu-card">
-          <header>
-            <h2>Erkennungsqualität</h2>
-            <strong>{{ job.confidence }}%</strong>
-          </header>
-
-          <div class="dd-import-route__quality">
-            <article>
-              <span>Sehr sicher</span>
-              <strong>{{ job.erkannteWerte - job.unsichereWerte }}</strong>
-            </article>
-            <article>
-              <span>Prüfen empfohlen</span>
-              <strong>{{ job.unsichereWerte }}</strong>
-            </article>
-            <article>
-              <span>Unsicher</span>
-              <strong>{{ job.confidence < 75 ? job.unsichereWerte : 0 }}</strong>
-            </article>
+        <dl>
+          <div>
+            <dt>Testperson</dt>
+            <dd>{{ job.testperson }}</dd>
           </div>
-
-          <a class="dd-button dd-button--secondary" routerLink="/review">
-            <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
-            Review öffnen
-          </a>
-        </aside>
-
-        <section class="dd-import-route__history dd-neu-card">
-          <header>
-            <div>
-              <h2>Importhistorie</h2>
-              <p>Jobs nach Status, OCR-Bedarf und Review-Relevanz filtern.</p>
-            </div>
-            <nav aria-label="Importfilter">
-              @for (filter of filterOptionen; track filter.key) {
-                <button type="button" [class.is-active]="aktiverFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
-              }
-            </nav>
-          </header>
-
-          <div class="dd-import-route__jobs">
-            @for (eintrag of gefilterteJobs(importjobs); track eintrag.id) {
-              <button class="dd-import-route__job {{ statusKlasse(eintrag.status) }}" [class.is-active]="istAusgewaehlt(eintrag)" type="button" (click)="jobAuswaehlen(eintrag)">
-                <span class="dd-import-route__badge {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
-                <strong>{{ eintrag.dateiname }}</strong>
-                <small>{{ eintrag.testperson }} · {{ eintrag.aktualisiertAm }}</small>
-                <i>{{ eintrag.confidence }}%</i>
-              </button>
-            }
+          <div>
+            <dt>Erstellt</dt>
+            <dd>{{ job.erstelltAm }}</dd>
           </div>
-        </section>
+          <div>
+            <dt>Werte</dt>
+            <dd>{{ job.erkannteWerte }}</dd>
+          </div>
+          <div>
+            <dt>Review</dt>
+            <dd>{{ job.unsichereWerte }}</dd>
+          </div>
+        </dl>
 
-        <aside class="dd-import-route__detail dd-neu-card">
-          <header>
-            <h2>Importdetails</h2>
-            <span>{{ job.id }}</span>
-          </header>
+        <h3>Log</h3>
+        <div class="dd-import-route__logs">
+          @for (log of job.logEintraege; track log.id) {
+            <article class="{{ statusKlasse(log.status === 'info' ? 'wartet' : log.status) }}">
+              <time>{{ log.zeitpunkt }}</time>
+              <div>
+                <strong>{{ log.titel }}</strong>
+                <p>{{ log.beschreibung }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      </aside>
 
-          <dl>
-            <div>
-              <dt>Testperson</dt>
-              <dd>{{ job.testperson }}</dd>
-            </div>
-            <div>
-              <dt>Erstellt</dt>
-              <dd>{{ job.erstelltAm }}</dd>
-            </div>
-            <div>
-              <dt>Werte</dt>
-              <dd>{{ job.erkannteWerte }}</dd>
-            </div>
-            <div>
-              <dt>Review</dt>
-              <dd>{{ job.unsichereWerte }}</dd>
-            </div>
-          </dl>
+      <section class="dd-import-route__datasets dd-neu-card">
+        <header>
+          <div>
+            <h2>Erkannte Datensätze</h2>
+            <p>Gruppen bleiben kompakt und öffnen sich bei Hover oder global per Button.</p>
+          </div>
+          <button class="dd-button dd-button--ghost" type="button" (click)="datasetsUmschalten()">{{ datasetsOffen() ? 'Alle ausblenden' : 'Alle einblenden' }}</button>
+        </header>
 
-          <h3>Log</h3>
-          <div class="dd-import-route__logs">
-            @for (log of job.logEintraege; track log.id) {
-              <article class="{{ statusKlasse(log.status === 'info' ? 'wartet' : log.status) }}">
-                <time>{{ log.zeitpunkt }}</time>
+        @if (job.datasets.length) {
+          <div class="dd-import-route__dataset-grid">
+            @for (dataset of job.datasets; track dataset.id) {
+              <article class="dd-import-route__dataset {{ datasetKlasse(dataset) }}" [class.is-open]="datasetsOffen()" tabindex="0">
+                <header>
+                  <strong>{{ dataset.name }}</strong>
+                  <span>{{ dataset.confidence }}%</span>
+                </header>
                 <div>
-                  <strong>{{ log.titel }}</strong>
-                  <p>{{ log.beschreibung }}</p>
+                  <p>{{ dataset.werte }} Werte erkannt</p>
+                  <p>{{ dataset.review }} Review-Punkte</p>
                 </div>
               </article>
             }
           </div>
-        </aside>
+        } @else {
+          <p class="dd-import-route__empty">Noch keine Datensätze erkannt. Manuelle Eingabe oder OCR-Retry möglich.</p>
+        }
+      </section>
+    }
+  </div>
+</section>
 
-        <section class="dd-import-route__datasets dd-neu-card">
-          <header>
-            <div>
-              <h2>Erkannte Datensätze</h2>
-              <p>Gruppen bleiben kompakt und öffnen sich bei Hover oder global per Button.</p>
-            </div>
-            <button class="dd-button dd-button--ghost" type="button" (click)="datasetsUmschalten()">{{ datasetsOffen() ? 'Alle ausblenden' : 'Alle einblenden' }}</button>
-          </header>
+@if (manuelleEingabeOffen()) {
+  <section class="dd-import-route__manual-modal" role="dialog" aria-modal="true" aria-labelledby="manual-title">
+    <div class="dd-import-route__manual-card">
+      <header>
+        <div>
+          <h2 id="manual-title">Manuelle Eingabe</h2>
+          <p>Fallback für Befunde, die nicht automatisch erkannt werden können. Die Eingabe landet im Review.</p>
+        </div>
+        <button type="button" aria-label="Manuelle Eingabe schließen" (click)="manuelleEingabeSchliessen()">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </header>
 
-          @if (job.datasets.length) {
-            <div class="dd-import-route__dataset-grid">
-              @for (dataset of job.datasets; track dataset.id) {
-                <article class="dd-import-route__dataset {{ datasetKlasse(dataset) }}" [class.is-open]="datasetsOffen()" tabindex="0">
-                  <header>
-                    <strong>{{ dataset.name }}</strong>
-                    <span>{{ dataset.confidence }}%</span>
-                  </header>
-                  <div>
-                    <p>{{ dataset.werte }} Werte erkannt</p>
-                    <p>{{ dataset.review }} Review-Punkte</p>
-                  </div>
-                </article>
-              }
-            </div>
-          } @else {
-            <p class="dd-import-route__empty">Noch keine Datensätze erkannt. Manuelle Eingabe oder OCR-Retry möglich.</p>
-          }
-        </section>
-      }
+      <div class="dd-import-route__manual-form">
+        <label>
+          <span>Laborwert-Key</span>
+          <input type="text" [value]="manuellLaborwertKey()" (input)="manuellesFeldSetzen('key', $event)">
+        </label>
+        <label>
+          <span>Anzeigename</span>
+          <input type="text" [value]="manuellAnzeigename()" (input)="manuellesFeldSetzen('name', $event)">
+        </label>
+        <label>
+          <span>Ergebnis</span>
+          <input type="text" [value]="manuellErgebnis()" (input)="manuellesFeldSetzen('ergebnis', $event)">
+        </label>
+        <label>
+          <span>Einheit</span>
+          <input type="text" [value]="manuellEinheit()" (input)="manuellesFeldSetzen('einheit', $event)">
+        </label>
+        <label>
+          <span>Referenzbereich</span>
+          <input type="text" [value]="manuellReferenz()" (input)="manuellesFeldSetzen('referenz', $event)">
+        </label>
+      </div>
+
+      <footer>
+        <button class="dd-button dd-button--secondary" type="button" (click)="manuelleEingabeSchliessen()">Abbrechen</button>
+        <button class="dd-button dd-button--primary" type="button" (click)="manuelleEingabeAnlegen()">Als Review-Fallback anlegen</button>
+      </footer>
     </div>
   </section>
-}
+}

@@ -708,6 +708,51 @@
   gap: var(--dd-space-2);
 }
 
+
+
+/* ==========================================================================
+   10   Status-Pills und bearbeitbare Felder
+   ========================================================================== */
+
+.dd-review-route .dd-chip.is-offen,
+.dd-review-route .dd-chip.is-korrigiert,
+.dd-review-route .dd-chip.is-bestaetigt,
+.dd-review-route .dd-chip.is-verworfen,
+.dd-review-route .dd-chip.is-blockiert {
+  border-radius: var(--dd-radius-pill);
+  padding: 0.28rem 0.64rem;
+  font-size: 0.68rem;
+  font-weight: 920;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dd-review-route .dd-chip.is-offen {
+  background: var(--dd-color-warning-soft);
+  color: var(--dd-color-warning);
+}
+
+.dd-review-route .dd-chip.is-korrigiert {
+  background: rgba(0, 94, 184, 0.12);
+  color: var(--dd-color-primary);
+}
+
+.dd-review-route .dd-chip.is-bestaetigt {
+  background: var(--dd-color-success-soft);
+  color: var(--dd-color-success);
+}
+
+.dd-review-route .dd-chip.is-verworfen,
+.dd-review-route .dd-chip.is-blockiert {
+  background: var(--dd-color-error-soft);
+  color: var(--dd-color-danger);
+}
+
+.dd-review-route__form input:focus,
+.dd-review-route__form textarea:focus {
+  box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.14), var(--dd-shadow-inset);
+}
+
 /* ==========================================================================
    09   Responsive
    ========================================================================== */
@@ -773,4 +818,5 @@
   .dd-review-route__paper p {
     min-width: 440px;
   }
-}
+}
+

@@ -130,13 +130,16 @@ Data-Dashboard/
 │   │   ├── app.component.scss
 │   │   ├── app.component.ts
 │   │   ├── app.config.ts
-│   │   └── app.routes.ts
+│   │   ├── app.routes.ts
+│   │   └── app.smoke.spec.ts
 │   ├── assets/
-│   │   └── fonts/
-│   │       ├── .gitkeep
-│   │       ├── inter-variable.ttf
-│   │       ├── material-symbols-outlined-latin-fill-normal.woff2
-│   │       └── README.md
+│   │   ├── fonts/
+│   │   │   ├── .gitkeep
+│   │   │   ├── inter-variable.ttf
+│   │   │   ├── material-symbols-outlined-latin-fill-normal.woff2
+│   │   │   └── README.md
+│   │   └── testdaten/
+│   │       └── testdaten-laborbefund-demo.pdf
 │   ├── styles/
 │   │   ├── animations.scss
 │   │   ├── base.scss
