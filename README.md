@@ -1,229 +1,157 @@
-<p align="center">
-  <img src="./assets/readme/hero.svg" alt="Daten Dashboards — Local Lab Insight Hub" width="100%" />
-</p>
+<div align="center">
 
-<p align="center">
-  <a href="#status"><img alt="Status" src="https://img.shields.io/badge/status-early%20development-00478D?style=for-the-badge" /></a>
-  <a href="#tech-stack"><img alt="Angular" src="https://img.shields.io/badge/frontend-Angular-005EB8?style=for-the-badge" /></a>
-  <a href="#tech-stack"><img alt="Django REST Framework" src="https://img.shields.io/badge/backend-Django%20REST-00478D?style=for-the-badge" /></a>
-  <a href="#local-first"><img alt="Local first" src="https://img.shields.io/badge/processing-local%20first-2E7D55?style=for-the-badge" /></a>
-  <a href="#medical-disclaimer"><img alt="No diagnosis" src="https://img.shields.io/badge/medical-no%20diagnosis-BA1A1A?style=for-the-badge" /></a>
-</p>
+# Daten Dashboards
 
----
+### Local Lab Insight Hub
 
-## Overview
+**A local lab-results assistant for structured PDF analysis, medical review, and clear patient reports.**
 
-**Daten Dashboards** is a local lab-results assistant for structured PDF analysis, medical review, and clear patient reports.
+<br>
 
-The project is designed as a complete workflow from uploaded test lab reports to reviewed values, dashboard-based analysis, and understandable patient-facing summaries. It does **not** provide diagnoses. Medical assessment and final approval always remain with the doctor.
+<img src="./assets/readme-header.svg" alt="Daten Dashboards neomorphic app header" width="100%">
 
----
+<br>
 
-## Core Idea
+![Angular](https://img.shields.io/badge/Frontend-Angular-C7D7FF?style=for-the-badge&labelColor=EEF1FA&color=00478D)
+![Django](https://img.shields.io/badge/Backend-Django-D8E1EA?style=for-the-badge&labelColor=EEF1FA&color=575F67)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-FFD7C2?style=for-the-badge&labelColor=EEF1FA&color=793100)
+![Local First](https://img.shields.io/badge/Processing-Local_First-D8E1EA?style=for-the-badge&labelColor=EEF1FA&color=00478D)
 
-> Turn complex lab reports into structured, comparable, doctor-reviewed and patient-friendly information.
-
-The system focuses on:
-
-| Area | Purpose |
-| --- | --- |
-| **Import** | Upload optimized test PDFs or manually start a prepared demo analysis. |
-| **Extraction** | Read PDF text layers or use local OCR for image-based reports. |
-| **Normalization** | Detect lab values, units, reference ranges and comparable parameter keys. |
-| **Review** | Let doctors verify uncertain values with original snippets side by side. |
-| **Dashboard** | Analyze trends, abnormal values, confidence scores and report comparisons. |
-| **Patient Report** | Generate a clear, print-ready explanation based only on approved data. |
+</div>
 
 ---
 
-## Workflow
+## Vision
 
-<p align="center">
-  <img src="./assets/readme/workflow.svg" alt="Daten Dashboards workflow" width="100%" />
-</p>
+**Daten Dashboards** is not just a dashboard. It is a full local workflow from lab report import to reviewed medical data and a clear patient-facing report.
+
+The system helps doctors structure, compare and review lab values faster. Patients receive a readable and understandable overview based only on medically released data.
+
+> The system does not provide diagnoses. Medical evaluation and release always remain the doctor's responsibility.
 
 ---
 
-## Feature Highlights
+## Core Workflow
 
-### Doctor Workspace
+<img src="./assets/workflow.svg" alt="Daten Dashboards import, review, analysis and report workflow" width="100%">
 
-- Test-data PDF download directly from the start screen
-- Demo analysis with prepared artificial data
-- Local PDF text extraction
-- Local OCR fallback for image-based lab reports
-- Import status with progress and confidence information
-- Review queue for uncertain or abnormal values
-- Side-by-side comparison of original snippet and extracted value
-- Correction form for result, unit and reference range
-- Doctor approval before report generation
+---
 
-### Data Analysis
+## Project Areas
 
-- Lab value grouping by medical area
-- Abnormal value prioritization
-- Confidence score per extracted value
-- Trend charts across multiple reports
-- Report comparison views
-- Value distribution by traffic-light status
-- Dashboard cards for quick clinical overview
+<table>
+  <tr>
+    <td width="50%">
+      <h3>Import Pipeline</h3>
+      <p>Upload optimized test PDFs or start a demo analysis. The backend creates import jobs, extracts text locally and detects lab values, units and reference ranges.</p>
+    </td>
+    <td width="50%">
+      <h3>Medical Review</h3>
+      <p>Doctors inspect uncertain values, compare the original source snippet with extracted data and correct result, unit or reference range before release.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>Analysis Dashboard</h3>
+      <p>Released values are grouped by medical areas, visualized with status indicators, reference ranges, trend charts and comparison views.</p>
+    </td>
+    <td width="50%">
+      <h3>Patient Report</h3>
+      <p>Patients receive a responsive HTML report with plain-language explanations, relevant questions for the doctor and a print-optimized layout.</p>
+    </td>
+  </tr>
+</table>
 
-### Patient Report
+---
 
-- Responsive HTML report
-- Print-optimized layout
-- Patient-friendly explanations from controlled knowledge content
-- Clear distinction between normal, high and low values
-- Suggested questions for the doctor conversation
-- Mandatory disclaimer that the report does not replace a diagnosis
+## Features
 
-### Knowledge Base
+### Backend
 
-- Controlled explanation texts instead of runtime-generated medical advice
-- JSON seed support for initial content
-- Editable entries for doctors or admins
-- Versioned text content
-- Source fields and status flags
-- Separate patient explanation and doctor information fields
+- Django REST Framework API for uploads, import jobs, review, release, dashboard data and report previews
+- PostgreSQL schema designed for at least 3NF, with BCNF where useful
+- Local PDF text extraction and local OCR fallback
+- Celery and Redis for background processing
+- Versioned knowledge base for patient explanations, doctor notes and disclaimers
+- Private media storage through the own API
+
+### Frontend
+
+- Angular application with consistent neomorphic UI components
+- Start screen with **Download test-data PDF** and **Start demo analysis**
+- Upload and import status views with confidence scores
+- Review interface for uncertain values
+- Data-first dashboard with prominent charts, reference ranges and trends
+- Patient report with responsive and print-ready layout
+- Datasets can stay visually collapsed and expand on hover or click, with a global show/hide toggle
+
+### Additional
+
+- Local-first architecture without external OCR, analysis or cloud services
+- Strict separation between import, analysis, medical review and patient report
+- Clear accessibility focus with readable contrast, focus states and touch-friendly layouts
+- Test-data workflow without real patient data
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-| --- | --- |
-| **Frontend** | Angular |
-| **Backend** | Django + Django REST Framework |
-| **Database** | PostgreSQL |
-| **Jobs** | Celery |
-| **Queue / Broker** | Redis |
-| **File Storage** | Private local media storage through the own API |
-| **PDF Processing** | Local PDF text analysis |
-| **OCR** | Local OCR pipeline, for example Tesseract |
-| **Reports** | Responsive HTML + print CSS, optional local PDF export later |
+| Area | Technology |
+|---|---|
+| Frontend | Angular |
+| Backend | Django, Django REST Framework |
+| Database | PostgreSQL |
+| Background Jobs | Celery |
+| Queue / Broker | Redis |
+| File Processing | Local media storage through own API |
+| PDF Analysis | Local PDF text analysis |
+| OCR | Local OCR pipeline, for example Tesseract |
+| Reports | HTML report with print CSS |
 
 ---
 
-## Local First
+## Design System
 
-Daten Dashboards is planned as a local-first analysis system:
+The app uses a **soft neomorphic interface** with a calm off-white base, subtle depth and strong text contrast.
 
-- No external OCR services
-- No external medical analysis APIs
-- No cloud-based patient data processing
-- Files remain in local storage
-- Analysis results stay in the own API and database
-- The demo workflow uses only artificial, anonymized test data
-
----
-
-## Data Model Goals
-
-The database model is planned to support at least **3NF** and, where useful, **BCNF**.
-
-Key domains:
-
-- Test persons
-- Lab reports
-- Lab values
-- Reference ranges
-- Import jobs
-- Extraction results
-- Review status
-- Knowledge base entries
-- Text versions
-- Patient reports
-- Audit and approval states
-
----
-
-## Design Direction
-
-The interface follows a soft **neomorphic clinical dashboard** style:
-
-| Token | Value |
-| --- | --- |
+| Token | Hex |
+|---|---|
 | Background | `#F9F9FF` |
-| Surface | `#F2F3FB` |
-| Raised shadow | `-8px -8px 16px #FFFFFF`, `8px 8px 16px #D1D9E6` |
-| Primary | `#00478D` |
-| Primary container | `#005EB8` |
+| Surface Container | `#ECEDF6` |
+| Surface Highest | `#E1E2EA` |
 | Text | `#191C21` |
-| Muted text | `#424752` |
-| Success | `#2E7D55` |
-| Warning | `#C77700` |
+| Text Muted | `#424752` |
+| Primary | `#00478D` |
+| Secondary | `#575F67` |
+| Tertiary | `#793100` |
 | Error | `#BA1A1A` |
 
-The UI should feel precise, calm and data-focused. Graphs, value trends, confidence indicators and comparison views are visually prioritized over decorative elements.
-
 ---
 
-## Planned App Areas
+## Local Development
 
-```text
-Start Screen
-├── Test-data PDF download
-├── Demo analysis
-└── Upload entry point
-
-Import & Analysis
-├── Upload jobs
-├── PDF extraction
-├── OCR fallback
-├── Confidence scoring
-└── Pipeline status
-
-Medical Review
-├── Uncertain values
-├── Original snippet
-├── Extracted value
-├── Correction form
-└── Approval workflow
-
-Analysis Dashboard
-├── Value groups
-├── Trend charts
-├── Abnormal values
-├── Report comparison
-└── Patient report generation
-
-Knowledge Base
-├── Lab value explanations
-├── Patient text
-├── Doctor notes
-├── Sources
-└── Version history
-
-Patient Report
-├── Summary
-├── Abnormal values
-├── Explanations
-├── Questions for doctor visit
-└── Disclaimer
+```bash
+git clone <repository-url>
+cd daten-dashboards
 ```
 
----
-
-## Status
-
-This repository is in early project setup. The current focus is on:
-
-- Base architecture
-- Design system
-- Data model planning
-- Import workflow structure
-- Local PDF and OCR processing concept
-- Dashboard and review UX
+Backend and frontend setup will be added as soon as the base project structure is created.
 
 ---
 
-## Medical Disclaimer
+## Safety Scope
 
-This project is built for structured lab-data processing and understandable report preparation. It does **not** provide medical diagnoses, treatment decisions or automated medical approval. All medical interpretation and final release must be performed by a qualified doctor.
+This project is intended for development with artificial and anonymized test data only.
+
+- No real patient data
+- No external cloud analysis
+- No external OCR service
+- No runtime AI diagnosis
+- Doctor-controlled release before patient reports
 
 ---
 
-## License
+## Repository Description
 
-License information will be added later.
+**Daten Dashboards is a local lab-results assistant for structured PDF analysis, medical review, and clear patient reports.**
+
