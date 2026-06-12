@@ -1,0 +1,450 @@
+/* ==========================================================================
+   INHALTSVERZEICHNIS
+
+   01   Route
+   02   Kopfbereich
+   03   Aktiver Kontext
+   04   Toolbar
+   05   Kartenliste
+   06   Modal
+   07   Responsive
+   ========================================================================== */
+
+/* ==========================================================================
+   01   Route
+   ========================================================================== */
+
+.dd-patienten-route {
+  display: grid;
+  gap: var(--dd-space-4);
+  width: min(100%, var(--dd-max-width));
+  margin-inline: auto;
+}
+
+/* ==========================================================================
+   02   Kopfbereich
+   ========================================================================== */
+
+.dd-patienten-route__headline {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--dd-space-4);
+}
+
+.dd-patienten-route__headline h1 {
+  margin: 0.6rem 0 0;
+  color: var(--dd-color-text);
+  font-size: clamp(2rem, 3.2vw, 3.15rem);
+  font-weight: 850;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.dd-patienten-route__headline p,
+.dd-patienten-route__active p,
+.dd-patienten-route__reports p,
+.dd-patienten-route__modal-card p {
+  margin: 0;
+  color: var(--dd-color-text-muted);
+  line-height: 1.55;
+}
+
+/* ==========================================================================
+   03   Aktiver Kontext
+   ========================================================================== */
+
+.dd-patienten-route__active {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) minmax(250px, 0.42fr);
+  gap: var(--dd-space-4);
+  align-items: center;
+  padding: var(--dd-space-4);
+}
+
+.dd-patienten-route__active > .material-symbols-outlined {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border-radius: var(--dd-radius-lg);
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-patienten-route__active small,
+.dd-patienten-route__card small,
+.dd-patienten-route__active dt,
+.dd-patienten-route__card dt {
+  display: block;
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-patienten-route__active strong {
+  display: block;
+  margin: 0.12rem 0 0.18rem;
+  color: var(--dd-color-text);
+  font-size: 1.25rem;
+}
+
+.dd-patienten-route__active article strong {
+  margin-top: 0.12rem;
+}
+
+.dd-patienten-route__active article {
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+/* ==========================================================================
+   04   Toolbar
+   ========================================================================== */
+
+.dd-patienten-route__toolbar {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1fr) auto;
+  gap: var(--dd-space-4);
+  align-items: center;
+  padding: var(--dd-space-4);
+}
+
+.dd-patienten-route__search-wrap {
+  display: grid;
+  gap: var(--dd-space-2);
+}
+
+.dd-patienten-route__search-wrap p {
+  margin: 0;
+  color: var(--dd-color-danger);
+  font-size: 0.78rem;
+  font-weight: 820;
+}
+
+.dd-patienten-route__search {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: var(--dd-space-2);
+  align-items: center;
+  min-height: 54px;
+  border-radius: var(--dd-radius-pill);
+  padding: 0.72rem 1rem;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-patienten-route__search span {
+  color: var(--dd-color-primary);
+}
+
+.dd-patienten-route__search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--dd-color-text);
+  font: inherit;
+}
+
+.dd-patienten-route__chips,
+.dd-patienten-route__sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dd-space-2);
+}
+
+.dd-patienten-route__chips button,
+.dd-patienten-route__sort button {
+  border-radius: var(--dd-radius-pill);
+  padding: 0.52rem 0.78rem;
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 850;
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-patienten-route__chips button:hover,
+.dd-patienten-route__chips button.is-active,
+.dd-patienten-route__sort button:hover,
+.dd-patienten-route__sort button.is-active {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+/* ==========================================================================
+   05   Kartenliste
+   ========================================================================== */
+
+.dd-patienten-route__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  gap: var(--dd-space-4);
+}
+
+.dd-patienten-route__card {
+  display: grid;
+  gap: var(--dd-space-4);
+  padding: var(--dd-space-4);
+}
+
+.dd-patienten-route__card.is-selected {
+  outline: 3px solid rgba(0, 94, 184, 0.16);
+}
+
+.dd-patienten-route__card header {
+  display: grid;
+  gap: var(--dd-space-2);
+}
+
+.dd-patienten-route__card header strong {
+  color: var(--dd-color-text);
+  font-size: 1.15rem;
+}
+
+.dd-patienten-route__card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--dd-space-2);
+  margin: 0;
+}
+
+.dd-patienten-route__card dl div {
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-patienten-route__card dd {
+  margin: 0.12rem 0 0;
+  color: var(--dd-color-text);
+  font-weight: 900;
+}
+
+.dd-patienten-route__lifestyle {
+  min-height: 44px;
+  margin: 0;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text-muted);
+  box-shadow: var(--dd-shadow-inset);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.dd-patienten-route__reports {
+  display: grid;
+  max-height: 164px;
+  gap: var(--dd-space-2);
+  overflow-y: auto;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-2);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-patienten-route__reports button {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr) auto;
+  gap: 0.08rem var(--dd-space-2);
+  align-items: center;
+  border-radius: var(--dd-radius-md);
+  padding: 0.56rem 0.62rem;
+  cursor: pointer;
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+}
+
+.dd-patienten-route__reports button:hover,
+.dd-patienten-route__reports button.is-active {
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
+.dd-patienten-route__reports span {
+  color: var(--dd-color-primary);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.dd-patienten-route__reports strong {
+  overflow: hidden;
+  color: var(--dd-color-text);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-patienten-route__reports small {
+  color: var(--dd-color-text-muted);
+  font-size: 0.74rem;
+  text-align: right;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.dd-patienten-route__card footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dd-space-2);
+  justify-content: flex-end;
+}
+
+.dd-chip.is-review,
+.dd-chip.is-import {
+  background: var(--dd-color-warning-soft);
+  color: var(--dd-color-warning);
+}
+
+.dd-chip.is-bericht,
+.dd-chip.is-aktiv {
+  background: var(--dd-color-success-soft);
+  color: var(--dd-color-success);
+}
+
+.dd-chip.is-leer {
+  background: var(--dd-color-low-soft);
+  color: var(--dd-color-low);
+}
+
+/* ==========================================================================
+   06   Modal
+   ========================================================================== */
+
+.dd-patienten-route__modal {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--dd-space-4);
+  background: rgba(25, 28, 33, 0.28);
+}
+
+.dd-patienten-route__modal-card {
+  display: grid;
+  gap: var(--dd-space-4);
+  width: min(100%, 720px);
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-4);
+  background: var(--dd-color-surface-high);
+  box-shadow: 0 28px 72px rgba(25, 28, 33, 0.3);
+}
+
+.dd-patienten-route__modal-card header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+}
+
+.dd-patienten-route__modal-card h2 {
+  margin: 0;
+  color: var(--dd-color-text);
+}
+
+.dd-patienten-route__modal-card header button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: var(--dd-radius-md);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-patienten-route__form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dd-space-3);
+}
+
+.dd-patienten-route__form label {
+  display: grid;
+  gap: var(--dd-space-2);
+}
+
+.dd-patienten-route__form label span {
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-patienten-route__form input,
+.dd-patienten-route__form textarea,
+.dd-patienten-route__form select {
+  width: 100%;
+  border: 0;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.78rem 0.9rem;
+  outline: none;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text);
+  box-shadow: var(--dd-shadow-inset);
+  font: inherit;
+}
+
+.dd-patienten-route__form .is-wide {
+  grid-column: 1 / -1;
+}
+
+.dd-patienten-route__modal-card footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--dd-space-2);
+}
+
+/* ==========================================================================
+   07   Responsive
+   ========================================================================== */
+
+@media (max-width: 1320px) {
+  .dd-patienten-route__grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+
+  .dd-patienten-route__toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .dd-patienten-route__reports button {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-patienten-route__reports small {
+    text-align: left;
+  }
+}
+
+@media (max-width: 820px) {
+  .dd-patienten-route__headline,
+  .dd-patienten-route__active {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .dd-patienten-route__headline {
+    display: grid;
+  }
+
+  .dd-patienten-route__grid,
+  .dd-patienten-route__form {
+    grid-template-columns: 1fr;
+  }
+}

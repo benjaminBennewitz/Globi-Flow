@@ -14,7 +14,7 @@
       <div class="dd-auswertung-route__context">
         <article>
           <span>Testperson</span>
-          <strong>{{ aktiverPatient(ansicht).name }}</strong>
+          <strong>{{ patientContext.aktiverPatient().name }}</strong>
         </article>
         <article>
           <span>Aktueller Befund</span>
@@ -28,48 +28,10 @@
     </header>
 
     <section class="dd-auswertung-route__filters dd-neu-card" aria-label="Auswertungsfilter">
-      <div class="dd-auswertung-route__patient-filter" (keydown.escape)="patientenOverlaySchliessen()">
-        <span>Testperson</span>
-        <button class="dd-auswertung-route__patient-trigger" type="button" [class.is-active]="patientenOverlayOffen()" (click)="patientenOverlayUmschalten()">
-          <span class="material-symbols-outlined" aria-hidden="true">person_search</span>
-          <strong>{{ aktiverPatient(ansicht).name }}</strong>
-          <small>{{ aktiverPatient(ansicht).befunde }} Befunde · {{ aktiverPatient(ansicht).kontext }}</small>
-        </button>
-
-        @if (patientenOverlayOffen()) {
-          <aside class="dd-auswertung-route__patient-overlay" aria-label="Testperson auswählen">
-            <header>
-              <div>
-                <h2>Testperson auswählen</h2>
-                <p>Suche und Filter für spätere größere Patientendatenbestände.</p>
-              </div>
-              <button type="button" aria-label="Patientenauswahl schließen" (click)="patientenOverlaySchliessen()">
-                <span class="material-symbols-outlined" aria-hidden="true">close</span>
-              </button>
-            </header>
-
-            <label class="dd-auswertung-route__patient-search">
-              <span class="material-symbols-outlined" aria-hidden="true">search</span>
-              <input type="search" autocomplete="off" placeholder="Name oder Kontext suchen" [value]="patientenSuche()" (input)="patientenSucheAendern($event)">
-            </label>
-
-            <div class="dd-auswertung-route__patient-filterbar" aria-label="Patientenfilter">
-              @for (filter of patientFilterOptionen; track filter.key) {
-                <button type="button" [class.is-active]="patientenFilter() === filter.key" (click)="patientenFilterSetzen(filter.key)">{{ filter.label }}</button>
-              }
-            </div>
-
-            <div class="dd-auswertung-route__patient-list">
-              @for (patient of gefiltertePatienten(ansicht); track patient.id) {
-                <button type="button" [class.is-active]="aktiverPatientId() === patient.id" (click)="patientSetzen(patient)">
-                  <strong>{{ patient.name }}</strong>
-                  <span>{{ patient.kontext }}</span>
-                  <small>{{ patient.befunde }} Befunde</small>
-                </button>
-              }
-            </div>
-          </aside>
-        }
+      <div class="dd-auswertung-route__patient-context">
+        <span>Aktiver Patient</span>
+        <strong>{{ patientContext.aktiverPatient().name }}</strong>
+        <small>{{ patientContext.aktiverPatient().nummer }} · über Topbar oder Patientenroute wechseln</small>
       </div>
 
       <div>
@@ -238,4 +200,4 @@
       </div>
     </section>
   </section>
-}
+}

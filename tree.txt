@@ -27,7 +27,9 @@ Data-Dashboard/
 │   │   │   │   ├── dashboard-view.mock.ts
 │   │   │   │   ├── importjobs.mock.ts
 │   │   │   │   ├── laborwerte.mock.ts
+│   │   │   │   ├── patienten.mock.ts
 │   │   │   │   ├── patientenbericht.mock.ts
+│   │   │   │   ├── review.mock.ts
 │   │   │   │   ├── review-eintraege.mock.ts
 │   │   │   │   ├── uebersicht.mock.ts
 │   │   │   │   └── wissenseintraege.mock.ts
@@ -36,7 +38,9 @@ Data-Dashboard/
 │   │   │   │   ├── dashboard-view.model.ts
 │   │   │   │   ├── importjob.model.ts
 │   │   │   │   ├── laborwert.model.ts
+│   │   │   │   ├── patient.model.ts
 │   │   │   │   ├── patientenbericht.model.ts
+│   │   │   │   ├── review.model.ts
 │   │   │   │   ├── review-eintrag.model.ts
 │   │   │   │   ├── uebersicht.model.ts
 │   │   │   │   └── wissenseintrag.model.ts
@@ -44,7 +48,8 @@ Data-Dashboard/
 │   │   │   │   ├── sichere-datei.util.ts
 │   │   │   │   └── sichere-suche.util.ts
 │   │   │   └── services/
-│   │   │       └── daten-dashboard-api.service.ts
+│   │   │       ├── daten-dashboard-api.service.ts
+│   │   │       └── patient-context.service.ts
 │   │   ├── features/
 │   │   │   ├── analyse-dashboard/
 │   │   │   │   ├── analyse-dashboard.component.html
@@ -83,6 +88,10 @@ Data-Dashboard/
 │   │   │   │   ├── importe-page.component.html
 │   │   │   │   ├── importe-page.component.scss
 │   │   │   │   └── importe-page.component.ts
+│   │   │   ├── patienten-page/
+│   │   │   │   ├── patienten-page.component.html
+│   │   │   │   ├── patienten-page.component.scss
+│   │   │   │   └── patienten-page.component.ts
 │   │   │   ├── review-page/
 │   │   │   │   ├── review-page.component.html
 │   │   │   │   ├── review-page.component.scss

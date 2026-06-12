@@ -9,6 +9,7 @@ import { Routes } from '@angular/router';
 import { AnalysePageComponent } from './pages/analyse-page/analyse-page.component';
 import { BerichtePageComponent } from './pages/berichte-page/berichte-page.component';
 import { ImportePageComponent } from './pages/importe-page/importe-page.component';
+import { PatientenPageComponent } from './pages/patienten-page/patienten-page.component';
 import { ReviewPageComponent } from './pages/review-page/review-page.component';
 import { UebersichtPageComponent } from './pages/uebersicht-page/uebersicht-page.component';
 import { WissensbasisPageComponent } from './pages/wissensbasis-page/wissensbasis-page.component';
@@ -18,10 +19,11 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'uebersicht' },
   { path: 'uebersicht', component: UebersichtPageComponent },
   { path: 'übersicht', redirectTo: 'uebersicht' },
+  { path: 'patienten', component: PatientenPageComponent },
   { path: 'importe', component: ImportePageComponent },
   { path: 'auswertung', component: AnalysePageComponent },
   { path: 'review', component: ReviewPageComponent },
   { path: 'wissensbasis', component: WissensbasisPageComponent },
   { path: 'berichte', component: BerichtePageComponent },
   { path: '**', redirectTo: 'uebersicht' }
-];
+];

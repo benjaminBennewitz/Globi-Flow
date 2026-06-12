@@ -88,7 +88,7 @@
 
 .dd-auswertung-route__filters {
   display: grid;
-  grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1fr) minmax(290px, 0.66fr) auto;
+  grid-template-columns: minmax(300px, 0.58fr) minmax(0, 1fr) minmax(290px, 0.66fr) auto;
   gap: var(--dd-space-4);
   align-items: end;
   padding: var(--dd-space-4);
@@ -113,8 +113,37 @@
   box-shadow: var(--dd-shadow-inset);
 }
 
+.dd-auswertung-route__patient-context,
 .dd-auswertung-route__patient-filter {
   position: relative;
+}
+
+.dd-auswertung-route__patient-context {
+  display: grid;
+  gap: 0.18rem;
+  min-height: 58px;
+  align-content: center;
+  border-radius: var(--dd-radius-lg);
+  margin-top: var(--dd-space-2);
+  padding: 0.65rem 0.78rem;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-auswertung-route__patient-context strong {
+  overflow: hidden;
+  color: var(--dd-color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-auswertung-route__patient-context small {
+  overflow: hidden;
+  color: var(--dd-color-text-muted);
+  font-size: 0.74rem;
+  font-weight: 780;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dd-auswertung-route__patient-trigger {
@@ -850,4 +879,4 @@
   .dd-auswertung-route__detail header > strong {
     white-space: normal;
   }
-}
+}

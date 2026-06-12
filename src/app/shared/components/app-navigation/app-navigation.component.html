@@ -11,6 +11,10 @@
       <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
       Übersicht
     </a>
+    <a routerLink="/patienten" routerLinkActive="is-active">
+      <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+      Patienten
+    </a>
     <a routerLink="/importe" routerLinkActive="is-active">
       <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
       Importe
@@ -59,6 +63,12 @@
     }
   </form>
 
+  <button class="dd-topbar__patient" type="button" [class.has-patient]="patientContext.aktiverPatient()" aria-label="Aktiven Patienten wechseln" (click)="modalOeffnen('patient')">
+    <span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
+    <strong>{{ patientContext.aktiverPatient().name }}</strong>
+    <small>{{ patientContext.aktiverPatient().nummer }} · {{ patientContext.aktiverBefund()?.datum || 'kein Befund' }}</small>
+  </button>
+
   <div class="dd-topbar__actions">
     <button class="dd-topbar__icon" type="button" aria-label="Benachrichtigungen öffnen" (click)="modalOeffnen('alarm')">
       <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
@@ -74,12 +84,44 @@
 </header>
 
 @if (aktivesModal) {
-  <section class="dd-header-modal" role="dialog" aria-modal="false" [attr.aria-labelledby]="aktivesModal === 'alarm' ? 'alarm-title' : 'settings-title'">
+  <section class="dd-header-modal" [class.is-patient]="aktivesModal === 'patient'" role="dialog" aria-modal="false" [attr.aria-labelledby]="aktivesModal === 'alarm' ? 'alarm-title' : aktivesModal === 'settings' ? 'settings-title' : 'patient-title'">
     <button class="dd-header-modal__close" type="button" aria-label="Overlay schließen" (click)="modalSchliessen()">
       <span class="material-symbols-outlined" aria-hidden="true">close</span>
     </button>
 
-    @if (aktivesModal === 'alarm') {
+    @if (aktivesModal === 'patient') {
+      <header>
+        <span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
+        <div>
+          <h2 id="patient-title">Patient auswählen</h2>
+          <p>Globaler Arbeitskontext für Import, Review, Auswertung und Berichte.</p>
+        </div>
+      </header>
+
+      <label class="dd-header-modal__patient-search">
+        <span class="material-symbols-outlined" aria-hidden="true">search</span>
+        <input type="search" autocomplete="off" placeholder="Name, ID oder Kontext suchen" [value]="patientContext.patientenSuche()" (input)="patientSucheAendern($event)">
+      </label>
+
+      <div class="dd-header-modal__patient-filters">
+        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'alle'" (click)="patientFilterSetzen('alle')">Alle</button>
+        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'review'" (click)="patientFilterSetzen('review')">Review</button>
+        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'demo'" (click)="patientFilterSetzen('demo')">Demo</button>
+        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'ocr'" (click)="patientFilterSetzen('ocr')">OCR</button>
+      </div>
+
+      <div class="dd-header-modal__patient-list">
+        @for (patient of patientContext.gefiltertePatienten(); track patient.id) {
+          <button type="button" [class.is-active]="patient.id === patientContext.aktiverPatient().id" (click)="patientContext.patientSetzen(patient); modalSchliessen()">
+            <strong>{{ patient.name }}</strong>
+            <span>{{ patient.nummer }} · {{ patient.kontext }}</span>
+            <small>{{ patient.offeneReviews }} Review</small>
+          </button>
+        }
+      </div>
+
+      <a class="dd-button dd-button--secondary" routerLink="/patienten" (click)="modalSchliessen()">Patienten verwalten</a>
+    } @else if (aktivesModal === 'alarm') {
       <header>
         <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
         <div>
@@ -133,4 +175,4 @@
       </div>
     }
   </section>
-}
+}

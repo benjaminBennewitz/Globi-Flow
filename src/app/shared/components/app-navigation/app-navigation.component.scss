@@ -185,7 +185,7 @@
 
 .dd-topbar__search-wrap {
   position: relative;
-  width: min(100%, 610px);
+  width: min(100%, 520px);
 }
 
 .dd-topbar__search-wrap:focus-within {
@@ -297,6 +297,50 @@
   transform: translateY(-1px);
 }
 
+.dd-topbar__patient {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 0 var(--dd-space-2);
+  width: min(100%, 290px);
+  min-height: 52px;
+  align-items: center;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.48rem 0.72rem;
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+}
+
+.dd-topbar__patient > span {
+  grid-row: span 2;
+  color: var(--dd-color-primary);
+}
+
+.dd-topbar__patient strong,
+.dd-topbar__patient small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-topbar__patient strong {
+  color: var(--dd-color-text);
+  font-size: 0.86rem;
+}
+
+.dd-topbar__patient small {
+  color: var(--dd-color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.dd-topbar__patient:hover {
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
 /* ==========================================================================
    06   Header Overlay
    ========================================================================== */
@@ -315,6 +359,10 @@
   background: var(--dd-color-surface-high);
   box-shadow: 0 28px 72px rgba(25, 28, 33, 0.3);
   animation: dd-fade-up 180ms var(--dd-ease-out) both;
+}
+
+.dd-header-modal.is-patient {
+  width: min(520px, calc(100vw - var(--dd-space-4)));
 }
 
 .dd-header-modal__close {
@@ -482,6 +530,96 @@
   box-shadow: var(--dd-focus-ring), var(--dd-shadow-inset);
 }
 
+.dd-header-modal__patient-search {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: var(--dd-space-2);
+  align-items: center;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.62rem 0.8rem;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-header-modal__patient-search span {
+  color: var(--dd-color-primary);
+}
+
+.dd-header-modal__patient-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--dd-color-text);
+  font: inherit;
+}
+
+.dd-header-modal__patient-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dd-space-2);
+}
+
+.dd-header-modal__patient-filters button {
+  border-radius: var(--dd-radius-pill);
+  padding: 0.48rem 0.72rem;
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-header-modal__patient-filters button:hover,
+.dd-header-modal__patient-filters button.is-active {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-header-modal__patient-list {
+  display: grid;
+  max-height: 320px;
+  gap: var(--dd-space-2);
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.dd-header-modal__patient-list button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.1rem var(--dd-space-3);
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  cursor: pointer;
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+}
+
+.dd-header-modal__patient-list button:hover,
+.dd-header-modal__patient-list button.is-active {
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
+.dd-header-modal__patient-list strong {
+  color: var(--dd-color-text);
+}
+
+.dd-header-modal__patient-list span {
+  color: var(--dd-color-text-muted);
+  font-size: 0.8rem;
+}
+
+.dd-header-modal__patient-list small {
+  grid-row: span 2;
+  color: var(--dd-color-primary);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
 /* ==========================================================================
    07   Responsive
    ========================================================================== */
@@ -542,4 +680,4 @@
   .dd-topbar__actions .dd-button {
     flex: 1;
   }
-}
+}

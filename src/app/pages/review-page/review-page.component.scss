@@ -1,13 +1,776 @@
 /* ==========================================================================
    INHALTSVERZEICHNIS
 
-   01   Host
+   01   Route
+   02   Kopfbereich
+   03   Kontext
+   04   Kennzahlen und Filter
+   05   Workspace
+   06   Warteschlange
+   07   Originalausschnitt
+   08   Formular
+   09   Responsive
    ========================================================================== */
 
 /* ==========================================================================
-   01   Host
+   01   Route
    ========================================================================== */
 
-:host {
-  display: block;
+.dd-review-route {
+  display: grid;
+  gap: var(--dd-space-4);
+  width: min(100%, var(--dd-max-width));
+  margin-inline: auto;
 }
+
+/* ==========================================================================
+   02   Kopfbereich
+   ========================================================================== */
+
+.dd-review-route__headline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: var(--dd-space-4);
+  align-items: end;
+}
+
+.dd-review-route__headline h1 {
+  margin: 0.6rem 0 0;
+  color: var(--dd-color-text);
+  font-size: clamp(2rem, 3.2vw, 3.15rem);
+  font-weight: 850;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.dd-review-route__headline p,
+.dd-review-route__context span,
+.dd-review-route__queue p,
+.dd-review-route__original p,
+.dd-review-route__form p {
+  margin: 0;
+  color: var(--dd-color-text-muted);
+  line-height: 1.55;
+}
+
+.dd-review-route__assignment {
+  display: grid;
+  gap: var(--dd-space-1);
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-4);
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-raised);
+}
+
+.dd-review-route__assignment span,
+.dd-review-route__assignment small {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
+  font-weight: 820;
+}
+
+.dd-review-route__assignment strong {
+  color: #ffffff;
+  font-size: 1.15rem;
+}
+
+/* ==========================================================================
+   03   Kontext
+   ========================================================================== */
+
+.dd-review-route__context {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.75fr) minmax(0, 1fr) minmax(180px, 0.36fr);
+  gap: var(--dd-space-4);
+  align-items: end;
+  padding: var(--dd-space-4);
+}
+
+.dd-review-route__patient,
+.dd-review-route__patient-locked {
+  position: relative;
+}
+
+.dd-review-route__patient > span,
+.dd-review-route__patient-locked > span,
+.dd-review-route__befund > span,
+.dd-review-route__progress > span {
+  display: block;
+  margin-bottom: var(--dd-space-2);
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-review-route__patient-locked {
+  display: grid;
+  gap: 0.14rem;
+  min-height: 58px;
+  align-content: center;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.65rem 0.78rem;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-review-route__patient-locked strong {
+  overflow: hidden;
+  color: var(--dd-color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-review-route__patient-locked small {
+  overflow: hidden;
+  color: var(--dd-color-text-muted);
+  font-size: 0.74rem;
+  font-weight: 780;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-review-route__patient-trigger {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 0 var(--dd-space-2);
+  width: 100%;
+  min-height: 58px;
+  align-items: center;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.65rem 0.78rem;
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text);
+  box-shadow: var(--dd-shadow-inset);
+  text-align: left;
+}
+
+.dd-review-route__patient-trigger > span {
+  grid-row: span 2;
+  color: var(--dd-color-primary);
+}
+
+.dd-review-route__patient-trigger strong,
+.dd-review-route__patient-trigger small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-review-route__patient-trigger small {
+  color: var(--dd-color-text-muted);
+  font-size: 0.74rem;
+  font-weight: 780;
+}
+
+.dd-review-route__patient-trigger:hover,
+.dd-review-route__patient-trigger.is-active {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-review-route__patient-trigger:hover span,
+.dd-review-route__patient-trigger.is-active span,
+.dd-review-route__patient-trigger:hover small,
+.dd-review-route__patient-trigger.is-active small {
+  color: #ffffff;
+}
+
+.dd-review-route__patient-overlay {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + var(--dd-space-3));
+  left: 0;
+  display: grid;
+  width: min(520px, calc(100vw - 2rem));
+  max-height: min(620px, calc(100vh - 12rem));
+  gap: var(--dd-space-3);
+  overflow: hidden;
+  border: 1px solid rgba(114, 119, 131, 0.2);
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-4);
+  background: var(--dd-color-surface-high);
+  box-shadow: 0 28px 72px rgba(25, 28, 33, 0.3);
+}
+
+.dd-review-route__patient-overlay header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+}
+
+.dd-review-route__patient-overlay h2 {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-size: 1.05rem;
+}
+
+.dd-review-route__patient-overlay header button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: var(--dd-radius-md);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-review-route__patient-search {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: var(--dd-space-2);
+  align-items: center;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.62rem 0.8rem;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-review-route__patient-search span {
+  color: var(--dd-color-primary);
+}
+
+.dd-review-route__patient-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--dd-color-text);
+  font: inherit;
+}
+
+.dd-review-route__patient-list {
+  display: grid;
+  gap: var(--dd-space-2);
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.dd-review-route__patient-list button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.1rem var(--dd-space-3);
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+}
+
+.dd-review-route__patient-list button:hover,
+.dd-review-route__patient-list button.is-active {
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
+.dd-review-route__patient-list strong {
+  color: var(--dd-color-text);
+}
+
+.dd-review-route__patient-list span {
+  color: var(--dd-color-text-muted);
+  font-size: 0.8rem;
+}
+
+.dd-review-route__patient-list small {
+  grid-row: span 2;
+  color: var(--dd-color-primary);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.dd-review-route__befund div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dd-space-2);
+}
+
+.dd-review-route__befund button {
+  display: grid;
+  gap: 0.08rem;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.62rem 0.78rem;
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text);
+  box-shadow: var(--dd-shadow-inset);
+  text-align: left;
+}
+
+.dd-review-route__befund button.is-active,
+.dd-review-route__befund button:hover {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-review-route__befund small {
+  color: currentColor;
+  opacity: 0.78;
+}
+
+.dd-review-route__progress strong {
+  color: var(--dd-color-primary);
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.dd-review-route__progress i {
+  display: block;
+  overflow: hidden;
+  height: 10px;
+  margin-top: var(--dd-space-2);
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-review-route__progress b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--dd-color-primary);
+}
+
+/* ==========================================================================
+   04   Kennzahlen und Filter
+   ========================================================================== */
+
+.dd-review-route__kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(145px, 1fr));
+  gap: var(--dd-space-4);
+}
+
+.dd-review-route__kpi {
+  position: relative;
+  display: grid;
+  gap: var(--dd-space-2);
+  min-height: 118px;
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-4);
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-raised);
+}
+
+.dd-review-route__kpi span,
+.dd-review-route__kpi small {
+  color: var(--dd-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 820;
+}
+
+.dd-review-route__kpi strong {
+  color: var(--dd-color-primary);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.dd-review-route__kpi i {
+  position: absolute;
+  top: var(--dd-space-4);
+  right: var(--dd-space-4);
+  color: var(--dd-color-primary);
+}
+
+.dd-review-route__kpi.is-warning strong,
+.dd-review-route__kpi.is-warning i {
+  color: var(--dd-color-warning);
+}
+
+.dd-review-route__kpi.is-danger strong,
+.dd-review-route__kpi.is-danger i {
+  color: var(--dd-color-danger);
+}
+
+.dd-review-route__kpi.is-success strong,
+.dd-review-route__kpi.is-success i {
+  color: var(--dd-color-success);
+}
+
+.dd-review-route__filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+  padding: var(--dd-space-4);
+}
+
+.dd-review-route__filters nav,
+.dd-review-route__bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dd-space-2);
+}
+
+.dd-review-route__filters nav button {
+  border-radius: var(--dd-radius-pill);
+  padding: 0.52rem 0.78rem;
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text-muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-review-route__filters nav button:hover,
+.dd-review-route__filters nav button.is-active {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+/* ==========================================================================
+   05   Workspace
+   ========================================================================== */
+
+.dd-review-route__workspace {
+  display: grid;
+  grid-template-columns: minmax(270px, 0.72fr) minmax(340px, 0.92fr) minmax(340px, 0.86fr);
+  gap: var(--dd-space-4);
+}
+
+.dd-review-route__queue,
+.dd-review-route__original,
+.dd-review-route__form {
+  display: grid;
+  gap: var(--dd-space-4);
+  align-content: start;
+  padding: var(--dd-space-4);
+}
+
+.dd-review-route h2 {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-size: 1.14rem;
+  font-weight: 850;
+}
+
+/* ==========================================================================
+   06   Warteschlange
+   ========================================================================== */
+
+.dd-review-route__queue-list {
+  display: grid;
+  gap: var(--dd-space-3);
+}
+
+.dd-review-route__queue-item {
+  display: grid;
+  gap: var(--dd-space-2);
+  width: 100%;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+}
+
+.dd-review-route__queue-item:hover,
+.dd-review-route__queue-item.is-active {
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-1px);
+}
+
+.dd-review-route__queue-item strong {
+  color: var(--dd-color-text);
+}
+
+.dd-review-route__queue-item small,
+.dd-review-route__queue-item i {
+  color: var(--dd-color-text-muted);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   07   Originalausschnitt
+   ========================================================================== */
+
+.dd-review-route__original header,
+.dd-review-route__form header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+}
+
+.dd-review-route__zoom {
+  display: flex;
+  align-items: center;
+  gap: var(--dd-space-2);
+}
+
+.dd-review-route__zoom button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: var(--dd-radius-md);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-review-route__zoom span {
+  color: var(--dd-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.dd-review-route__paper {
+  --review-zoom: 1;
+  display: grid;
+  gap: var(--dd-space-3);
+  overflow: auto;
+  min-height: 280px;
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-5);
+  background: linear-gradient(180deg, #ffffff, #f6f7fb);
+  box-shadow: var(--dd-shadow-inset);
+  transform-origin: top left;
+}
+
+.dd-review-route__paper > div,
+.dd-review-route__paper p {
+  display: grid;
+  grid-template-columns: 1fr 0.7fr 0.7fr;
+  gap: var(--dd-space-3);
+  width: calc(100% * var(--review-zoom));
+  min-width: 520px;
+  transform: scale(var(--review-zoom));
+  transform-origin: top left;
+}
+
+.dd-review-route__paper > div {
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-review-route__paper p {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92rem;
+}
+
+.dd-review-route__paper mark {
+  border-radius: 0.45rem;
+  padding: 0.22rem 0.4rem;
+  background: rgba(0, 94, 184, 0.14);
+  color: var(--dd-color-primary);
+}
+
+.dd-review-route__paper small,
+.dd-review-route__raw span {
+  color: var(--dd-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.dd-review-route__raw {
+  display: grid;
+  gap: var(--dd-space-2);
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+/* ==========================================================================
+   08   Formular
+   ========================================================================== */
+
+.dd-review-route__form header > strong {
+  color: var(--dd-color-primary);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.dd-review-route__form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dd-space-3);
+}
+
+.dd-review-route__form label {
+  display: grid;
+  gap: var(--dd-space-2);
+}
+
+.dd-review-route__form label span,
+.dd-review-route__checks h3,
+.dd-review-route__parser h3 {
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-review-route__form input,
+.dd-review-route__form textarea {
+  width: 100%;
+  border: 0;
+  border-radius: var(--dd-radius-lg);
+  padding: 0.78rem 0.9rem;
+  outline: none;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text);
+  box-shadow: var(--dd-shadow-inset);
+  font: inherit;
+}
+
+.dd-review-route__comment {
+  grid-column: 1 / -1;
+}
+
+.dd-review-route__checks,
+.dd-review-route__parser {
+  display: grid;
+  gap: var(--dd-space-3);
+}
+
+.dd-review-route__checks h3,
+.dd-review-route__parser h3 {
+  margin: 0;
+}
+
+.dd-review-route__checks article {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: var(--dd-space-3);
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-review-route__checks article > span {
+  width: 10px;
+  height: 10px;
+  margin-top: 0.35rem;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-text-soft);
+}
+
+.dd-review-route__checks article.is-ok > span {
+  background: var(--dd-color-success);
+}
+
+.dd-review-route__checks article.is-pruefen > span,
+.dd-review-route__checks article.is-fehlt > span {
+  background: var(--dd-color-warning);
+}
+
+.dd-review-route__checks article.is-konflikt > span {
+  background: var(--dd-color-danger);
+}
+
+.dd-review-route__checks strong {
+  color: var(--dd-color-text);
+  font-size: 0.9rem;
+}
+
+.dd-review-route__checks p,
+.dd-review-route__parser p {
+  margin: 0;
+  color: var(--dd-color-text-muted);
+  font-size: 0.82rem;
+}
+
+.dd-review-route__parser p {
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-review-route__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--dd-space-2);
+}
+
+/* ==========================================================================
+   09   Responsive
+   ========================================================================== */
+
+@media (max-width: 1420px) {
+  .dd-review-route__workspace {
+    grid-template-columns: minmax(270px, 0.72fr) minmax(0, 1fr);
+  }
+
+  .dd-review-route__form {
+    grid-column: 1 / -1;
+  }
+
+  .dd-review-route__kpis {
+    grid-template-columns: repeat(3, minmax(145px, 1fr));
+  }
+}
+
+@media (max-width: 1080px) {
+  .dd-review-route__headline,
+  .dd-review-route__context,
+  .dd-review-route__workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-review-route__filters,
+  .dd-review-route__original header,
+  .dd-review-route__form header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+.dd-review-route__empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--dd-space-3);
+  padding: var(--dd-space-5);
+  text-align: center;
+}
+
+.dd-review-route__empty .material-symbols-outlined {
+  color: var(--dd-color-primary);
+  font-size: 3rem;
+}
+
+.dd-review-route__empty h2 {
+  margin: 0;
+}
+
+.dd-review-route__empty p {
+  margin: 0;
+  color: var(--dd-color-text-muted);
+}
+
+@media (max-width: 680px) {
+  .dd-review-route__kpis,
+  .dd-review-route__form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-review-route__paper > div,
+  .dd-review-route__paper p {
+    min-width: 440px;
+  }
+}

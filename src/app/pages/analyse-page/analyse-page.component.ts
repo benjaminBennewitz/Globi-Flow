@@ -8,15 +8,14 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuswertungGruppe, AuswertungKennzahl, AuswertungLaborwert, AuswertungPatient, AuswertungReviewStatus, AuswertungTrend, AuswertungViewModel } from '../../core/models/auswertung.model';
+import { AuswertungGruppe, AuswertungKennzahl, AuswertungLaborwert, AuswertungReviewStatus, AuswertungTrend, AuswertungViewModel } from '../../core/models/auswertung.model';
 import { LaborwertPrioritaet, LaborwertStatus } from '../../core/models/laborwert.model';
 import { DatenDashboardApiService } from '../../core/services/daten-dashboard-api.service';
+import { PatientContextService } from '../../core/services/patient-context.service';
 
 /** Statusfilter der Auswertungsroute. */
 type AuswertungStatusFilter = LaborwertStatus | 'alle';
 
-/** Filter für die Patientenauswahl. */
-type AuswertungPatientFilter = 'alle' | 'mehrere' | 'ocr';
 
 /** Route `/auswertung` mit analytischer Laborwertansicht. */
 @Component({
@@ -30,20 +29,11 @@ export class AnalysePageComponent {
   /** API-bereiter Datenservice. */
   private readonly datenDashboardApi = inject(DatenDashboardApiService);
 
+  /** Globaler Patientenkontext. */
+  public readonly patientContext = inject(PatientContextService);
+
   /** Fachliche Auswertungsansicht aus Mockdaten oder später API. */
   protected readonly auswertung$ = this.datenDashboardApi.ladeAuswertung();
-
-  /** Aktiver Patient für die Auswertungsfilterung. */
-  public readonly aktiverPatientId: WritableSignal<string> = signal('patient-demo-01');
-
-  /** Sichtbarkeit des Patientenauswahl-Overlays. */
-  public readonly patientenOverlayOffen: WritableSignal<boolean> = signal(false);
-
-  /** Suchbegriff der Patientenauswahl. */
-  public readonly patientenSuche: WritableSignal<string> = signal('');
-
-  /** Aktiver Patientenauswahlfilter. */
-  public readonly patientenFilter: WritableSignal<AuswertungPatientFilter> = signal('alle');
 
   /** Animations-Token für erneutes Zeichnen des Verlaufs. */
   public readonly diagrammAnimationsToken: WritableSignal<number> = signal(0);
@@ -59,13 +49,6 @@ export class AnalysePageComponent {
 
   /** Schaltet ungeprüfte Werte in der Auswertung aus. */
   public readonly nurGepruefteWerte: WritableSignal<boolean> = signal(false);
-
-  /** Patientenauswahlfilter für das Overlay. */
-  public readonly patientFilterOptionen: { key: AuswertungPatientFilter; label: string }[] = [
-    { key: 'alle', label: 'Alle' },
-    { key: 'mehrere', label: 'Mehrere Befunde' },
-    { key: 'ocr', label: 'OCR' }
-  ];
 
   /** Statusfilter für die Oberfläche. */
   public readonly statusFilter: { key: AuswertungStatusFilter; label: string }[] = [
@@ -101,46 +84,6 @@ export class AnalysePageComponent {
   public aktiverWert(ansicht: AuswertungViewModel): AuswertungLaborwert | null {
     const sichtbareWerte = this.gefilterteWerte(ansicht);
     return sichtbareWerte.find((wert: AuswertungLaborwert) => wert.id === this.aktiverWertId()) ?? sichtbareWerte[0] ?? ansicht.werte[0] ?? null;
-  }
-
-  /** Liefert den aktuell gewählten Patienten. */
-  public aktiverPatient(ansicht: AuswertungViewModel): AuswertungPatient {
-    return ansicht.patienten.find((patient: AuswertungPatient) => patient.id === this.aktiverPatientId()) ?? ansicht.patienten[0];
-  }
-
-  /** Liefert gefilterte Patienten für das Overlay. */
-  public gefiltertePatienten(ansicht: AuswertungViewModel): AuswertungPatient[] {
-    const suche = this.patientenSuche().trim().toLowerCase();
-    return ansicht.patienten.filter((patient: AuswertungPatient) => this.patientFilterPasst(patient, suche));
-  }
-
-  /** Öffnet oder schließt die Patientenauswahl. */
-  public patientenOverlayUmschalten(): void {
-    this.patientenOverlayOffen.update((wert: boolean) => !wert);
-  }
-
-  /** Schließt die Patientenauswahl. */
-  public patientenOverlaySchliessen(): void {
-    this.patientenOverlayOffen.set(false);
-  }
-
-  /** Aktualisiert die Patientensuche. */
-  public patientenSucheAendern(event: Event): void {
-    const eingabe = event.target as HTMLInputElement;
-    this.patientenSuche.set(eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '').slice(0, 80));
-  }
-
-  /** Setzt den Patientenauswahlfilter. */
-  public patientenFilterSetzen(filter: AuswertungPatientFilter): void {
-    this.patientenFilter.set(filter);
-  }
-
-  /** Setzt den aktiven Patienten. */
-  public patientSetzen(patient: AuswertungPatient): void {
-    this.aktiverPatientId.set(patient.id);
-    this.aktiverWertId.set('auswertung-ldl');
-    this.diagrammAnimationsToken.update((wert: number) => wert + 1);
-    this.patientenOverlaySchliessen();
   }
 
   /** Setzt die aktive Gruppe. */
@@ -246,14 +189,6 @@ export class AnalysePageComponent {
     return `${Math.round((wert / this.gruppenGesamt(gruppe)) * 100)}%`;
   }
 
-  /** Prüft, ob ein Patient zum aktiven Overlayfilter passt. */
-  private patientFilterPasst(patient: AuswertungPatient, suche: string): boolean {
-    const suchtext = `${patient.name} ${patient.kontext}`.toLowerCase();
-    const suchePasst = !suche || suchtext.includes(suche);
-    const filterPasst = this.patientenFilter() === 'alle' || (this.patientenFilter() === 'mehrere' && patient.befunde > 1) || (this.patientenFilter() === 'ocr' && patient.quelle === 'ocr');
-    return suchePasst && filterPasst;
-  }
-
   /** Prüft, ob ein Wert zum aktiven Filter passt. */
   private passtZuFilter(wert: AuswertungLaborwert): boolean {
     const gruppePasst = this.aktiveGruppe() === 'alle' || wert.gruppe === this.aktiveGruppe();
@@ -298,4 +233,4 @@ export class AnalysePageComponent {
   private zahl(wert: number): string {
     return Number.isInteger(wert) ? `${wert}` : wert.toFixed(1).replace('.', ',');
   }
-}
+}

@@ -106,24 +106,6 @@ export interface AuswertungGruppe {
   review: number;
 }
 
-/** Patient oder Testperson für die Auswertungsfilterung. */
-export interface AuswertungPatient {
-  /** Eindeutige Patient-ID. */
-  id: string;
-
-  /** Anzeigename der Testperson. */
-  name: string;
-
-  /** Kurzer Zusatz für Kontext oder Demo-Hinweis. */
-  kontext: string;
-
-  /** Anzahl verfügbarer Befunde. */
-  befunde: number;
-
-  /** Import-/Datenquelle für Filterung. */
-  quelle: 'demo' | 'verlauf' | 'ocr' | 'manuell';
-}
-
 /** Kompakte KPI der Auswertungsroute. */
 export interface AuswertungKennzahl {
   /** Anzeigename der Kennzahl. */
@@ -144,12 +126,6 @@ export interface AuswertungKennzahl {
 
 /** Vollständiges ViewModel der Auswertung. */
 export interface AuswertungViewModel {
-  /** Verfügbare Patienten oder Testpersonen. */
-  patienten: AuswertungPatient[];
-
-  /** Angezeigte Testperson. */
-  testperson: string;
-
   /** Aktueller Befund. */
   aktuellerBefund: string;
 
@@ -164,4 +140,4 @@ export interface AuswertungViewModel {
 
   /** Gruppierte Statusmatrix. */
   gruppen: AuswertungGruppe[];
-}
+}

@@ -9,16 +9,6 @@ import { AuswertungViewModel } from '../models/auswertung.model';
 
 /** API-bereite Mockdaten für `/auswertung`. */
 export const MOCK_AUSWERTUNG: AuswertungViewModel = {
-  patienten: [
-    { id: 'patient-demo-01', name: 'Demo Testperson', kontext: 'optimierte Testdaten', befunde: 5, quelle: 'demo' },
-    { id: 'patient-demo-02', name: 'Testperson Verlauf', kontext: 'mehrere Befunde', befunde: 4, quelle: 'verlauf' },
-    { id: 'patient-demo-03', name: 'OCR-Testperson', kontext: 'Scan-Befunde', befunde: 2, quelle: 'ocr' },
-    { id: 'patient-demo-04', name: 'Testperson Lipide', kontext: 'Fettstoffwechsel', befunde: 6, quelle: 'verlauf' },
-    { id: 'patient-demo-05', name: 'Testperson Blutbild', kontext: 'hämatologische Werte', befunde: 3, quelle: 'demo' },
-    { id: 'patient-demo-06', name: 'Manuelle Testperson', kontext: 'Fallback-Eingabe', befunde: 1, quelle: 'manuell' },
-    { id: 'patient-demo-07', name: 'Scan-Testperson Verlauf', kontext: 'OCR und Verlauf', befunde: 4, quelle: 'ocr' }
-  ],
-  testperson: 'Demo Testperson',
   aktuellerBefund: '12.06.2026',
   vergleichsBefund: '14.03.2026',
   zeitraum: '12 Monate',
@@ -194,4 +184,4 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
     { key: 'vitamine', name: 'Vitamine', normal: 2, niedrig: 0, hoch: 0, review: 2 },
     { key: 'schilddruese', name: 'Schilddrüse', normal: 4, niedrig: 0, hoch: 0, review: 0 }
   ]
-};
+};

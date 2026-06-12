@@ -5,9 +5,11 @@
  * @module AppNavigationComponent
  */
 
-import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { PatientQuelle } from '../../../core/models/patient.model';
 import { normalisiereSichereSuche, SICHERE_SUCHE_MAX_LAENGE } from '../../../core/security/sichere-suche.util';
+import { PatientContextService } from '../../../core/services/patient-context.service';
 
 /** Hauptnavigation mit eigenständigen Routen und Overlays. */
 @Component({
@@ -19,7 +21,10 @@ import { normalisiereSichereSuche, SICHERE_SUCHE_MAX_LAENGE } from '../../../cor
 })
 export class AppNavigationComponent {
   /** Aktuell geöffnetes Header-Overlay. */
-  public aktivesModal: 'alarm' | 'settings' | null = null;
+  public aktivesModal: 'alarm' | 'settings' | 'patient' | null = null;
+
+  /** Globaler Patientenkontext für alle Routen. */
+  public readonly patientContext = inject(PatientContextService);
 
   /** Aktueller bereinigter Suchbegriff. */
   public readonly suchbegriff: WritableSignal<string> = signal('');
@@ -34,7 +39,7 @@ export class AppNavigationComponent {
   public readonly suchMaxLaenge = SICHERE_SUCHE_MAX_LAENGE;
 
   /** Öffnet ein Header-Overlay. */
-  public modalOeffnen(modal: 'alarm' | 'settings'): void {
+  public modalOeffnen(modal: 'alarm' | 'settings' | 'patient'): void {
     this.aktivesModal = modal;
   }
 
@@ -54,6 +59,18 @@ export class AppNavigationComponent {
     this.suchMeldung.set(ergebnis.meldung);
   }
 
+  /** Aktualisiert die globale Patientensuche. */
+  public patientSucheAendern(event: Event): void {
+    const eingabe = event.target as HTMLInputElement;
+    this.patientContext.patientenSucheSetzen(eingabe.value);
+    eingabe.value = this.patientContext.patientenSuche();
+  }
+
+  /** Setzt den globalen Patientenfilter. */
+  public patientFilterSetzen(filter: PatientQuelle | 'alle' | 'review'): void {
+    this.patientContext.patientenFilterSetzen(filter);
+  }
+
   /** Verhindert unsichere oder leere Suchanfragen vor API-Nutzung. */
   public sucheAbsenden(event: Event): void {
     event.preventDefault();
@@ -69,4 +86,4 @@ export class AppNavigationComponent {
     this.sucheBlockiert.set(false);
     this.suchMeldung.set('Suche vorbereitet.');
   }
-}
+}

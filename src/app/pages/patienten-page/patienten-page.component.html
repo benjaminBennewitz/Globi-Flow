@@ -1,0 +1,171 @@
+<!-- src/app/pages/patienten-page/patienten-page.component.html -->
+
+<section class="dd-patienten-route" aria-labelledby="patienten-title">
+  <header class="dd-patienten-route__headline">
+    <div>
+      <span class="dd-eyebrow">Zentraler Arbeitskontext</span>
+      <h1 id="patienten-title">Patienten</h1>
+      <p>Testpersonen verwalten, aktive Zuordnung setzen und hinterlegte Befunde kontrollieren.</p>
+    </div>
+
+    <button class="dd-button dd-button--primary" type="button" (click)="modalOeffnen()">
+      <span class="material-symbols-outlined" aria-hidden="true">person_add</span>
+      Testperson anlegen
+    </button>
+  </header>
+
+  <section class="dd-patienten-route__active dd-neu-card" aria-label="Aktiver Patient">
+    <span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
+    <div>
+      <small>Aktiver Arbeitskontext</small>
+      <strong>{{ patientContext.aktiverPatient().name }}</strong>
+      <p>{{ patientContext.aktiverPatient().nummer }} · {{ patientContext.aktiverPatient().befunde }} Befunde · {{ patientContext.aktiverPatient().offeneReviews }} offene Reviews</p>
+      <p>{{ patientContext.aktiverPatient().geburtsdatum }} · {{ patientContext.aktiverPatient().groesseCm }} cm · {{ patientContext.aktiverPatient().gewichtKg }} kg</p>
+    </div>
+
+    @if (patientContext.aktiverBefund(); as befund) {
+      <article>
+        <small>Aktiver Befund</small>
+        <strong>{{ befund.datum }}</strong>
+        <p>{{ befund.name }}</p>
+      </article>
+    }
+  </section>
+
+  <section class="dd-patienten-route__toolbar dd-neu-card" aria-label="Patientenfilter">
+    <div class="dd-patienten-route__search-wrap">
+      <label class="dd-patienten-route__search">
+        <span class="material-symbols-outlined" aria-hidden="true">search</span>
+        <input type="search" placeholder="Name, ID, Lebensstil oder Befundstatus suchen" [value]="patientContext.patientenSuche()" (input)="sucheAendern($event)">
+      </label>
+      @if (suchFeedback()) {
+        <p>{{ suchFeedback() }}</p>
+      }
+    </div>
+
+    <div class="dd-patienten-route__chips" aria-label="Filter">
+      @for (filter of filterOptionen; track filter.key) {
+        <button type="button" [class.is-active]="patientContext.patientenFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
+      }
+    </div>
+
+    <div class="dd-patienten-route__sort" aria-label="Sortierung">
+      @for (option of sortierOptionen; track option.key) {
+        <button type="button" [class.is-active]="sortierung() === option.key" (click)="sortierungSetzen(option.key)">{{ option.label }}</button>
+      }
+    </div>
+  </section>
+
+  <section class="dd-patienten-route__grid" aria-label="Patientenliste">
+    @for (patient of sichtbarePatienten(); track patient.id) {
+      <article class="dd-patienten-route__card dd-neu-card" [class.is-selected]="patient.id === patientContext.aktiverPatient().id">
+        <header>
+          <span class="dd-chip {{ statusKlasse(patient.status) }}">{{ statusLabel(patient.status) }}</span>
+          <strong>{{ patient.name }}</strong>
+          <small>{{ patient.nummer }} · {{ patient.kontext }}</small>
+        </header>
+
+        <dl>
+          <div>
+            <dt>Geburtsdatum</dt>
+            <dd>{{ patient.geburtsdatum }}</dd>
+          </div>
+          <div>
+            <dt>Körperdaten</dt>
+            <dd>{{ patient.groesseCm }} cm · {{ patient.gewichtKg }} kg</dd>
+          </div>
+          <div>
+            <dt>Review</dt>
+            <dd>{{ patient.offeneReviews }}</dd>
+          </div>
+        </dl>
+
+        <p class="dd-patienten-route__lifestyle">{{ patient.lebensstil }}</p>
+
+        <section class="dd-patienten-route__reports" aria-label="Hinterlegte Befunde">
+          @for (befund of patient.befundListe; track befund.id) {
+            <button type="button" [class.is-active]="befund.id === patientContext.aktiverBefund()?.id" (click)="patientAuswaehlen(patient); patientContext.befundSetzen(befund)">
+              <span>{{ befund.datum }}</span>
+              <strong>{{ befund.name }}</strong>
+              <small>{{ befund.werte }} Werte · {{ befund.offeneReviews }} Review</small>
+            </button>
+          } @empty {
+            <p>Noch keine Befunde hinterlegt.</p>
+          }
+        </section>
+
+        <footer>
+          <button class="dd-button dd-button--secondary" type="button" (click)="patientAuswaehlen(patient)">Auswählen</button>
+          <a class="dd-button dd-button--secondary" routerLink="/review" (click)="patientAuswaehlen(patient)">Review</a>
+          <a class="dd-button dd-button--primary" routerLink="/auswertung" (click)="patientAuswaehlen(patient)">Auswertung</a>
+        </footer>
+      </article>
+    }
+  </section>
+</section>
+
+@if (modalOffen()) {
+  <section class="dd-patienten-route__modal" role="dialog" aria-modal="true" aria-labelledby="patient-modal-title">
+    <div class="dd-patienten-route__modal-card">
+      <header>
+        <div>
+          <h2 id="patient-modal-title">Testperson anlegen</h2>
+          <p>Neue lokale Testperson für Import, Review und Auswertung vorbereiten.</p>
+        </div>
+        <button type="button" aria-label="Modal schließen" (click)="modalSchliessen()">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </header>
+
+      <div class="dd-patienten-route__form">
+        <label>
+          <span>Anzeigename</span>
+          <input type="text" placeholder="z. B. Mara" [value]="neuerVorname()" (input)="vornameAendern($event)">
+        </label>
+        <label>
+          <span>Nachname</span>
+          <input type="text" placeholder="z. B. Hoffmann" [value]="neuerNachname()" (input)="nachnameAendern($event)">
+        </label>
+        <label>
+          <span>Testpersonen-ID</span>
+          <input type="text" placeholder="wird sonst automatisch vergeben" [value]="neueNummer()" (input)="nummerAendern($event)">
+        </label>
+        <label>
+          <span>Geburtsdatum</span>
+          <input type="text" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()" (input)="geburtsdatumAendern($event)">
+        </label>
+        <label>
+          <span>Geschlecht</span>
+          <select [value]="neuesGeschlecht()" (change)="geschlechtAendern($event)">
+            <option value="unbekannt">Unbekannt</option>
+            <option value="weiblich">Weiblich</option>
+            <option value="maennlich">Männlich</option>
+            <option value="divers">Divers</option>
+          </select>
+        </label>
+        <label>
+          <span>Gewicht kg</span>
+          <input type="text" inputmode="decimal" placeholder="72" [value]="neuesGewicht()" (input)="gewichtAendern($event)">
+        </label>
+        <label>
+          <span>Größe cm</span>
+          <input type="text" inputmode="numeric" placeholder="168" [value]="neueGroesse()" (input)="groesseAendern($event)">
+        </label>
+        <label class="is-wide">
+          <span>Lebensstil</span>
+          <textarea rows="2" placeholder="z. B. Büroarbeit, moderat aktiv, vegetarische Ernährung" [value]="neuerLebensstil()" (input)="lebensstilAendern($event)"></textarea>
+        </label>
+        <label class="is-wide">
+          <span>Notiz</span>
+          <textarea rows="3" placeholder="Interne Notiz zu Testdaten" [value]="neueNotiz()" (input)="notizAendern($event)"></textarea>
+        </label>
+      </div>
+
+      <footer>
+        <button class="dd-button dd-button--secondary" type="button" (click)="modalSchliessen()">Abbrechen</button>
+        <button class="dd-button dd-button--secondary" type="button" (click)="patientAnlegen(false)">Speichern</button>
+        <button class="dd-button dd-button--primary" type="button" (click)="patientAnlegen(true)">Speichern und auswählen</button>
+      </footer>
+    </div>
+  </section>
+}
