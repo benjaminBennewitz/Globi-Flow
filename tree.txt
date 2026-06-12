@@ -39,6 +39,7 @@ Data-Dashboard/
 │   │   │   │   ├── uebersicht.model.ts
 │   │   │   │   └── wissenseintrag.model.ts
 │   │   │   ├── security/
+│   │   │   │   ├── sichere-datei.util.ts
 │   │   │   │   └── sichere-suche.util.ts
 │   │   │   └── services/
 │   │   │       └── daten-dashboard-api.service.ts

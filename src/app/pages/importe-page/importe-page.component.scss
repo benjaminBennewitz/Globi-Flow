@@ -1,13 +1,747 @@
 /* ==========================================================================
    INHALTSVERZEICHNIS
 
-   01   Host
+   01   Route
+   02   Kopfbereich
+   03   Kennzahlen
+   04   Layout
+   05   Upload
+   06   Aktiver Job
+   07   Confidence
+   08   Historie
+   09   Details
+   10   Datasets
+   11   Responsive
    ========================================================================== */
 
 /* ==========================================================================
-   01   Host
+   01   Route
    ========================================================================== */
 
-:host {
-  display: block;
+.dd-import-route {
+  display: grid;
+  gap: var(--dd-space-4);
+  width: min(100%, var(--dd-max-width));
+  margin-inline: auto;
 }
+
+/* ==========================================================================
+   02   Kopfbereich
+   ========================================================================== */
+
+.dd-import-route__headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dd-space-4);
+}
+
+.dd-import-route__headline h1 {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-size: clamp(2rem, 3.2vw, 3.15rem);
+  font-weight: 850;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.dd-import-route__headline p {
+  max-width: 680px;
+  margin: 0.55rem 0 0;
+  color: var(--dd-color-text-muted);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.dd-import-route__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--dd-space-2);
+}
+
+/* ==========================================================================
+   03   Kennzahlen
+   ========================================================================== */
+
+.dd-import-route__kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
+  gap: var(--dd-space-4);
+}
+
+.dd-import-route__kpi {
+  position: relative;
+  display: grid;
+  gap: var(--dd-space-2);
+  min-height: 132px;
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-4);
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-raised);
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+.dd-import-route__kpi:hover,
+.dd-import-route__kpi:focus-visible {
+  box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.96), 12px 12px 24px rgba(209, 217, 230, 0.98);
+  transform: translateY(-4px);
+}
+
+.dd-import-route__kpi span {
+  color: var(--dd-color-text-muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.dd-import-route__kpi strong {
+  color: var(--dd-color-primary);
+  font-size: 2.25rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.dd-import-route__kpi small {
+  color: var(--dd-color-text-soft);
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+.dd-import-route__kpi i {
+  position: absolute;
+  top: var(--dd-space-4);
+  right: var(--dd-space-4);
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-bg-deep);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-import-route__kpi.is-success strong,
+.dd-import-route__kpi.is-success i {
+  color: var(--dd-color-success);
+}
+
+.dd-import-route__kpi.is-warning strong,
+.dd-import-route__kpi.is-warning i {
+  color: var(--dd-color-warning);
+}
+
+.dd-import-route__kpi.is-danger strong,
+.dd-import-route__kpi.is-danger i {
+  color: var(--dd-color-danger);
+}
+
+/* ==========================================================================
+   04   Layout
+   ========================================================================== */
+
+.dd-import-route__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.75fr);
+  gap: var(--dd-space-4);
+}
+
+.dd-import-route__grid h2 {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-size: 1.12rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.dd-import-route__grid p {
+  margin: 0;
+  color: var(--dd-color-text-muted);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   05   Upload
+   ========================================================================== */
+
+.dd-import-route__upload {
+  display: grid;
+  grid-column: span 1;
+  gap: var(--dd-space-4);
+  min-height: 360px;
+  align-content: center;
+  justify-items: center;
+  border: 2px dashed rgba(0, 94, 184, 0.2);
+  padding: var(--dd-space-5);
+  text-align: center;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.dd-import-route__upload.is-dragging {
+  border-color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-2px);
+}
+
+@property --dd-upload-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.dd-import-route__upload.has-route-highlight {
+  border: 3px solid transparent;
+  background: linear-gradient(var(--dd-color-surface), var(--dd-color-surface)) padding-box, conic-gradient(from var(--dd-upload-angle), transparent 0deg, transparent 248deg, #005eb8 286deg, #25a86f 322deg, transparent 360deg) border-box;
+  box-shadow: 0 0 0 4px rgba(0, 94, 184, 0.08), var(--dd-shadow-raised);
+  animation: dd-upload-border-angle 1.8s linear infinite;
+}
+
+.dd-import-route__upload.has-route-highlight::before {
+  display: none;
+}
+
+@keyframes dd-upload-border-angle {
+  to {
+    --dd-upload-angle: 360deg;
+  }
+}
+
+.dd-import-route__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dd-import-route__upload-icon {
+  display: grid;
+  width: 92px;
+  height: 92px;
+  place-items: center;
+  border-radius: 32px;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-import-route__upload-icon span {
+  font-size: 2.8rem;
+}
+
+.dd-import-route__file-preview {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 34px;
+  gap: var(--dd-space-3);
+  width: min(100%, 520px);
+  align-items: center;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+}
+
+.dd-import-route__file-preview > span {
+  color: var(--dd-color-danger);
+}
+
+.dd-import-route__file-preview strong {
+  display: block;
+  overflow: hidden;
+  color: var(--dd-color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-import-route__file-preview small {
+  color: var(--dd-color-text-muted);
+  font-weight: 780;
+}
+
+.dd-import-route__file-preview button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: var(--dd-radius-md);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-import-route__upload-actions,
+.dd-import-route__rules {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--dd-space-2);
+}
+
+.dd-import-route__rules {
+  padding: 0;
+  list-style: none;
+}
+
+.dd-import-route__rules li {
+  border-radius: var(--dd-radius-pill);
+  padding: 0.46rem 0.72rem;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  box-shadow: var(--dd-shadow-inset);
+}
+
+/* ==========================================================================
+   06   Aktiver Job
+   ========================================================================== */
+
+.dd-import-route__active,
+.dd-import-route__confidence,
+.dd-import-route__history,
+.dd-import-route__detail,
+.dd-import-route__datasets {
+  display: grid;
+  gap: var(--dd-space-4);
+  padding: var(--dd-space-4);
+}
+
+.dd-import-route__active header,
+.dd-import-route__confidence header,
+.dd-import-route__history header,
+.dd-import-route__detail header,
+.dd-import-route__datasets header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__active header > strong,
+.dd-import-route__confidence header > strong {
+  color: var(--dd-color-primary);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.dd-import-route__badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border-radius: var(--dd-radius-pill);
+  padding: 0.32rem 0.62rem;
+  background: var(--dd-color-primary-soft);
+  color: var(--dd-color-primary);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dd-import-route__badge.is-review,
+.dd-import-route__badge.is-analysiert {
+  background: var(--dd-color-warning-soft);
+  color: var(--dd-color-warning);
+}
+
+.dd-import-route__badge.is-fehler {
+  background: var(--dd-color-danger-soft);
+  color: var(--dd-color-danger);
+}
+
+.dd-import-route__badge.is-abgeschlossen {
+  background: var(--dd-color-success-soft);
+  color: var(--dd-color-success);
+}
+
+.dd-import-route__progress {
+  overflow: hidden;
+  height: 14px;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-import-route__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--dd-color-primary), var(--dd-color-success));
+  animation: dd-grow-x 680ms var(--dd-ease-out) both;
+}
+
+.dd-import-route__active-meta,
+.dd-import-route__detail dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--dd-space-3);
+  margin: 0;
+}
+
+.dd-import-route__active-meta div,
+.dd-import-route__detail dl div {
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-import-route__active-meta dt,
+.dd-import-route__detail dt {
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+.dd-import-route__active-meta dd,
+.dd-import-route__detail dd {
+  margin: 0.24rem 0 0;
+  color: var(--dd-color-text);
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.dd-import-route__error {
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-danger-soft);
+  color: var(--dd-color-danger) !important;
+  font-weight: 850;
+}
+
+.dd-import-route__steps {
+  display: grid;
+  gap: var(--dd-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dd-import-route__steps li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__steps li > span {
+  width: 14px;
+  height: 14px;
+  margin-top: 0.28rem;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-outline);
+}
+
+.dd-import-route__steps li.is-erledigt > span {
+  background: var(--dd-color-success);
+}
+
+.dd-import-route__steps li.is-aktiv > span {
+  background: var(--dd-color-primary);
+  box-shadow: 0 0 0 7px rgba(0, 94, 184, 0.13);
+}
+
+.dd-import-route__steps li.is-fehler > span {
+  background: var(--dd-color-danger);
+}
+
+.dd-import-route__steps li.is-uebersprungen > span {
+  background: var(--dd-color-text-soft);
+}
+
+.dd-import-route__steps strong {
+  color: var(--dd-color-text);
+  font-size: 0.92rem;
+}
+
+.dd-import-route__steps p {
+  font-size: 0.83rem;
+}
+
+/* ==========================================================================
+   07   Confidence
+   ========================================================================== */
+
+.dd-import-route__quality {
+  display: grid;
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__quality article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-import-route__quality span {
+  color: var(--dd-color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 820;
+}
+
+.dd-import-route__quality strong {
+  color: var(--dd-color-primary);
+  font-size: 1.45rem;
+}
+
+/* ==========================================================================
+   08   Historie
+   ========================================================================== */
+
+.dd-import-route__history {
+  grid-column: span 1;
+}
+
+.dd-import-route__history nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--dd-space-2);
+}
+
+.dd-import-route__history nav button {
+  border-radius: var(--dd-radius-pill);
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  color: var(--dd-color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 850;
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-import-route__history nav button:hover,
+.dd-import-route__history nav button.is-active {
+  background: var(--dd-color-primary);
+  color: #ffffff;
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-import-route__jobs {
+  display: grid;
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__job {
+  position: relative;
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) auto;
+  gap: var(--dd-space-3);
+  width: 100%;
+  align-items: center;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  cursor: pointer;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.dd-import-route__job:hover,
+.dd-import-route__job.is-active {
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-2px);
+}
+
+.dd-import-route__job strong {
+  overflow: hidden;
+  color: var(--dd-color-text);
+  font-size: 0.94rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-import-route__job small {
+  color: var(--dd-color-text-muted);
+  font-size: 0.8rem;
+}
+
+.dd-import-route__job i {
+  color: var(--dd-color-primary);
+  font-size: 1.1rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+/* ==========================================================================
+   09   Details
+   ========================================================================== */
+
+.dd-import-route__detail header span {
+  color: var(--dd-color-text-soft);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.dd-import-route__detail dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dd-import-route__detail h3 {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-size: 0.98rem;
+}
+
+.dd-import-route__logs {
+  display: grid;
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__logs article {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: var(--dd-space-3);
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-import-route__logs time {
+  color: var(--dd-color-primary);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.dd-import-route__logs strong {
+  color: var(--dd-color-text);
+  font-size: 0.9rem;
+}
+
+.dd-import-route__logs p {
+  font-size: 0.82rem;
+}
+
+/* ==========================================================================
+   10   Datasets
+   ========================================================================== */
+
+.dd-import-route__datasets {
+  grid-column: 1 / -1;
+}
+
+.dd-import-route__dataset-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: var(--dd-space-3);
+}
+
+.dd-import-route__dataset {
+  display: grid;
+  min-height: 92px;
+  max-height: 92px;
+  gap: var(--dd-space-3);
+  overflow: hidden;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-soft);
+  transition: box-shadow 180ms ease, max-height 220ms ease, transform 180ms ease;
+}
+
+.dd-import-route__dataset:hover,
+.dd-import-route__dataset:focus-visible,
+.dd-import-route__dataset.is-open {
+  max-height: 220px;
+  box-shadow: var(--dd-shadow-raised);
+  transform: translateY(-2px);
+}
+
+.dd-import-route__dataset header {
+  align-items: center;
+}
+
+.dd-import-route__dataset header strong {
+  color: var(--dd-color-text);
+  font-size: 0.95rem;
+}
+
+.dd-import-route__dataset header span {
+  color: var(--dd-color-primary);
+  font-weight: 900;
+}
+
+.dd-import-route__dataset div {
+  display: grid;
+  gap: var(--dd-space-1);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.dd-import-route__dataset:hover div,
+.dd-import-route__dataset:focus-visible div,
+.dd-import-route__dataset.is-open div {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dd-import-route__dataset p,
+.dd-import-route__empty {
+  font-size: 0.84rem;
+}
+
+.dd-import-route__dataset.is-review header span {
+  color: var(--dd-color-warning);
+}
+
+.dd-import-route__dataset.is-fehler header span {
+  color: var(--dd-color-danger);
+}
+
+/* ==========================================================================
+   11   Responsive
+   ========================================================================== */
+
+@media (max-width: 1450px) {
+  .dd-import-route__kpis {
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+  }
+
+  .dd-import-route__dataset-grid {
+    grid-template-columns: repeat(3, minmax(170px, 1fr));
+  }
+}
+
+@media (max-width: 1080px) {
+  .dd-import-route__headline,
+  .dd-import-route__active header,
+  .dd-import-route__history header,
+  .dd-import-route__datasets header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .dd-import-route__grid,
+  .dd-import-route__kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-import-route__active-meta,
+  .dd-import-route__detail dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .dd-import-route__job,
+  .dd-import-route__file-preview,
+  .dd-import-route__logs article {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-import-route__active-meta,
+  .dd-import-route__detail dl,
+  .dd-import-route__dataset-grid {
+    grid-template-columns: 1fr;
+  }
+}

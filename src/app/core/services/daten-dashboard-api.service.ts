@@ -16,6 +16,7 @@ import { ReviewEintrag } from '../models/review-eintrag.model';
 import { UebersichtViewModel } from '../models/uebersicht.model';
 import { Wissenseintrag } from '../models/wissenseintrag.model';
 import { MOCK_DASHBOARD_VIEW } from '../mocks/dashboard-view.mock';
+import { MOCK_IMPORTJOBS } from '../mocks/importjobs.mock';
 import { MOCK_UEBERSICHT } from '../mocks/uebersicht.mock';
 
 /** API-bereiter Datenservice ohne lokale Persistenz. */
@@ -36,7 +37,7 @@ export class DatenDashboardApiService {
 
   /** Liefert Importjobs aus Mockdaten und später aus `apiEndpunkte.importjobs`. */
   public ladeImportjobs(): Observable<Importjob[]> {
-    return of(MOCK_DASHBOARD_VIEW.importjobs).pipe(delay(80));
+    return of(MOCK_IMPORTJOBS).pipe(delay(80));
   }
 
   /** Liefert Laborwerte aus Mockdaten und später aus `apiEndpunkte.dashboard`. */

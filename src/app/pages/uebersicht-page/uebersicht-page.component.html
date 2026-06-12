@@ -160,7 +160,7 @@
 
       <article class="dd-overview__quick dd-neu-card">
         <h2>Schnellaktionen</h2>
-        <a class="dd-button dd-button--primary" routerLink="/importe">
+        <a class="dd-button dd-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
           <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
           Import starten
         </a>
@@ -235,4 +235,4 @@
       </section>
     }
   </section>
-}
+}

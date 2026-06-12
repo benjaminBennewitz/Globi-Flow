@@ -66,7 +66,7 @@
     <button class="dd-topbar__icon" type="button" aria-label="Einstellungen öffnen" (click)="modalOeffnen('settings')">
       <span class="material-symbols-outlined" aria-hidden="true">settings</span>
     </button>
-    <a class="dd-button dd-button--primary" routerLink="/importe">
+    <a class="dd-button dd-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
       <span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>
       Neuer Import
     </a>
@@ -133,4 +133,4 @@
       </div>
     }
   </section>
-}
+}
