@@ -1,0 +1,296 @@
+/* ==========================================================================
+   INHALTSVERZEICHNIS
+
+   01   Routengruppen
+   02   Sektionen
+   03   Feinelemente
+   04   Keyframes
+   05   Reduced Motion und Print
+   ========================================================================== */
+
+/* ==========================================================================
+   01   Routengruppen
+   ========================================================================== */
+
+:where(
+  .dd-import-route,
+  .dd-auswertung-route,
+  .dd-review-route,
+  .dd-patienten-route,
+  .dd-wissensbasis-route,
+  .dd-berichte-route
+) {
+  isolation: isolate;
+}
+
+/* ==========================================================================
+   02   Sektionen
+   ========================================================================== */
+
+:where(
+  .dd-import-route,
+  .dd-auswertung-route,
+  .dd-review-route,
+  .dd-patienten-route,
+  .dd-wissensbasis-route,
+  .dd-berichte-route
+) > * {
+  animation: dd-page-section-in 560ms var(--dd-ease-out) both;
+  will-change: opacity, transform, filter;
+}
+
+:where(
+  .dd-import-route,
+  .dd-auswertung-route,
+  .dd-review-route,
+  .dd-patienten-route,
+  .dd-wissensbasis-route,
+  .dd-berichte-route
+) > *:nth-child(1) {
+  animation-delay: 30ms;
+}
+
+:where(
+  .dd-import-route,
+  .dd-auswertung-route,
+  .dd-review-route,
+  .dd-patienten-route,
+  .dd-wissensbasis-route,
+  .dd-berichte-route
+) > *:nth-child(2) {
+  animation-delay: 90ms;
+}
+
+:where(
+  .dd-import-route,
+  .dd-auswertung-route,
+  .dd-review-route,
+  .dd-patienten-route,
+  .dd-wissensbasis-route,
+  .dd-berichte-route
+) > *:nth-child(3) {
+  animation-delay: 150ms;
+}
+
+:where(
+  .dd-import-route,
+  .dd-auswertung-route,
+  .dd-review-route,
+  .dd-patienten-route,
+  .dd-wissensbasis-route,
+  .dd-berichte-route
+) > *:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+:where(
+  .dd-import-route,
+  .dd-auswertung-route,
+  .dd-review-route,
+  .dd-patienten-route,
+  .dd-wissensbasis-route,
+  .dd-berichte-route
+) > *:nth-child(n + 5) {
+  animation-delay: 260ms;
+}
+
+/* ==========================================================================
+   03   Feinelemente
+   ========================================================================== */
+
+:where(
+  .dd-import-route__kpis > *,
+  .dd-auswertung-route__kpis > *,
+  .dd-review-route__kpis > *,
+  .dd-patienten-route__kpis > *,
+  .dd-wissensbasis-route__kpis > *,
+  .dd-berichte-route__controls > *,
+  .dd-berichte-route__preview > *,
+  .dd-patienten-route__card,
+  .dd-wissensbasis-route__entry,
+  .dd-review-route__queue-item,
+  .dd-import-route__history-item,
+  .dd-auswertung-route__value-card
+) {
+  animation: dd-page-item-in 520ms var(--dd-ease-out) both;
+  will-change: opacity, transform;
+}
+
+:where(
+  .dd-import-route__kpis > *,
+  .dd-auswertung-route__kpis > *,
+  .dd-review-route__kpis > *,
+  .dd-patienten-route__kpis > *,
+  .dd-wissensbasis-route__kpis > *,
+  .dd-berichte-route__controls > *,
+  .dd-berichte-route__preview > *,
+  .dd-patienten-route__card,
+  .dd-wissensbasis-route__entry,
+  .dd-review-route__queue-item,
+  .dd-import-route__history-item,
+  .dd-auswertung-route__value-card
+):nth-child(1) {
+  animation-delay: 120ms;
+}
+
+:where(
+  .dd-import-route__kpis > *,
+  .dd-auswertung-route__kpis > *,
+  .dd-review-route__kpis > *,
+  .dd-patienten-route__kpis > *,
+  .dd-wissensbasis-route__kpis > *,
+  .dd-berichte-route__controls > *,
+  .dd-berichte-route__preview > *,
+  .dd-patienten-route__card,
+  .dd-wissensbasis-route__entry,
+  .dd-review-route__queue-item,
+  .dd-import-route__history-item,
+  .dd-auswertung-route__value-card
+):nth-child(2) {
+  animation-delay: 170ms;
+}
+
+:where(
+  .dd-import-route__kpis > *,
+  .dd-auswertung-route__kpis > *,
+  .dd-review-route__kpis > *,
+  .dd-patienten-route__kpis > *,
+  .dd-wissensbasis-route__kpis > *,
+  .dd-berichte-route__controls > *,
+  .dd-berichte-route__preview > *,
+  .dd-patienten-route__card,
+  .dd-wissensbasis-route__entry,
+  .dd-review-route__queue-item,
+  .dd-import-route__history-item,
+  .dd-auswertung-route__value-card
+):nth-child(3) {
+  animation-delay: 220ms;
+}
+
+:where(
+  .dd-import-route__kpis > *,
+  .dd-auswertung-route__kpis > *,
+  .dd-review-route__kpis > *,
+  .dd-patienten-route__kpis > *,
+  .dd-wissensbasis-route__kpis > *,
+  .dd-berichte-route__controls > *,
+  .dd-berichte-route__preview > *,
+  .dd-patienten-route__card,
+  .dd-wissensbasis-route__entry,
+  .dd-review-route__queue-item,
+  .dd-import-route__history-item,
+  .dd-auswertung-route__value-card
+):nth-child(4) {
+  animation-delay: 270ms;
+}
+
+:where(
+  .dd-import-route__kpis > *,
+  .dd-auswertung-route__kpis > *,
+  .dd-review-route__kpis > *,
+  .dd-patienten-route__kpis > *,
+  .dd-wissensbasis-route__kpis > *,
+  .dd-berichte-route__controls > *,
+  .dd-berichte-route__preview > *,
+  .dd-patienten-route__card,
+  .dd-wissensbasis-route__entry,
+  .dd-review-route__queue-item,
+  .dd-import-route__history-item,
+  .dd-auswertung-route__value-card
+):nth-child(n + 5) {
+  animation-delay: 320ms;
+}
+
+/* ==========================================================================
+   04   Keyframes
+   ========================================================================== */
+
+@keyframes dd-page-section-in {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateY(22px) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dd-page-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   05   Reduced Motion und Print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .dd-import-route,
+    .dd-auswertung-route,
+    .dd-review-route,
+    .dd-patienten-route,
+    .dd-wissensbasis-route,
+    .dd-berichte-route
+  ) > *,
+  :where(
+    .dd-import-route__kpis > *,
+    .dd-auswertung-route__kpis > *,
+    .dd-review-route__kpis > *,
+    .dd-patienten-route__kpis > *,
+    .dd-wissensbasis-route__kpis > *,
+    .dd-berichte-route__controls > *,
+    .dd-berichte-route__preview > *,
+    .dd-patienten-route__card,
+    .dd-wissensbasis-route__entry,
+    .dd-review-route__queue-item,
+    .dd-import-route__history-item,
+    .dd-auswertung-route__value-card
+  ) {
+    animation: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media print {
+  :where(
+    .dd-import-route,
+    .dd-auswertung-route,
+    .dd-review-route,
+    .dd-patienten-route,
+    .dd-wissensbasis-route,
+    .dd-berichte-route
+  ) > *,
+  :where(
+    .dd-import-route__kpis > *,
+    .dd-auswertung-route__kpis > *,
+    .dd-review-route__kpis > *,
+    .dd-patienten-route__kpis > *,
+    .dd-wissensbasis-route__kpis > *,
+    .dd-berichte-route__controls > *,
+    .dd-berichte-route__preview > *,
+    .dd-patienten-route__card,
+    .dd-wissensbasis-route__entry,
+    .dd-review-route__queue-item,
+    .dd-import-route__history-item,
+    .dd-auswertung-route__value-card
+  ) {
+    animation: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
