@@ -1,0 +1,5 @@
+<!-- src/app/pages/review-page/review-page.component.html -->
+
+@if (reviewEintraege$ | async; as reviewEintraege) {
+  <dd-review-queue [reviewEintraege]="reviewEintraege" />
+}

@@ -1,42 +1,7 @@
 <!-- src/app/app.component.html -->
 
-<main class="dd-app-shell">
-  <section class="dd-hero dd-neu-card">
-    <div class="dd-hero__content">
-      <span class="dd-eyebrow">Lokale Laborwerte-Analyse</span>
-      <h1>{{ appName }}</h1>
-      <p>{{ claim }}</p>
-      <div class="dd-hero__actions" aria-label="Startaktionen">
-        <button class="dd-button dd-button--primary" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">description</span>
-          Testdaten-PDF herunterladen
-        </button>
-        <button class="dd-button dd-button--secondary" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
-          Demo-Analyse starten
-        </button>
-      </div>
-    </div>
+<dd-app-navigation />
 
-    <aside class="dd-data-panel" aria-label="Analyse-Vorschau">
-      <div class="dd-kpi">
-        <span>Confidence</span>
-        <strong>94%</strong>
-      </div>
-      <div class="dd-mini-chart" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div class="dd-status-row">
-        <span class="dd-chip dd-chip--success">Freigegeben</span>
-        <span class="dd-chip dd-chip--warning">Review</span>
-        <span class="dd-chip dd-chip--danger">Auffällig</span>
-      </div>
-    </aside>
-  </section>
+<main class="dd-app-main">
+  <router-outlet />
 </main>
-
-<router-outlet />

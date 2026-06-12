@@ -1,0 +1,195 @@
+/* ==========================================================================
+   INHALTSVERZEICHNIS
+
+   01   Importbereich
+   02   Upload
+   03   Jobs
+   04   Fortschritt
+   05   Schritte
+   06   Responsive
+   ========================================================================== */
+
+/* ==========================================================================
+   01   Importbereich
+   ========================================================================== */
+
+.dd-import {
+  display: grid;
+  gap: var(--dd-space-4);
+}
+
+/* ==========================================================================
+   02   Upload
+   ========================================================================== */
+
+.dd-import__upload {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dd-space-4);
+  padding: var(--dd-space-4);
+}
+
+.dd-import__upload div {
+  display: grid;
+  gap: var(--dd-space-1);
+}
+
+.dd-import__upload .material-symbols-outlined {
+  width: fit-content;
+  border-radius: var(--dd-radius-pill);
+  padding: 0.6rem;
+  background: var(--dd-color-primary-soft);
+  color: var(--dd-color-primary);
+}
+
+.dd-import__upload strong {
+  font-size: 1.1rem;
+}
+
+.dd-import__upload p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--dd-color-text-muted);
+}
+
+/* ==========================================================================
+   03   Jobs
+   ========================================================================== */
+
+.dd-import__jobs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dd-space-4);
+}
+
+.dd-import__job {
+  display: grid;
+  gap: var(--dd-space-4);
+  padding: var(--dd-space-4);
+}
+
+.dd-import__job header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+}
+
+.dd-import__job h3 {
+  margin: var(--dd-space-2) 0 0;
+  color: var(--dd-color-text);
+  font-size: 1.05rem;
+}
+
+.dd-import__job header strong {
+  color: var(--dd-color-primary);
+  font-size: 2.4rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 950;
+  letter-spacing: -0.06em;
+}
+
+.dd-import__meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--dd-space-2);
+  margin: 0;
+}
+
+.dd-import__meta div {
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-import__meta dt {
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-import__meta dd {
+  margin: 0.2rem 0 0;
+  color: var(--dd-color-text);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+/* ==========================================================================
+   04   Fortschritt
+   ========================================================================== */
+
+.dd-import__progress {
+  height: 16px;
+  overflow: hidden;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-import__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--dd-color-primary), var(--dd-color-tertiary));
+  transform-origin: left center;
+  animation: dd-grow-x 820ms var(--dd-ease-out) both;
+}
+
+/* ==========================================================================
+   05   Schritte
+   ========================================================================== */
+
+.dd-import__steps {
+  display: grid;
+  gap: var(--dd-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dd-import__steps li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: var(--dd-space-2);
+}
+
+.dd-import__steps li > span {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.2rem;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-border);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-import__steps li.is-done > span {
+  background: var(--dd-color-success);
+}
+
+.dd-import__steps strong {
+  font-size: 0.9rem;
+}
+
+.dd-import__steps p {
+  margin: 0.1rem 0 0;
+  color: var(--dd-color-text-muted);
+  font-size: 0.86rem;
+}
+
+/* ==========================================================================
+   06   Responsive
+   ========================================================================== */
+
+@media (max-width: 940px) {
+  .dd-import__jobs {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-import__upload {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

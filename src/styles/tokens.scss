@@ -16,18 +16,19 @@
 ###
 #################################*/
 
-/* ========================================================================== 
+/* ==========================================================================
    INHALTSVERZEICHNIS
 
    01   Font Face
-   02   Basis-Tokens
-   03   Neomorphismus
-   04   Statusfarben
-   05   Material Icons
-   06   Datentypografie
+   02   Farb-Tokens
+   03   Layout-Tokens
+   04   Neomorphismus
+   05   Statusfarben
+   06   Material Icons
+   07   Datentypografie
    ========================================================================== */
 
-/* ========================================================================== 
+/* ==========================================================================
    01   Font Face
    ========================================================================== */
 
@@ -47,99 +48,123 @@
   src: url('/assets/fonts/material-symbols-outlined-latin-fill-normal.woff2') format('woff2');
 }
 
-/* ========================================================================== 
-   02   Basis-Tokens
+/* ==========================================================================
+   02   Farb-Tokens
    ========================================================================== */
 
 :root {
   color-scheme: light;
-  --dd-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --dd-font-mono: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --dd-font-data: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --dd-color-bg: #f9f9ff;
+  --dd-color-bg-soft: #f2f3fb;
   --dd-color-bg-deep: #ecedf6;
-  --dd-color-surface: #f2f3fb;
+  --dd-color-surface: #f9f9ff;
+  --dd-color-surface-low: #f2f3fb;
+  --dd-color-surface-mid: #ecedf6;
   --dd-color-surface-high: #ffffff;
-  --dd-color-surface-low: #e7e8f0;
+  --dd-color-surface-pressed: #e7e8f0;
   --dd-color-text: #191c21;
   --dd-color-text-muted: #424752;
   --dd-color-text-soft: #727783;
-  --dd-color-border: #c2c6d4;
+  --dd-color-outline: #c2c6d4;
+  --dd-color-outline-strong: #727783;
   --dd-color-primary: #00478d;
-  --dd-color-primary-strong: #00366d;
+  --dd-color-primary-hover: #005db6;
   --dd-color-primary-soft: #d6e3ff;
+  --dd-color-primary-muted: #a9c7ff;
   --dd-color-secondary: #575f67;
-  --dd-color-secondary-soft: #d8e1ea;
+  --dd-color-secondary-soft: #dbe4ed;
   --dd-color-tertiary: #793100;
+  --dd-color-tertiary-hover: #9f4300;
   --dd-color-tertiary-soft: #ffdbcb;
-  --dd-radius-sm: 0.5rem;
-  --dd-radius-md: 0.75rem;
-  --dd-radius-lg: 1rem;
-  --dd-radius-xl: 1.5rem;
-  --dd-radius-2xl: 2rem;
-  --dd-radius-pill: 9999px;
-  --dd-space-1: 0.25rem;
-  --dd-space-2: 0.5rem;
-  --dd-space-3: 0.75rem;
-  --dd-space-4: 1.5rem;
-  --dd-space-5: 2.5rem;
-  --dd-space-6: 4rem;
-  --dd-max-width: 1680px;
-  --dd-header-height: 76px;
-}
-
-/* ========================================================================== 
-   03   Neomorphismus
-   ========================================================================== */
-
-:root {
-  --dd-shadow-light: -10px -10px 24px rgba(255, 255, 255, 0.95);
-  --dd-shadow-dark: 12px 12px 28px rgba(209, 217, 230, 0.95);
-  --dd-shadow-raised: var(--dd-shadow-light), var(--dd-shadow-dark);
-  --dd-shadow-soft: -6px -6px 16px rgba(255, 255, 255, 0.9), 8px 8px 18px rgba(209, 217, 230, 0.8);
-  --dd-shadow-inset: inset -6px -6px 14px rgba(255, 255, 255, 0.95), inset 6px 6px 14px rgba(209, 217, 230, 0.92);
-  --dd-gradient-page: radial-gradient(circle at 12% 16%, rgba(214, 227, 255, 0.72), transparent 34%), radial-gradient(circle at 86% 12%, rgba(255, 219, 203, 0.52), transparent 28%), linear-gradient(135deg, #f9f9ff 0%, #ecedf6 100%);
-}
-
-/* ========================================================================== 
-   04   Statusfarben
-   ========================================================================== */
-
-:root {
-  --dd-color-success: #1f7a4d;
-  --dd-color-success-soft: #dff2e6;
-  --dd-color-warning: #9f5f00;
-  --dd-color-warning-soft: #fff1d1;
+  --dd-color-error: #ba1a1a;
+  --dd-color-error-soft: #ffdad6;
+  --dd-color-success: #16834a;
+  --dd-color-success-soft: #dff4e9;
+  --dd-color-warning: #a85b00;
+  --dd-color-warning-soft: #fff1dc;
   --dd-color-danger: #ba1a1a;
   --dd-color-danger-soft: #ffdad6;
-  --dd-color-low: #4457a6;
-  --dd-color-low-soft: #e8eaf8;
+  --dd-color-low: #2857a6;
+  --dd-color-low-soft: #e2ebff;
 }
 
-/* ========================================================================== 
-   05   Material Icons
+/* ==========================================================================
+   03   Layout-Tokens
+   ========================================================================== */
+
+:root {
+  --dd-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dd-font-data: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dd-sidebar-width: 292px;
+  --dd-topbar-height: 78px;
+  --dd-max-width: 1510px;
+  --dd-radius-sm: 8px;
+  --dd-radius-md: 12px;
+  --dd-radius-lg: 16px;
+  --dd-radius-xl: 24px;
+  --dd-radius-2xl: 30px;
+  --dd-radius-pill: 999px;
+  --dd-space-1: 4px;
+  --dd-space-2: 8px;
+  --dd-space-3: 12px;
+  --dd-space-4: 24px;
+  --dd-space-5: 40px;
+  --dd-space-6: 64px;
+  --dd-space-7: 88px;
+}
+
+/* ==========================================================================
+   04   Neomorphismus
+   ========================================================================== */
+
+:root {
+  --dd-light-edge: #ffffff;
+  --dd-shadow-edge: #d1d9e6;
+  --dd-shadow-raised: -8px -8px 16px rgba(255, 255, 255, 0.95), 8px 8px 16px rgba(209, 217, 230, 0.92);
+  --dd-shadow-soft: -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 12px rgba(209, 217, 230, 0.82);
+  --dd-shadow-inset: inset -5px -5px 10px rgba(255, 255, 255, 0.95), inset 5px 5px 10px rgba(209, 217, 230, 0.9);
+  --dd-shadow-nav: 9px 0 22px rgba(209, 217, 230, 0.7);
+  --dd-focus-ring: 0 0 0 4px rgba(0, 93, 182, 0.18);
+}
+
+/* ==========================================================================
+   05   Statusfarben
+   ========================================================================== */
+
+:root {
+  --dd-status-normal: #16834a;
+  --dd-status-normal-soft: #dff4e9;
+  --dd-status-high: #ba1a1a;
+  --dd-status-high-soft: #ffdad6;
+  --dd-status-low: #2857a6;
+  --dd-status-low-soft: #e2ebff;
+  --dd-status-review: #a85b00;
+  --dd-status-review-soft: #fff1dc;
+}
+
+/* ==========================================================================
+   06   Material Icons
    ========================================================================== */
 
 .material-symbols-outlined {
-  direction: ltr;
   display: inline-flex;
-  flex: 0 0 auto;
+  overflow: hidden;
+  direction: ltr;
   font-family: 'Material Symbols Outlined';
   font-feature-settings: 'liga';
-  font-size: 1.35em;
+  font-size: 1.25em;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: normal;
   line-height: 1;
-  text-rendering: optimizeLegibility;
   text-transform: none;
   white-space: nowrap;
   word-wrap: normal;
+  -webkit-font-smoothing: antialiased;
 }
 
-
 /* ==========================================================================
-   06   Datentypografie
+   07   Datentypografie
    ========================================================================== */
 
 .dd-data-text {

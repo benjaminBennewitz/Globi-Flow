@@ -1,0 +1,103 @@
+<!-- src/app/features/analyse-dashboard/analyse-dashboard.component.html -->
+
+<section class="dd-analysis dd-section-panel" id="dashboard" aria-labelledby="dashboard-title">
+  <header class="dd-section-heading dd-analysis__heading">
+    <div>
+      <span class="dd-eyebrow">Analyse Dashboard</span>
+      <h2 id="dashboard-title">Die Datenauswertung steht visuell im Mittelpunkt.</h2>
+      <p>Referenzbereiche, Verlaufslinien und Balken wachsen dezent ein und bleiben informativ lesbar.</p>
+    </div>
+    <button class="dd-button dd-button--secondary" type="button" (click)="datensaetzeUmschalten()">
+      {{ alleDatensaetzeSichtbar ? 'Datensätze einklappen' : 'Alle Datensätze anzeigen' }}
+    </button>
+  </header>
+
+  @if (aktiverLaborwert; as laborwert) {
+    <article class="dd-analysis__focus">
+      <div class="dd-analysis__focus-copy">
+        <span class="dd-chip {{ statusKlasse(laborwert.status) }}">{{ laborwert.status }}</span>
+        <h3>{{ laborwert.name }}</h3>
+        <strong class="dd-data-text">{{ laborwert.wert }} {{ laborwert.einheit }}</strong>
+        <p>{{ laborwert.hinweis }}</p>
+      </div>
+
+      <div class="dd-analysis__range" aria-label="Referenzbereich">
+        <div class="dd-analysis__range-line">
+          <span class="dd-analysis__range-band"></span>
+          <span class="dd-analysis__range-marker" [style.left]="wertPosition(laborwert)"></span>
+        </div>
+        <div class="dd-analysis__range-labels">
+          <span>{{ laborwert.referenzMin }} {{ laborwert.einheit }}</span>
+          <span>{{ laborwert.referenzMax }} {{ laborwert.einheit }}</span>
+        </div>
+      </div>
+
+      <svg class="dd-analysis__hero-chart" viewBox="0 0 300 150" role="img" aria-label="Animierte Verlaufsgrafik">
+        <path d="M16 128 H284" />
+        <path d="M16 32 H284" />
+        <polyline [attr.points]="punkteFuerTrend(laborwert.trend)" />
+      </svg>
+    </article>
+  }
+
+  <div class="dd-analysis__grid">
+    <div class="dd-analysis__groups dd-neu-card">
+      <h3>Wertgruppen</h3>
+      <div class="dd-analysis__bars">
+        @for (gruppe of gruppen; track gruppe.key) {
+          <article>
+            <div>
+              <span [style.height]="gruppenHoehe(gruppe)"></span>
+            </div>
+            <strong>{{ gruppe.name }}</strong>
+            <small>{{ gruppe.auffaellig + gruppe.review }} auffällig / Review</small>
+          </article>
+        }
+      </div>
+    </div>
+
+    <div class="dd-analysis__trends dd-neu-card">
+      <h3>Verläufe</h3>
+      @for (trend of trends; track trend.key) {
+        <article>
+          <header>
+            <strong>{{ trend.name }}</strong>
+            <span>{{ trend.einheit }}</span>
+          </header>
+          <svg viewBox="0 0 300 92" role="img" [attr.aria-label]="trend.name">
+            <polyline [attr.points]="punkteFuerTrend(trend.werte)" />
+          </svg>
+        </article>
+      }
+    </div>
+  </div>
+
+  <div class="dd-analysis__datasets">
+    @for (laborwert of laborwerte; track laborwert.id) {
+      <article class="dd-dataset dd-analysis__dataset" [class.is-open]="alleDatensaetzeSichtbar" tabindex="0">
+        <header>
+          <div>
+            <span class="dd-chip {{ statusKlasse(laborwert.status) }}">{{ laborwert.status }}</span>
+            <h3>{{ laborwert.name }}</h3>
+          </div>
+          <strong class="dd-data-text">{{ laborwert.wert }} {{ laborwert.einheit }}</strong>
+        </header>
+        <p>{{ laborwert.hinweis }}</p>
+        <dl>
+          <div>
+            <dt>Referenz</dt>
+            <dd>{{ laborwert.referenzMin }}–{{ laborwert.referenzMax }} {{ laborwert.einheit }}</dd>
+          </div>
+          <div>
+            <dt>Confidence</dt>
+            <dd>{{ laborwert.confidence }}%</dd>
+          </div>
+          <div>
+            <dt>Gruppe</dt>
+            <dd>{{ laborwert.gruppe }}</dd>
+          </div>
+        </dl>
+      </article>
+    }
+  </div>
+</section>

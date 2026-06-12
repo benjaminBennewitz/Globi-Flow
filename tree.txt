@@ -19,6 +19,85 @@ Data-Dashboard/
 │   └── ...
 ├── src/
 │   ├── app/
+│   │   ├── core/
+│   │   │   ├── api/
+│   │   │   │   └── api-endpoints.ts
+│   │   │   ├── mocks/
+│   │   │   │   ├── dashboard-view.mock.ts
+│   │   │   │   ├── importjobs.mock.ts
+│   │   │   │   ├── laborwerte.mock.ts
+│   │   │   │   ├── patientenbericht.mock.ts
+│   │   │   │   ├── review-eintraege.mock.ts
+│   │   │   │   ├── uebersicht.mock.ts
+│   │   │   │   └── wissenseintraege.mock.ts
+│   │   │   ├── models/
+│   │   │   │   ├── dashboard-view.model.ts
+│   │   │   │   ├── importjob.model.ts
+│   │   │   │   ├── laborwert.model.ts
+│   │   │   │   ├── patientenbericht.model.ts
+│   │   │   │   ├── review-eintrag.model.ts
+│   │   │   │   ├── uebersicht.model.ts
+│   │   │   │   └── wissenseintrag.model.ts
+│   │   │   ├── security/
+│   │   │   │   └── sichere-suche.util.ts
+│   │   │   └── services/
+│   │   │       └── daten-dashboard-api.service.ts
+│   │   ├── features/
+│   │   │   ├── analyse-dashboard/
+│   │   │   │   ├── analyse-dashboard.component.html
+│   │   │   │   ├── analyse-dashboard.component.scss
+│   │   │   │   └── analyse-dashboard.component.ts
+│   │   │   ├── import-status/
+│   │   │   │   ├── import-status.component.html
+│   │   │   │   ├── import-status.component.scss
+│   │   │   │   └── import-status.component.ts
+│   │   │   ├── patientenbericht/
+│   │   │   │   ├── patientenbericht.component.html
+│   │   │   │   ├── patientenbericht.component.scss
+│   │   │   │   └── patientenbericht.component.ts
+│   │   │   ├── review-queue/
+│   │   │   │   ├── review-queue.component.html
+│   │   │   │   ├── review-queue.component.scss
+│   │   │   │   └── review-queue.component.ts
+│   │   │   ├── startscreen/
+│   │   │   │   ├── startscreen.component.html
+│   │   │   │   ├── startscreen.component.scss
+│   │   │   │   └── startscreen.component.ts
+│   │   │   └── wissens-editor/
+│   │   │       ├── wissens-editor.component.html
+│   │   │       ├── wissens-editor.component.scss
+│   │   │       └── wissens-editor.component.ts
+│   │   ├── pages/
+│   │   │   ├── analyse-page/
+│   │   │   │   ├── analyse-page.component.html
+│   │   │   │   ├── analyse-page.component.scss
+│   │   │   │   └── analyse-page.component.ts
+│   │   │   ├── berichte-page/
+│   │   │   │   ├── berichte-page.component.html
+│   │   │   │   ├── berichte-page.component.scss
+│   │   │   │   └── berichte-page.component.ts
+│   │   │   ├── importe-page/
+│   │   │   │   ├── importe-page.component.html
+│   │   │   │   ├── importe-page.component.scss
+│   │   │   │   └── importe-page.component.ts
+│   │   │   ├── review-page/
+│   │   │   │   ├── review-page.component.html
+│   │   │   │   ├── review-page.component.scss
+│   │   │   │   └── review-page.component.ts
+│   │   │   ├── uebersicht-page/
+│   │   │   │   ├── uebersicht-page.component.html
+│   │   │   │   ├── uebersicht-page.component.scss
+│   │   │   │   └── uebersicht-page.component.ts
+│   │   │   └── wissensbasis-page/
+│   │   │       ├── wissensbasis-page.component.html
+│   │   │       ├── wissensbasis-page.component.scss
+│   │   │       └── wissensbasis-page.component.ts
+│   │   ├── shared/
+│   │   │   └── components/
+│   │   │       └── app-navigation/
+│   │   │           ├── app-navigation.component.html
+│   │   │           ├── app-navigation.component.scss
+│   │   │           └── app-navigation.component.ts
 │   │   ├── app.component.html
 │   │   ├── app.component.scss
 │   │   ├── app.component.ts
@@ -31,7 +110,9 @@ Data-Dashboard/
 │   │       ├── material-symbols-outlined-latin-fill-normal.woff2
 │   │       └── README.md
 │   ├── styles/
+│   │   ├── animations.scss
 │   │   ├── base.scss
+│   │   ├── overlays.scss
 │   │   ├── tokens.scss
 │   │   └── utilities.scss
 │   ├── index.html
@@ -47,6 +128,7 @@ Data-Dashboard/
 ├── package-lock.json
 ├── README.md
 ├── tools.md
+├── tree.txt
 ├── tsconfig.app.json
 ├── tsconfig.json
 └── tsconfig.spec.json

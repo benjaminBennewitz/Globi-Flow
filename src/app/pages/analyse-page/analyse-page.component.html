@@ -1,0 +1,5 @@
+<!-- src/app/pages/analyse-page/analyse-page.component.html -->
+
+@if (ansicht$ | async; as ansicht) {
+  <dd-analyse-dashboard [laborwerte]="ansicht.laborwerte" [gruppen]="ansicht.gruppen" [trends]="ansicht.trends" />
+}

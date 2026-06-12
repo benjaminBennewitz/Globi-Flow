@@ -1,0 +1,52 @@
+<!-- src/app/features/patientenbericht/patientenbericht.component.html -->
+
+@if (bericht; as daten) {
+  <section class="dd-report dd-section-panel" id="bericht" aria-labelledby="bericht-title">
+    <header class="dd-section-heading">
+      <span class="dd-eyebrow">Patientenbericht</span>
+      <h2 id="bericht-title">Freigegebene Daten verständlich und druckfreundlich zusammenfassen.</h2>
+      <p>Die Berichtsvorschau ist bewusst ruhiger als das Arzt-Dashboard und nutzt klare Sprache.</p>
+    </header>
+
+    <article class="dd-report__paper">
+      <header class="dd-report__header">
+        <div>
+          <span>Bericht für</span>
+          <h3>{{ daten.testperson }}</h3>
+        </div>
+        <strong>{{ daten.berichtsdatum }}</strong>
+      </header>
+
+      <section class="dd-report__summary">
+        <h4>Zusammenfassung</h4>
+        <p>{{ daten.zusammenfassung }}</p>
+      </section>
+
+      <div class="dd-report__sections">
+        @for (abschnitt of daten.abschnitte; track abschnitt.key) {
+          <section>
+            <h4>{{ abschnitt.titel }}</h4>
+            <p>{{ abschnitt.text }}</p>
+          </section>
+        }
+      </div>
+
+      <section class="dd-report__questions">
+        <h4>Fragen für das Arztgespräch</h4>
+        <ul>
+          @for (frage of daten.fragen; track frage.id) {
+            <li>
+              <span>{{ frage.bereich }}</span>
+              <p>{{ frage.frage }}</p>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <footer>
+        <strong>Disclaimer</strong>
+        <p>{{ daten.disclaimer }}</p>
+      </footer>
+    </article>
+  </section>
+}

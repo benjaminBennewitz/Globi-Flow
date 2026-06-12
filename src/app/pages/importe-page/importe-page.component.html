@@ -1,0 +1,5 @@
+<!-- src/app/pages/importe-page/importe-page.component.html -->
+
+@if (importjobs$ | async; as importjobs) {
+  <dd-import-status [importjobs]="importjobs" />
+}

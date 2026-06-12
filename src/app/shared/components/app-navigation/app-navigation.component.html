@@ -1,0 +1,136 @@
+<!-- src/app/shared/components/app-navigation/app-navigation.component.html -->
+
+<aside class="dd-sidebar" aria-label="Hauptnavigation">
+  <a class="dd-sidebar__brand" routerLink="/uebersicht" aria-label="Daten Dashboards Start">
+    <strong>Daten<br>Dashboards</strong>
+    <span>Clinical Lab Admin</span>
+  </a>
+
+  <nav class="dd-sidebar__nav" aria-label="Projektbereiche">
+    <a routerLink="/uebersicht" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
+      <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
+      Übersicht
+    </a>
+    <a routerLink="/importe" routerLinkActive="is-active">
+      <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
+      Importe
+    </a>
+    <a routerLink="/auswertung" routerLinkActive="is-active">
+      <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+      Auswertung
+    </a>
+    <a routerLink="/review" routerLinkActive="is-active">
+      <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
+      Review
+    </a>
+    <a routerLink="/wissensbasis" routerLinkActive="is-active">
+      <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
+      Wissensbasis
+    </a>
+    <a routerLink="/berichte" routerLinkActive="is-active">
+      <span class="material-symbols-outlined" aria-hidden="true">article</span>
+      Berichte
+    </a>
+  </nav>
+
+  <section class="dd-sidebar__user" aria-label="Benutzerprofil">
+    <span class="dd-sidebar__avatar">DS</span>
+    <div>
+      <strong>Dr. Max Schmidt</strong>
+      <small>Laborleiter</small>
+    </div>
+  </section>
+
+  <section class="dd-sidebar__status" aria-label="Systemstatus">
+    <span></span>
+    Systemstatus: Online
+  </section>
+</aside>
+
+<header class="dd-topbar" aria-label="Kopfleiste">
+  <form class="dd-topbar__search-wrap" role="search" (submit)="sucheAbsenden($event)">
+    <label class="dd-topbar__search" [class.has-error]="sucheBlockiert()">
+      <span class="material-symbols-outlined" aria-hidden="true">search</span>
+      <input type="search" placeholder="Patient suchen (ID, Name, Geb.-Datum) ..." aria-label="Patient suchen" autocomplete="off" autocapitalize="none" spellcheck="false" [attr.maxlength]="suchMaxLaenge" [value]="suchbegriff()" [attr.aria-invalid]="sucheBlockiert()" aria-describedby="topbar-search-message" (input)="suchwertAendern($event)">
+    </label>
+
+    @if (suchMeldung(); as meldung) {
+      <p class="dd-topbar__search-message" id="topbar-search-message" [class.has-error]="sucheBlockiert()">{{ meldung }}</p>
+    }
+  </form>
+
+  <div class="dd-topbar__actions">
+    <button class="dd-topbar__icon" type="button" aria-label="Benachrichtigungen öffnen" (click)="modalOeffnen('alarm')">
+      <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+    </button>
+    <button class="dd-topbar__icon" type="button" aria-label="Einstellungen öffnen" (click)="modalOeffnen('settings')">
+      <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+    </button>
+    <a class="dd-button dd-button--primary" routerLink="/importe">
+      <span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>
+      Neuer Import
+    </a>
+  </div>
+</header>
+
+@if (aktivesModal) {
+  <section class="dd-header-modal" role="dialog" aria-modal="false" [attr.aria-labelledby]="aktivesModal === 'alarm' ? 'alarm-title' : 'settings-title'">
+    <button class="dd-header-modal__close" type="button" aria-label="Overlay schließen" (click)="modalSchliessen()">
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+
+    @if (aktivesModal === 'alarm') {
+      <header>
+        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+        <div>
+          <h2 id="alarm-title">Benachrichtigungen</h2>
+          <p>Dringende Hinweise aus Import, Review und Berichtserstellung.</p>
+        </div>
+      </header>
+
+      <div class="dd-header-modal__list">
+        <article>
+          <span class="dd-header-modal__badge is-danger">Kritisch</span>
+          <strong>Review seit 8 Tagen offen</strong>
+          <p>Ein Befund mit auffälligen Werten wartet auf ärztliche Prüfung.</p>
+        </article>
+        <article>
+          <span class="dd-header-modal__badge is-warning">Prüfen</span>
+          <strong>Niedrige OCR-Confidence</strong>
+          <p>Ein bildbasierter Befund sollte im Originalausschnitt geprüft werden.</p>
+        </article>
+        <article>
+          <span class="dd-header-modal__badge is-info">Bereit</span>
+          <strong>Bericht bereit zur Freigabe</strong>
+          <p>Ein Patientenbericht wurde vollständig vorbereitet.</p>
+        </article>
+      </div>
+    } @else {
+      <header>
+        <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+        <div>
+          <h2 id="settings-title">Einstellungen</h2>
+          <p>Vorbereitete Oberfläche für spätere Benutzer- und Systemoptionen.</p>
+        </div>
+      </header>
+
+      <div class="dd-header-modal__settings">
+        <label class="dd-header-modal__switch">
+          <input type="checkbox">
+          <span class="dd-header-modal__toggle" aria-hidden="true"></span>
+          <strong>Kompakte Tabellen</strong>
+        </label>
+        <label class="dd-header-modal__switch">
+          <input type="checkbox">
+          <span class="dd-header-modal__toggle" aria-hidden="true"></span>
+          <strong>Animationen reduzieren</strong>
+        </label>
+        <label class="dd-header-modal__switch">
+          <input type="checkbox" checked>
+          <span class="dd-header-modal__toggle" aria-hidden="true"></span>
+          <strong>Review-Hinweise priorisieren</strong>
+        </label>
+      </div>
+    }
+  </section>
+}

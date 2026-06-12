@@ -1,0 +1,5 @@
+<!-- src/app/pages/wissensbasis-page/wissensbasis-page.component.html -->
+
+@if (wissenseintraege$ | async; as wissenseintraege) {
+  <dd-wissens-editor [wissenseintraege]="wissenseintraege" />
+}

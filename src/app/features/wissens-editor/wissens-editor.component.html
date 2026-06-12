@@ -1,0 +1,28 @@
+<!-- src/app/features/wissens-editor/wissens-editor.component.html -->
+
+<section class="dd-knowledge dd-section-panel" id="wissen" aria-labelledby="wissen-title">
+  <header class="dd-section-heading">
+    <span class="dd-eyebrow">Wissensdatenbank</span>
+    <h2 id="wissen-title">Kontrollierte Texte statt Laufzeit-KI.</h2>
+    <p>Patiententexte, Arztinformationen, Quellen und Disclaimer werden versioniert gepflegt.</p>
+  </header>
+
+  <div class="dd-knowledge__grid">
+    @for (eintrag of wissenseintraege; track eintrag.id) {
+      <article class="dd-knowledge__card dd-neu-card">
+        <header>
+          <div>
+            <span class="dd-chip dd-chip--success">v{{ eintrag.version }} · {{ eintrag.status }}</span>
+            <h3>{{ eintrag.anzeigename }}</h3>
+          </div>
+          <span>{{ eintrag.kategorie }}</span>
+        </header>
+        <p>{{ eintrag.patientKurztext }}</p>
+        <div class="dd-knowledge__preview dd-neu-inset">
+          <strong>Patientenvorschau</strong>
+          <p>{{ eintrag.patientLangtext }}</p>
+        </div>
+      </article>
+    }
+  </div>
+</section>

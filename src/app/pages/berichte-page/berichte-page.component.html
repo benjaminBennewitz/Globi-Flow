@@ -1,0 +1,5 @@
+<!-- src/app/pages/berichte-page/berichte-page.component.html -->
+
+@if (patientenbericht$ | async; as patientenbericht) {
+  <dd-patientenbericht [bericht]="patientenbericht" />
+}

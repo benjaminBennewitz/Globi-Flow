@@ -1,0 +1,63 @@
+<!-- src/app/features/import-status/import-status.component.html -->
+
+<section class="dd-import dd-section-panel" id="import" aria-labelledby="import-title">
+  <header class="dd-section-heading">
+    <span class="dd-eyebrow">Import Pipeline</span>
+    <h2 id="import-title">PDF lokal analysieren und API-ready vorbereiten.</h2>
+    <p>Aktuell arbeitet die Oberfläche mit zentralen Mockdaten. Später kommen Upload, Status und Review direkt aus Django REST.</p>
+  </header>
+
+  <div class="dd-import__upload dd-neu-inset">
+    <div>
+      <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
+      <strong>Laborbefund hochladen</strong>
+      <p>Keine lokale Persistenz im Browser. Dateien laufen später ausschließlich über die eigene API.</p>
+    </div>
+    <button class="dd-button dd-button--secondary" type="button">Datei auswählen</button>
+  </div>
+
+  <div class="dd-import__jobs">
+    @for (job of importjobs; track job.id) {
+      <article class="dd-import__job dd-dataset" tabindex="0">
+        <header>
+          <div>
+            <span class="dd-chip {{ statusKlasse(job.status) }}">{{ job.status }}</span>
+            <h3>{{ job.dateiname }}</h3>
+          </div>
+          <strong>{{ job.confidence }}%</strong>
+        </header>
+
+        <div class="dd-import__progress" aria-label="Importfortschritt">
+          <span [style.width.%]="job.fortschritt"></span>
+        </div>
+
+        <dl class="dd-import__meta">
+          <div>
+            <dt>Analyse</dt>
+            <dd>{{ job.analyseArt }}</dd>
+          </div>
+          <div>
+            <dt>Werte</dt>
+            <dd>{{ job.erkannteWerte }}</dd>
+          </div>
+          <div>
+            <dt>Review</dt>
+            <dd>{{ job.unsichereWerte }}</dd>
+          </div>
+        </dl>
+
+        <ol class="dd-import__steps">
+          @for (schritt of job.schritte; track schritt.key) {
+            <li [class.is-done]="schritt.abgeschlossen">
+              <span></span>
+              <div>
+                <strong>{{ schritt.name }}</strong>
+                <p>{{ schritt.beschreibung }}</p>
+              </div>
+            </li>
+          }
+        </ol>
+      </article>
+    }
+  </div>
+</section>
