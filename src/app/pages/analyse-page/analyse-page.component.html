@@ -1,5 +1,241 @@
 <!-- src/app/pages/analyse-page/analyse-page.component.html -->
 
-@if (ansicht$ | async; as ansicht) {
-  <dd-analyse-dashboard [laborwerte]="ansicht.laborwerte" [gruppen]="ansicht.gruppen" [trends]="ansicht.trends" />
-}
+@if (auswertung$ | async; as ansicht) {
+  @let sichtbareWerte = gefilterteWerte(ansicht);
+
+  <section class="dd-auswertung-route" aria-labelledby="auswertung-title">
+    <header class="dd-auswertung-route__headline">
+      <div>
+        <span class="dd-eyebrow">Fachliche Analyse</span>
+        <h1 id="auswertung-title">Auswertung</h1>
+        <p>Laborwerte priorisieren, Referenzbereiche prüfen und Verläufe zwischen Befunden vergleichen.</p>
+      </div>
+
+      <div class="dd-auswertung-route__context">
+        <article>
+          <span>Testperson</span>
+          <strong>{{ aktiverPatient(ansicht).name }}</strong>
+        </article>
+        <article>
+          <span>Aktueller Befund</span>
+          <strong>{{ ansicht.aktuellerBefund }}</strong>
+        </article>
+        <article>
+          <span>Vergleich</span>
+          <strong>{{ ansicht.vergleichsBefund }}</strong>
+        </article>
+      </div>
+    </header>
+
+    <section class="dd-auswertung-route__filters dd-neu-card" aria-label="Auswertungsfilter">
+      <div class="dd-auswertung-route__patient-filter" (keydown.escape)="patientenOverlaySchliessen()">
+        <span>Testperson</span>
+        <button class="dd-auswertung-route__patient-trigger" type="button" [class.is-active]="patientenOverlayOffen()" (click)="patientenOverlayUmschalten()">
+          <span class="material-symbols-outlined" aria-hidden="true">person_search</span>
+          <strong>{{ aktiverPatient(ansicht).name }}</strong>
+          <small>{{ aktiverPatient(ansicht).befunde }} Befunde · {{ aktiverPatient(ansicht).kontext }}</small>
+        </button>
+
+        @if (patientenOverlayOffen()) {
+          <aside class="dd-auswertung-route__patient-overlay" aria-label="Testperson auswählen">
+            <header>
+              <div>
+                <h2>Testperson auswählen</h2>
+                <p>Suche und Filter für spätere größere Patientendatenbestände.</p>
+              </div>
+              <button type="button" aria-label="Patientenauswahl schließen" (click)="patientenOverlaySchliessen()">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+              </button>
+            </header>
+
+            <label class="dd-auswertung-route__patient-search">
+              <span class="material-symbols-outlined" aria-hidden="true">search</span>
+              <input type="search" autocomplete="off" placeholder="Name oder Kontext suchen" [value]="patientenSuche()" (input)="patientenSucheAendern($event)">
+            </label>
+
+            <div class="dd-auswertung-route__patient-filterbar" aria-label="Patientenfilter">
+              @for (filter of patientFilterOptionen; track filter.key) {
+                <button type="button" [class.is-active]="patientenFilter() === filter.key" (click)="patientenFilterSetzen(filter.key)">{{ filter.label }}</button>
+              }
+            </div>
+
+            <div class="dd-auswertung-route__patient-list">
+              @for (patient of gefiltertePatienten(ansicht); track patient.id) {
+                <button type="button" [class.is-active]="aktiverPatientId() === patient.id" (click)="patientSetzen(patient)">
+                  <strong>{{ patient.name }}</strong>
+                  <span>{{ patient.kontext }}</span>
+                  <small>{{ patient.befunde }} Befunde</small>
+                </button>
+              }
+            </div>
+          </aside>
+        }
+      </div>
+
+      <div>
+        <span>Gruppe</span>
+        <div class="dd-auswertung-route__chips">
+          <button type="button" [class.is-active]="aktiveGruppe() === 'alle'" (click)="gruppeSetzen('alle')">Alle</button>
+          @for (gruppe of ansicht.gruppen; track gruppe.key) {
+            <button type="button" [class.is-active]="aktiveGruppe() === gruppe.name" (click)="gruppeSetzen(gruppe.name)">{{ gruppe.name }}</button>
+          }
+        </div>
+      </div>
+
+      <div>
+        <span>Status</span>
+        <div class="dd-auswertung-route__chips">
+          @for (filter of statusFilter; track filter.key) {
+            <button type="button" [class.is-active]="aktiverStatus() === filter.key" (click)="statusSetzen(filter.key)">{{ filter.label }}</button>
+          }
+        </div>
+      </div>
+
+      <button class="dd-auswertung-route__toggle" type="button" [class.is-active]="nurGepruefteWerte()" (click)="gepruefteUmschalten()">
+        <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+        Nur geprüfte Werte
+      </button>
+    </section>
+
+    <div class="dd-auswertung-route__kpis">
+      @for (kennzahl of kennzahlen(ansicht); track kennzahl.label) {
+        <article class="dd-auswertung-route__kpi is-{{ kennzahl.status }}" tabindex="0">
+          <span>{{ kennzahl.label }}</span>
+          <strong>{{ kennzahl.wert }}</strong>
+          <small>{{ kennzahl.hinweis }}</small>
+          <i class="material-symbols-outlined" aria-hidden="true">{{ kennzahl.icon }}</i>
+        </article>
+      }
+    </div>
+
+    @if (aktiverWert(ansicht); as wert) {
+      <div class="dd-auswertung-route__main">
+        <section class="dd-auswertung-route__priority dd-neu-card" aria-labelledby="priority-title">
+          <header>
+            <div>
+              <h2 id="priority-title">Priorisierte Auffälligkeiten</h2>
+              <p>{{ sichtbareWerte.length }} Werte passend zur aktuellen Filterung.</p>
+            </div>
+          </header>
+
+          <div class="dd-auswertung-route__value-list">
+            @for (eintrag of sichtbareWerte; track eintrag.id) {
+              <button class="dd-auswertung-route__value-row" [class.is-active]="eintrag.id === wert.id" type="button" (click)="wertAuswaehlen(eintrag)">
+                <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
+                <strong>{{ eintrag.name }}</strong>
+                <span>{{ messwert(eintrag.wert, eintrag.einheit) }}</span>
+                <small>{{ delta(eintrag.veraenderungAbsolut, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent) }}%</small>
+                <i class="{{ trendKlasse(eintrag.trend) }}">{{ eintrag.trend }}</i>
+              </button>
+            }
+          </div>
+        </section>
+
+        <section class="dd-auswertung-route__detail dd-neu-card" aria-labelledby="detail-title">
+          <header>
+            <div>
+              <span class="dd-chip {{ statusKlasse(wert.status) }}">{{ wert.status }}</span>
+              <h2 id="detail-title">{{ wert.name }}</h2>
+              <p>{{ wert.hinweis }}</p>
+            </div>
+            <strong>{{ messwert(wert.wert, wert.einheit) }}</strong>
+          </header>
+
+          <dl class="dd-auswertung-route__meta">
+            <div>
+              <dt>Referenz</dt>
+              <dd>{{ messwert(wert.referenzMin, wert.einheit) }} – {{ messwert(wert.referenzMax, wert.einheit) }}</dd>
+            </div>
+            <div>
+              <dt>Vorher</dt>
+              <dd>{{ messwert(wert.vorherigerWert, wert.einheit) }}</dd>
+            </div>
+            <div>
+              <dt>Änderung</dt>
+              <dd>{{ delta(wert.veraenderungAbsolut, wert.einheit) }} · {{ delta(wert.veraenderungProzent) }}%</dd>
+            </div>
+            <div>
+              <dt>Confidence</dt>
+              <dd>{{ wert.confidence }}%</dd>
+            </div>
+          </dl>
+
+          <div class="dd-auswertung-route__range" aria-label="Referenzbereich">
+            <span class="dd-auswertung-route__range-line"></span>
+            <span class="dd-auswertung-route__range-ref" [style.left]="referenzStart(wert)" [style.width]="referenzBreite(wert)"></span>
+            <span class="dd-auswertung-route__range-marker" [style.left]="markerPosition(wert)"></span>
+          </div>
+
+          <div class="dd-auswertung-route__range-labels">
+            <span>niedrig</span>
+            <span>Referenzbereich</span>
+            <span>erhöht</span>
+          </div>
+
+          <svg class="dd-auswertung-route__chart" [class.is-animation-a]="diagrammAnimationsToken() % 2 === 0" [class.is-animation-b]="diagrammAnimationsToken() % 2 === 1" viewBox="0 0 480 180" role="img" [attr.aria-label]="wert.name + ' Verlauf'">
+            <line x1="46" y1="154" x2="438" y2="154"></line>
+            <rect x="46" [attr.y]="referenzBandY(wert)" width="392" [attr.height]="referenzBandHoehe(wert)" rx="10"></rect>
+            <polyline class="dd-auswertung-route__chart-line" pathLength="100" [attr.points]="verlaufPunkte(wert)"></polyline>
+            @for (punkt of wert.verlauf; track punkt.datum; let index = $index) {
+              <circle class="dd-auswertung-route__chart-point" [attr.cx]="punktX(wert, index)" [attr.cy]="punktY(wert, punkt.wert)" r="3.6" [style.animation-delay.ms]="240 + index * 90"></circle>
+              <text [attr.x]="punktX(wert, index)" y="172">{{ punkt.label }}</text>
+            }
+          </svg>
+        </section>
+      </div>
+
+      <section class="dd-auswertung-route__comparison dd-neu-card" aria-labelledby="comparison-title">
+        <header>
+          <div>
+            <h2 id="comparison-title">Befundvergleich</h2>
+            <p>Aktueller Befund gegen vorherigen Befund mit absoluter und prozentualer Veränderung.</p>
+          </div>
+          <a class="dd-button dd-button--secondary" routerLink="/review">Review öffnen</a>
+        </header>
+
+        <div class="dd-auswertung-route__comparison-grid">
+          @for (eintrag of sichtbareWerte.slice(0, 6); track eintrag.id) {
+            <article>
+              <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
+              <strong>{{ eintrag.name }}</strong>
+              <p>{{ messwert(eintrag.vorherigerWert, eintrag.einheit) }} → {{ messwert(eintrag.wert, eintrag.einheit) }}</p>
+              <small class="{{ trendKlasse(eintrag.trend) }}">{{ delta(eintrag.veraenderungAbsolut, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent) }}%</small>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="dd-auswertung-route__groups dd-neu-card" aria-labelledby="groups-title">
+      <header>
+        <div>
+          <h2 id="groups-title">Gruppenmatrix</h2>
+          <p>Statusverteilung pro Laborwertgruppe ohne überdimensionierte Balkendiagramme.</p>
+        </div>
+      </header>
+
+      <div class="dd-auswertung-route__group-grid">
+        @for (gruppe of ansicht.gruppen; track gruppe.key) {
+          <article>
+            <header>
+              <strong>{{ gruppe.name }}</strong>
+              <span>{{ gruppenGesamt(gruppe) }} Werte</span>
+            </header>
+            <div class="dd-auswertung-route__segments" aria-hidden="true">
+              <span class="is-normal" [style.width]="gruppenBreite(gruppe.normal, gruppe)"></span>
+              <span class="is-niedrig" [style.width]="gruppenBreite(gruppe.niedrig, gruppe)"></span>
+              <span class="is-hoch" [style.width]="gruppenBreite(gruppe.hoch, gruppe)"></span>
+              <span class="is-review" [style.width]="gruppenBreite(gruppe.review, gruppe)"></span>
+            </div>
+            <dl>
+              <div><dt>Normal</dt><dd>{{ gruppe.normal }}</dd></div>
+              <div><dt>Niedrig</dt><dd>{{ gruppe.niedrig }}</dd></div>
+              <div><dt>Erhöht</dt><dd>{{ gruppe.hoch }}</dd></div>
+              <div><dt>Review</dt><dd>{{ gruppe.review }}</dd></div>
+            </dl>
+          </article>
+        }
+      </div>
+    </section>
+  </section>
+}

@@ -23,6 +23,7 @@ Data-Dashboard/
 │   │   │   ├── api/
 │   │   │   │   └── api-endpoints.ts
 │   │   │   ├── mocks/
+│   │   │   │   ├── auswertung.mock.ts
 │   │   │   │   ├── dashboard-view.mock.ts
 │   │   │   │   ├── importjobs.mock.ts
 │   │   │   │   ├── laborwerte.mock.ts
@@ -31,6 +32,7 @@ Data-Dashboard/
 │   │   │   │   ├── uebersicht.mock.ts
 │   │   │   │   └── wissenseintraege.mock.ts
 │   │   │   ├── models/
+│   │   │   │   ├── auswertung.model.ts
 │   │   │   │   ├── dashboard-view.model.ts
 │   │   │   │   ├── importjob.model.ts
 │   │   │   │   ├── laborwert.model.ts

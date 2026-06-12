@@ -8,6 +8,7 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { API_ENDPUNKTE } from '../api/api-endpoints';
+import { AuswertungViewModel } from '../models/auswertung.model';
 import { DashboardViewModel } from '../models/dashboard-view.model';
 import { Importjob } from '../models/importjob.model';
 import { Laborwert } from '../models/laborwert.model';
@@ -15,6 +16,7 @@ import { Patientenbericht } from '../models/patientenbericht.model';
 import { ReviewEintrag } from '../models/review-eintrag.model';
 import { UebersichtViewModel } from '../models/uebersicht.model';
 import { Wissenseintrag } from '../models/wissenseintrag.model';
+import { MOCK_AUSWERTUNG } from '../mocks/auswertung.mock';
 import { MOCK_DASHBOARD_VIEW } from '../mocks/dashboard-view.mock';
 import { MOCK_IMPORTJOBS } from '../mocks/importjobs.mock';
 import { MOCK_UEBERSICHT } from '../mocks/uebersicht.mock';
@@ -28,6 +30,11 @@ export class DatenDashboardApiService {
   /** Liefert die komplette Datenansicht aktuell aus Mockdaten. */
   public ladeStartansicht(): Observable<DashboardViewModel> {
     return of(MOCK_DASHBOARD_VIEW).pipe(delay(120));
+  }
+
+  /** Liefert die fachliche Auswertungsansicht aus Mockdaten. */
+  public ladeAuswertung(): Observable<AuswertungViewModel> {
+    return of(MOCK_AUSWERTUNG).pipe(delay(90));
   }
 
   /** Liefert die aggregierte Übersichtsansicht aus Mockdaten. */
