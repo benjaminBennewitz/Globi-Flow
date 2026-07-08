@@ -163,6 +163,10 @@ export class AnalysePageComponent {
 
   /** Berechnet X-Koordinate eines Verlaufspunkts. */
   public punktX(wert: AuswertungLaborwert, index: number): number {
+    if (wert.verlauf.length <= 1) {
+      return 242;
+    }
+
     const maxIndex = Math.max(wert.verlauf.length - 1, 1);
     return Math.round((46 + (index / maxIndex) * 392) * 10) / 10;
   }
@@ -251,6 +255,10 @@ export class AnalysePageComponent {
 
   /** Berechnet X-Koordinaten für den normalisierten Overlay-Chart. */
   public normalisierterPunktX(wert: AuswertungLaborwert, index: number): number {
+    if (wert.verlauf.length <= 1) {
+      return 356;
+    }
+
     const maxIndex = Math.max(wert.verlauf.length - 1, 1);
     return this.runden(86 + (index / maxIndex) * 540);
   }
@@ -378,7 +386,9 @@ export class AnalysePageComponent {
     }
 
     if (punkte.length === 1) {
-      return `M ${punkte[0].x.toFixed(1)} ${punkte[0].y.toFixed(1)}`;
+      const startX = this.runden(Math.max(46, punkte[0].x - 16));
+      const endX = this.runden(punkte[0].x + 16);
+      return `M ${startX.toFixed(1)} ${punkte[0].y.toFixed(1)} L ${endX.toFixed(1)} ${punkte[0].y.toFixed(1)}`;
     }
 
     const segmente = [`M ${punkte[0].x.toFixed(1)} ${punkte[0].y.toFixed(1)}`];

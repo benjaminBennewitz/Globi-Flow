@@ -5,7 +5,7 @@
  * @module ImportePageComponent
  */
 
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, WritableSignal, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Importjob, ImportjobAnalyseArt, ImportjobDataset, ImportjobOcrStatus, ImportjobSchrittStatus, ImportjobStatus } from '../../core/models/importjob.model';
 import { pruefeSicherePdfDatei, SICHERE_DATEI_MAX_LABEL } from '../../core/security/sichere-datei.util';
@@ -42,7 +42,7 @@ interface ImportKennzahl {
   styleUrl: './importe-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ImportePageComponent {
+export class ImportePageComponent implements OnDestroy {
   /** Aktuelle Route mit optionalem Upload-Fokus. */
   private readonly route = inject(ActivatedRoute);
 
@@ -63,6 +63,9 @@ export class ImportePageComponent {
 
   /** Lokal geprüfte PDF-Datei für den API-Upload. */
   private ausgewaehlteDatei: File | null = null;
+
+  /** Regelmäßige Aktualisierung für synchrone und spätere Background-Importe. */
+  private readonly importPoller = window.setInterval(() => this.importjobsLaden(true), 6000);
 
   /** Importjobs aus der Backend-API. */
   public readonly importjobs: WritableSignal<Importjob[]> = signal([]);
@@ -134,11 +137,20 @@ export class ImportePageComponent {
   }
 
   /** Lädt Importjobs aus der API. */
-  private importjobsLaden(): void {
+  private importjobsLaden(still: boolean = false): void {
     this.globiFlowApi.ladeImportjobs().subscribe((jobs: Importjob[]) => {
+      const bisherAktiv = this.ausgewaehlterJobId();
       this.importjobs.set(jobs);
-      this.ausgewaehlterJobId.set(jobs[0]?.id ?? '');
+
+      if (!still || !jobs.some((job: Importjob) => job.id === bisherAktiv)) {
+        this.ausgewaehlterJobId.set(jobs[0]?.id ?? '');
+      }
     });
+  }
+
+  /** Räumt den Import-Poller beim Verlassen der Route auf. */
+  public ngOnDestroy(): void {
+    window.clearInterval(this.importPoller);
   }
 
   /** Importfilter für die Historie. */
@@ -277,13 +289,17 @@ export class ImportePageComponent {
       return;
     }
 
-    this.globiFlowApi.laborbefundHochladen(this.ausgewaehlteDatei).subscribe({
+    const aktiverPatient = this.patientContext.aktiverPatient();
+
+    this.globiFlowApi.laborbefundHochladen(this.ausgewaehlteDatei, aktiverPatient.id).subscribe({
       next: (job: Importjob) => {
         this.importjobs.update((jobs: Importjob[]) => [job, ...jobs.filter((eintrag: Importjob) => eintrag.id !== job.id)]);
         this.ausgewaehlterJobId.set(job.id);
         this.aktiverFilter.set('alle');
         this.dateiEntfernen();
-        this.toastService.zeige('Importjob angelegt', 'Die PDF wurde lokal an die Backend-API übergeben.', 'success');
+        this.patientContext.patientenNeuLaden();
+        window.setTimeout(() => this.importjobsLaden(true), 850);
+        this.toastService.zeige('Importjob angelegt', `Die PDF wurde ${aktiverPatient.name} zugeordnet und lokal analysiert.`, 'success');
       },
       error: () => {
         this.toastService.zeige('Upload fehlgeschlagen', 'Die API konnte die PDF nicht annehmen oder analysieren.', 'danger');
