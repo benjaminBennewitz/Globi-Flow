@@ -13,7 +13,7 @@
     </div>
 
     <div class="gf-berichte-route__headline-actions">
-      <button class="gf-button gf-button--secondary" type="button" (click)="vorschauAktualisieren()">
+      <button class="gf-button gf-button--secondary" type="button">
         <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
         Vorschau aktualisieren
       </button>
@@ -136,8 +136,16 @@
         }
       </section>
 
+    </article>
+
+    <article class="gf-berichte-route__page gf-berichte-route__page--recommendations">
+      <header class="gf-berichte-route__page-title">
+        <span>Empfehlungen</span>
+        <h2>Hinweise für das Arztgespräch</h2>
+        <p>Die Hinweise helfen bei der Vorbereitung und ersetzen keine ärztliche Diagnose.</p>
+      </header>
+
       <section class="gf-berichte-route__recommendations">
-        <h3>Empfehlungen und Hinweise</h3>
         @for (empfehlung of daten.empfehlungen; track empfehlung.id) {
         <article class="is-{{ empfehlung.prioritaet }}">
           <span>{{ empfehlung.prioritaet }}</span>
