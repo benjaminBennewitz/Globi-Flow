@@ -29,15 +29,15 @@
    ========================================================================== */
 
 :root {
-  --dd-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dd-ease-pop: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  --gf-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --gf-ease-pop: cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
 /* ==========================================================================
    02   Keyframes
    ========================================================================== */
 
-@keyframes dd-fade-up {
+@keyframes gf-fade-up {
   from {
     opacity: 0;
     transform: translateY(16px);
@@ -49,7 +49,7 @@
   }
 }
 
-@keyframes dd-grow-x {
+@keyframes gf-grow-x {
   from {
     transform: scaleX(0);
   }
@@ -59,7 +59,7 @@
   }
 }
 
-@keyframes dd-grow-y {
+@keyframes gf-grow-y {
   from {
     transform: scaleY(0);
   }
@@ -69,13 +69,13 @@
   }
 }
 
-@keyframes dd-draw-line {
+@keyframes gf-draw-line {
   to {
     stroke-dashoffset: 0;
   }
 }
 
-@keyframes dd-soft-pop {
+@keyframes gf-soft-pop {
   from {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.72);
@@ -87,7 +87,7 @@
   }
 }
 
-@keyframes dd-soft-pop-center {
+@keyframes gf-soft-pop-center {
   from {
     opacity: 0;
     transform: scale(0.82);
@@ -99,7 +99,7 @@
   }
 }
 
-@keyframes dd-soft-pulse {
+@keyframes gf-soft-pulse {
   0%,
   100% {
     transform: scale(1);
@@ -110,7 +110,7 @@
   }
 }
 
-@keyframes dd-spin {
+@keyframes gf-spin {
   to {
     transform: rotate(360deg);
   }
@@ -128,13 +128,13 @@
   }
 }
 
-@keyframes dd-border-spin {
+@keyframes gf-border-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-@keyframes dd-border-run-top {
+@keyframes gf-border-run-top {
   0% {
     width: 0;
     opacity: 1;
@@ -152,7 +152,7 @@
   }
 }
 
-@keyframes dd-border-run-right {
+@keyframes gf-border-run-right {
   0%,
   24% {
     height: 0;
@@ -176,7 +176,7 @@
   }
 }
 
-@keyframes dd-border-run-bottom {
+@keyframes gf-border-run-bottom {
   0%,
   49% {
     width: 0;
@@ -200,7 +200,7 @@
   }
 }
 
-@keyframes dd-border-run-left {
+@keyframes gf-border-run-left {
   0%,
   74% {
     height: 0;
@@ -223,7 +223,7 @@
   }
 }
 
-@keyframes dd-upload-top-runner {
+@keyframes gf-upload-top-runner {
   from {
     left: -30%;
   }

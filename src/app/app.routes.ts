@@ -1,7 +1,7 @@
 /* src/app/app.routes.ts */
 
 /**
- * @file Definiert alle Hauptrouten der Daten-Dashboards-App.
+ * @file Definiert alle Hauptrouten der Globi-Flow-App.
  * @module AppRoutes
  */
 
@@ -26,4 +26,5 @@ export const routes: Routes = [
   { path: 'wissensbasis', component: WissensbasisPageComponent },
   { path: 'berichte', component: BerichtePageComponent },
   { path: '**', redirectTo: 'uebersicht' }
-];
+];
+

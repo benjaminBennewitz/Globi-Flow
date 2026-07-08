@@ -10,7 +10,7 @@ import { Importjob, ImportjobStatus } from '../../core/models/importjob.model';
 
 /** Importbereich mit API-bereitem Status-Layout. */
 @Component({
-  selector: 'dd-import-status',
+  selector: 'gf-import-status',
   imports: [],
   templateUrl: './import-status.component.html',
   styleUrl: './import-status.component.scss',
@@ -22,6 +22,6 @@ export class ImportStatusComponent {
 
   /** Gibt die Badge-Klasse für einen Importstatus zurück. */
   public statusKlasse(status: ImportjobStatus): string {
-    return `dd-chip--${status === 'abgeschlossen' ? 'success' : status === 'fehler' ? 'danger' : 'warning'}`;
+    return `gf-chip--${status === 'abgeschlossen' ? 'success' : status === 'fehler' ? 'danger' : 'warning'}`;
   }
 }

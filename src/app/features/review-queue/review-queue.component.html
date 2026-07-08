@@ -1,24 +1,24 @@
 <!-- src/app/features/review-queue/review-queue.component.html -->
 
-<section class="dd-review dd-section-panel" id="review" aria-labelledby="review-title">
-  <header class="dd-section-heading">
-    <span class="dd-eyebrow">Ärztliche Prüfung</span>
+<section class="gf-review gf-section-panel" id="review" aria-labelledby="review-title">
+  <header class="gf-section-heading">
+    <span class="gf-eyebrow">Ärztliche Prüfung</span>
     <h2 id="review-title">Originalausschnitt und erkannter Wert bleiben direkt vergleichbar.</h2>
     <p>Die spätere API kann jeden Eintrag einzeln bestätigen, korrigieren oder zurückstellen.</p>
   </header>
 
-  <div class="dd-review__list">
+  <div class="gf-review__list">
     @for (eintrag of reviewEintraege; track eintrag.id) {
-      <article class="dd-review__item dd-neu-card">
+      <article class="gf-review__item gf-neu-card">
         <header>
           <div>
-            <span class="dd-chip dd-chip--warning">{{ eintrag.feld }}</span>
+            <span class="gf-chip gf-chip--warning">{{ eintrag.feld }}</span>
             <h3>{{ eintrag.laborwertName }}</h3>
           </div>
           <strong>{{ eintrag.confidence }}%</strong>
         </header>
 
-        <div class="dd-review__compare">
+        <div class="gf-review__compare">
           <section>
             <span>Originalausschnitt</span>
             <p>{{ eintrag.originalText }}</p>
@@ -33,11 +33,11 @@
           </section>
         </div>
 
-        <p class="dd-review__reason">{{ eintrag.grund }}</p>
+        <p class="gf-review__reason">{{ eintrag.grund }}</p>
 
         <footer>
-          <button class="dd-button dd-button--secondary" type="button">Korrigieren</button>
-          <button class="dd-button dd-button--primary" type="button">Als geprüft markieren</button>
+          <button class="gf-button gf-button--secondary" type="button">Korrigieren</button>
+          <button class="gf-button gf-button--primary" type="button">Als geprüft markieren</button>
         </footer>
       </article>
     }

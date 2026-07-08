@@ -1,5 +1,5 @@
 ---
-name: Daten Dashboards
+name: Globi Flows
 colors:
   surface: '#f9f9ff'
   surface-dim: '#d8dae2'

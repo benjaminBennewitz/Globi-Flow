@@ -46,13 +46,13 @@ html {
   min-width: 320px;
   min-height: 100%;
   min-height: 100svh;
-  background: var(--dd-color-bg);
-  color: var(--dd-color-text);
-  font-family: var(--dd-font-body);
+  background: var(--gf-color-bg);
+  color: var(--gf-color-text);
+  font-family: var(--gf-font-body);
   font-optical-sizing: auto;
   font-synthesis: none;
   scroll-behavior: smooth;
-  scrollbar-color: var(--dd-color-primary) var(--dd-color-bg-deep);
+  scrollbar-color: var(--gf-color-primary) var(--gf-color-bg-deep);
   scrollbar-width: thin;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -67,9 +67,9 @@ body {
   background:
     radial-gradient(circle at 16% 0%, rgba(214, 227, 255, 0.72), transparent 34%),
     radial-gradient(circle at 92% 8%, rgba(255, 219, 203, 0.42), transparent 30%),
-    var(--dd-color-bg);
-  color: var(--dd-color-text);
-  font-family: var(--dd-font-body);
+    var(--gf-color-bg);
+  color: var(--gf-color-text);
+  font-family: var(--gf-font-body);
   text-rendering: geometricPrecision;
 }
 
@@ -112,7 +112,7 @@ strong {
 
 :focus-visible {
   outline: none;
-  box-shadow: var(--dd-focus-ring);
+  box-shadow: var(--gf-focus-ring);
 }
 
 /* ==========================================================================
@@ -125,13 +125,13 @@ strong {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--dd-color-bg-deep);
+  background: var(--gf-color-bg-deep);
 }
 
 ::-webkit-scrollbar-thumb {
-  border: 3px solid var(--dd-color-bg-deep);
-  border-radius: var(--dd-radius-pill);
-  background: var(--dd-color-primary);
+  border: 3px solid var(--gf-color-bg-deep);
+  border-radius: var(--gf-radius-pill);
+  background: var(--gf-color-primary);
 }
 
 /* ==========================================================================

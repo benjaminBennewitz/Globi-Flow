@@ -35,7 +35,7 @@ interface ImportKennzahl {
 
 /** Route `/importe` für Upload, Pipeline-Status und Importhistorie. */
 @Component({
-  selector: 'dd-importe-page',
+  selector: 'gf-importe-page',
   imports: [RouterLink],
   templateUrl: './importe-page.component.html',
   styleUrl: './importe-page.component.scss',

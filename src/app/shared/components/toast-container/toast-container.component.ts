@@ -10,7 +10,7 @@ import { ToastService } from '../../services/toast.service';
 
 /** Globaler Container für kurze Statusmeldungen. */
 @Component({
-  selector: 'dd-toast-container',
+  selector: 'gf-toast-container',
   imports: [],
   templateUrl: './toast-container.component.html',
   styleUrl: './toast-container.component.scss',

@@ -1,9 +1,18 @@
-Data-Dashboard/
+Globi-Flow/
 ├── .angular/
 │   └── ...
 ├── assets/
 │   ├── readme-header.svg
 │   └── workflow.svg
+├── docs/
+│   └── readme/
+│       ├── badge-angular.svg
+│       ├── badge-local.svg
+│       ├── badge-review.svg
+│       ├── globi-flow-overview.svg
+│       ├── globi-flow-palette.svg
+│       ├── globi-flow-report.svg
+│       └── globi-flow-review.svg
 ├── node_modules/
 │   └── ...
 ├── src/
@@ -39,7 +48,7 @@ Data-Dashboard/
 │   │   │   │   ├── sichere-datei.util.ts
 │   │   │   │   └── sichere-suche.util.ts
 │   │   │   └── services/
-│   │   │       ├── daten-dashboard-api.service.ts
+│   │   │       ├── globi-flow-api.service.ts
 │   │   │       └── patient-context.service.ts
 │   │   ├── features/
 │   │   │   ├── analyse-dashboard/
@@ -147,7 +156,7 @@ Data-Dashboard/
 ├── .gitignore
 ├── angular.json
 ├── DESIGNSYSTEM.md
-├── Featureliste_Daten_Dashboards.docx
+├── Featureliste_Globi-Flow.docx
 ├── make-tree.ps1
 ├── package.json
 ├── package-lock.json

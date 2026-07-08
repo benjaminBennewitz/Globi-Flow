@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="150" viewBox="0 0 960 150" role="img" aria-label="Globi Flow Farbpalette">
+<rect width="960" height="150" rx="28" fill="#f2f3fb"/>
+<g font-family="Inter, Arial" font-size="14" font-weight="700" fill="#191c21">
+  <rect x="32" y="32" width="148" height="56" rx="18" fill="#f9f9ff" stroke="#c2c6d4"/>
+  <text x="32" y="116">Background · #f9f9ff</text>
+  <rect x="216" y="32" width="148" height="56" rx="18" fill="#00478d"/>
+  <text x="216" y="116">Primary · #00478d</text>
+  <rect x="400" y="32" width="148" height="56" rx="18" fill="#ecedf6"/>
+  <text x="400" y="116">Surface · #ecedf6</text>
+  <rect x="584" y="32" width="148" height="56" rx="18" fill="#793100"/>
+  <text x="584" y="116">Tertiary · #793100</text>
+  <rect x="768" y="32" width="148" height="56" rx="18" fill="#ba1a1a"/>
+  <text x="768" y="116">Error · #ba1a1a</text>
+</g>
+</svg>

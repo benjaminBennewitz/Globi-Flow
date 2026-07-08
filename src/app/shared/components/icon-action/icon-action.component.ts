@@ -9,7 +9,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 
 /** Wiederverwendbarer Icon-Aktionsbutton mit einheitlichem Hover-Verhalten. */
 @Component({
-  selector: 'dd-icon-action',
+  selector: 'gf-icon-action',
   imports: [],
   templateUrl: './icon-action.component.html',
   styleUrl: './icon-action.component.scss',

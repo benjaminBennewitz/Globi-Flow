@@ -10,7 +10,7 @@ import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } fr
 import { RouterLink } from '@angular/router';
 import { AuswertungGruppe, AuswertungKennzahl, AuswertungLaborwert, AuswertungReviewStatus, AuswertungTrend, AuswertungViewModel } from '../../core/models/auswertung.model';
 import { LaborwertPrioritaet, LaborwertStatus } from '../../core/models/laborwert.model';
-import { DatenDashboardApiService } from '../../core/services/daten-dashboard-api.service';
+import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { PatientContextService } from '../../core/services/patient-context.service';
 
 /** Statusfilter der Auswertungsroute. */
@@ -19,7 +19,7 @@ type AuswertungStatusFilter = LaborwertStatus | 'alle';
 
 /** Route `/auswertung` mit analytischer Laborwertansicht. */
 @Component({
-  selector: 'dd-analyse-page',
+  selector: 'gf-analyse-page',
   imports: [AsyncPipe, RouterLink],
   templateUrl: './analyse-page.component.html',
   styleUrl: './analyse-page.component.scss',
@@ -27,13 +27,13 @@ type AuswertungStatusFilter = LaborwertStatus | 'alle';
 })
 export class AnalysePageComponent {
   /** API-bereiter Datenservice. */
-  private readonly datenDashboardApi = inject(DatenDashboardApiService);
+  private readonly globiFlowApi = inject(GlobiFlowApiService);
 
   /** Globaler Patientenkontext. */
   public readonly patientContext = inject(PatientContextService);
 
   /** Fachliche Auswertungsansicht aus Mockdaten oder später API. */
-  protected readonly auswertung$ = this.datenDashboardApi.ladeAuswertung();
+  protected readonly auswertung$ = this.globiFlowApi.ladeAuswertung();
 
   /** Animations-Token für erneutes Zeichnen des Verlaufs. */
   public readonly diagrammAnimationsToken: WritableSignal<number> = signal(0);
@@ -191,7 +191,7 @@ export class AnalysePageComponent {
   /** Liefert den CSS-Gradienten für den Qualitätsring. */
   public scoreGradient(ansicht: AuswertungViewModel): string {
     const score = this.aufbereitungsScore(ansicht);
-    return `conic-gradient(var(--dd-color-primary) ${score * 3.6}deg, var(--dd-color-bg) 0deg)`;
+    return `conic-gradient(var(--gf-color-primary) ${score * 3.6}deg, var(--gf-color-bg) 0deg)`;
   }
 
   /** Liefert den CSS-Gradienten für die Statusverteilung. */
@@ -203,7 +203,7 @@ export class AnalysePageComponent {
     const normalEnde = normal;
     const auffaelligEnde = normal + auffaellig;
     const reviewEnde = normal + auffaellig + review;
-    return `conic-gradient(var(--dd-color-success) 0 ${normalEnde}%, var(--dd-color-danger) ${normalEnde}% ${auffaelligEnde}%, var(--dd-color-warning) ${auffaelligEnde}% ${reviewEnde}%, var(--dd-color-outline) ${reviewEnde}% 100%)`;
+    return `conic-gradient(var(--gf-color-success) 0 ${normalEnde}%, var(--gf-color-danger) ${normalEnde}% ${auffaelligEnde}%, var(--gf-color-warning) ${auffaelligEnde}% ${reviewEnde}%, var(--gf-color-outline) ${reviewEnde}% 100%)`;
   }
 
   /** Zählt Werte mit einem bestimmten Status. */

@@ -8,57 +8,57 @@
    01   Icon-Aktion
    ========================================================================== */
 
-.dd-icon-action {
+.gf-icon-action {
   display: grid;
   width: 38px;
   height: 38px;
   place-items: center;
-  border-radius: var(--dd-radius-md);
+  border-radius: var(--gf-radius-md);
   cursor: pointer;
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-soft);
-  transition: transform 160ms var(--dd-ease-out), box-shadow 160ms var(--dd-ease-out), background 160ms var(--dd-ease-out);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-soft);
+  transition: transform 160ms var(--gf-ease-out), box-shadow 160ms var(--gf-ease-out), background 160ms var(--gf-ease-out);
 }
 
-.dd-icon-action span {
+.gf-icon-action span {
   font-size: 1.25rem;
-  transition: transform 160ms var(--dd-ease-out);
+  transition: transform 160ms var(--gf-ease-out);
 }
 
-.dd-icon-action.is-danger span {
-  color: var(--dd-color-danger);
+.gf-icon-action.is-danger span {
+  color: var(--gf-color-danger);
 }
 
-.dd-icon-action.is-primary span {
-  color: var(--dd-color-primary);
+.gf-icon-action.is-primary span {
+  color: var(--gf-color-primary);
 }
 
-.dd-icon-action.is-muted span {
-  color: var(--dd-color-text-muted);
+.gf-icon-action.is-muted span {
+  color: var(--gf-color-text-muted);
 }
 
-.dd-icon-action.is-success span {
-  color: var(--dd-color-success);
+.gf-icon-action.is-success span {
+  color: var(--gf-color-success);
 }
 
-.dd-icon-action.is-warning span {
-  color: var(--dd-color-warning);
+.gf-icon-action.is-warning span {
+  color: var(--gf-color-warning);
 }
 
-.dd-icon-action:hover {
-  background: var(--dd-color-surface);
-  box-shadow: var(--dd-shadow-raised);
+.gf-icon-action:hover {
+  background: var(--gf-color-surface);
+  box-shadow: var(--gf-shadow-raised);
   transform: translateY(-1px);
 }
 
-.dd-icon-action:hover span {
+.gf-icon-action:hover span {
   transform: scale(1.08);
 }
 
-.dd-icon-action.is-close:hover span {
+.gf-icon-action.is-close:hover span {
   transform: rotate(90deg) scale(1.04);
 }
 
-.dd-icon-action.is-delete:hover span {
+.gf-icon-action.is-delete:hover span {
   transform: scale(1.08);
 }

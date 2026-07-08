@@ -9,11 +9,11 @@ import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal, WritableSignal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AktivitaetsEintrag, AktivitaetsFilter, DringenderHinweis, GesundheitsverlaufPunkt, UebersichtAktionStatus } from '../../core/models/uebersicht.model';
-import { DatenDashboardApiService } from '../../core/services/daten-dashboard-api.service';
+import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 
 /** Übersichtsroute mit allgemeinen Praxis-, Import- und Review-Kennzahlen. */
 @Component({
-  selector: 'dd-uebersicht-page',
+  selector: 'gf-uebersicht-page',
   imports: [AsyncPipe, RouterLink],
   templateUrl: './uebersicht-page.component.html',
   styleUrl: './uebersicht-page.component.scss',
@@ -21,7 +21,7 @@ import { DatenDashboardApiService } from '../../core/services/daten-dashboard-ap
 })
 export class UebersichtPageComponent {
   /** API-bereiter Datenservice. */
-  private readonly datenDashboardApi = inject(DatenDashboardApiService);
+  private readonly globiFlowApi = inject(GlobiFlowApiService);
 
   /** Drag-Zustand für die horizontale Chart-Navigation. */
   private dragAktiv = false;
@@ -33,7 +33,7 @@ export class UebersichtPageComponent {
   private dragStartScroll = 0;
 
   /** Aggregierte Übersichtsdaten aus Mock oder später API. */
-  protected readonly uebersicht$ = this.datenDashboardApi.ladeUebersicht();
+  protected readonly uebersicht$ = this.globiFlowApi.ladeUebersicht();
 
 
   /** Geführter Kernworkflow vom Befund bis zum Patientenbericht. */

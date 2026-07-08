@@ -13,12 +13,12 @@
    ========================================================================== */
 
 :where(
-  .dd-import-route,
-  .dd-auswertung-route,
-  .dd-review-route,
-  .dd-patienten-route,
-  .dd-wissensbasis-route,
-  .dd-berichte-route
+  .gf-import-route,
+  .gf-auswertung-route,
+  .gf-review-route,
+  .gf-patienten-route,
+  .gf-wissensbasis-route,
+  .gf-berichte-route
 ) {
   isolation: isolate;
 }
@@ -28,68 +28,68 @@
    ========================================================================== */
 
 :where(
-  .dd-import-route,
-  .dd-auswertung-route,
-  .dd-review-route,
-  .dd-patienten-route,
-  .dd-wissensbasis-route,
-  .dd-berichte-route
+  .gf-import-route,
+  .gf-auswertung-route,
+  .gf-review-route,
+  .gf-patienten-route,
+  .gf-wissensbasis-route,
+  .gf-berichte-route
 ) > * {
-  animation: dd-page-section-in 560ms var(--dd-ease-out) both;
+  animation: gf-page-section-in 560ms var(--gf-ease-out) both;
   will-change: opacity, transform, filter;
 }
 
 :where(
-  .dd-import-route,
-  .dd-auswertung-route,
-  .dd-review-route,
-  .dd-patienten-route,
-  .dd-wissensbasis-route,
-  .dd-berichte-route
+  .gf-import-route,
+  .gf-auswertung-route,
+  .gf-review-route,
+  .gf-patienten-route,
+  .gf-wissensbasis-route,
+  .gf-berichte-route
 ) > *:nth-child(1) {
   animation-delay: 30ms;
 }
 
 :where(
-  .dd-import-route,
-  .dd-auswertung-route,
-  .dd-review-route,
-  .dd-patienten-route,
-  .dd-wissensbasis-route,
-  .dd-berichte-route
+  .gf-import-route,
+  .gf-auswertung-route,
+  .gf-review-route,
+  .gf-patienten-route,
+  .gf-wissensbasis-route,
+  .gf-berichte-route
 ) > *:nth-child(2) {
   animation-delay: 90ms;
 }
 
 :where(
-  .dd-import-route,
-  .dd-auswertung-route,
-  .dd-review-route,
-  .dd-patienten-route,
-  .dd-wissensbasis-route,
-  .dd-berichte-route
+  .gf-import-route,
+  .gf-auswertung-route,
+  .gf-review-route,
+  .gf-patienten-route,
+  .gf-wissensbasis-route,
+  .gf-berichte-route
 ) > *:nth-child(3) {
   animation-delay: 150ms;
 }
 
 :where(
-  .dd-import-route,
-  .dd-auswertung-route,
-  .dd-review-route,
-  .dd-patienten-route,
-  .dd-wissensbasis-route,
-  .dd-berichte-route
+  .gf-import-route,
+  .gf-auswertung-route,
+  .gf-review-route,
+  .gf-patienten-route,
+  .gf-wissensbasis-route,
+  .gf-berichte-route
 ) > *:nth-child(4) {
   animation-delay: 210ms;
 }
 
 :where(
-  .dd-import-route,
-  .dd-auswertung-route,
-  .dd-review-route,
-  .dd-patienten-route,
-  .dd-wissensbasis-route,
-  .dd-berichte-route
+  .gf-import-route,
+  .gf-auswertung-route,
+  .gf-review-route,
+  .gf-patienten-route,
+  .gf-wissensbasis-route,
+  .gf-berichte-route
 ) > *:nth-child(n + 5) {
   animation-delay: 260ms;
 }
@@ -99,104 +99,104 @@
    ========================================================================== */
 
 :where(
-  .dd-import-route__kpis > *,
-  .dd-auswertung-route__kpis > *,
-  .dd-review-route__kpis > *,
-  .dd-patienten-route__kpis > *,
-  .dd-wissensbasis-route__kpis > *,
-  .dd-berichte-route__controls > *,
-  .dd-berichte-route__preview > *,
-  .dd-patienten-route__card,
-  .dd-wissensbasis-route__entry,
-  .dd-review-route__queue-item,
-  .dd-import-route__history-item,
-  .dd-auswertung-route__value-card
+  .gf-import-route__kpis > *,
+  .gf-auswertung-route__kpis > *,
+  .gf-review-route__kpis > *,
+  .gf-patienten-route__kpis > *,
+  .gf-wissensbasis-route__kpis > *,
+  .gf-berichte-route__controls > *,
+  .gf-berichte-route__preview > *,
+  .gf-patienten-route__card,
+  .gf-wissensbasis-route__entry,
+  .gf-review-route__queue-item,
+  .gf-import-route__history-item,
+  .gf-auswertung-route__value-card
 ) {
-  animation: dd-page-item-in 520ms var(--dd-ease-out) both;
+  animation: gf-page-item-in 520ms var(--gf-ease-out) both;
   will-change: opacity, transform;
 }
 
 :where(
-  .dd-import-route__kpis > *,
-  .dd-auswertung-route__kpis > *,
-  .dd-review-route__kpis > *,
-  .dd-patienten-route__kpis > *,
-  .dd-wissensbasis-route__kpis > *,
-  .dd-berichte-route__controls > *,
-  .dd-berichte-route__preview > *,
-  .dd-patienten-route__card,
-  .dd-wissensbasis-route__entry,
-  .dd-review-route__queue-item,
-  .dd-import-route__history-item,
-  .dd-auswertung-route__value-card
+  .gf-import-route__kpis > *,
+  .gf-auswertung-route__kpis > *,
+  .gf-review-route__kpis > *,
+  .gf-patienten-route__kpis > *,
+  .gf-wissensbasis-route__kpis > *,
+  .gf-berichte-route__controls > *,
+  .gf-berichte-route__preview > *,
+  .gf-patienten-route__card,
+  .gf-wissensbasis-route__entry,
+  .gf-review-route__queue-item,
+  .gf-import-route__history-item,
+  .gf-auswertung-route__value-card
 ):nth-child(1) {
   animation-delay: 120ms;
 }
 
 :where(
-  .dd-import-route__kpis > *,
-  .dd-auswertung-route__kpis > *,
-  .dd-review-route__kpis > *,
-  .dd-patienten-route__kpis > *,
-  .dd-wissensbasis-route__kpis > *,
-  .dd-berichte-route__controls > *,
-  .dd-berichte-route__preview > *,
-  .dd-patienten-route__card,
-  .dd-wissensbasis-route__entry,
-  .dd-review-route__queue-item,
-  .dd-import-route__history-item,
-  .dd-auswertung-route__value-card
+  .gf-import-route__kpis > *,
+  .gf-auswertung-route__kpis > *,
+  .gf-review-route__kpis > *,
+  .gf-patienten-route__kpis > *,
+  .gf-wissensbasis-route__kpis > *,
+  .gf-berichte-route__controls > *,
+  .gf-berichte-route__preview > *,
+  .gf-patienten-route__card,
+  .gf-wissensbasis-route__entry,
+  .gf-review-route__queue-item,
+  .gf-import-route__history-item,
+  .gf-auswertung-route__value-card
 ):nth-child(2) {
   animation-delay: 170ms;
 }
 
 :where(
-  .dd-import-route__kpis > *,
-  .dd-auswertung-route__kpis > *,
-  .dd-review-route__kpis > *,
-  .dd-patienten-route__kpis > *,
-  .dd-wissensbasis-route__kpis > *,
-  .dd-berichte-route__controls > *,
-  .dd-berichte-route__preview > *,
-  .dd-patienten-route__card,
-  .dd-wissensbasis-route__entry,
-  .dd-review-route__queue-item,
-  .dd-import-route__history-item,
-  .dd-auswertung-route__value-card
+  .gf-import-route__kpis > *,
+  .gf-auswertung-route__kpis > *,
+  .gf-review-route__kpis > *,
+  .gf-patienten-route__kpis > *,
+  .gf-wissensbasis-route__kpis > *,
+  .gf-berichte-route__controls > *,
+  .gf-berichte-route__preview > *,
+  .gf-patienten-route__card,
+  .gf-wissensbasis-route__entry,
+  .gf-review-route__queue-item,
+  .gf-import-route__history-item,
+  .gf-auswertung-route__value-card
 ):nth-child(3) {
   animation-delay: 220ms;
 }
 
 :where(
-  .dd-import-route__kpis > *,
-  .dd-auswertung-route__kpis > *,
-  .dd-review-route__kpis > *,
-  .dd-patienten-route__kpis > *,
-  .dd-wissensbasis-route__kpis > *,
-  .dd-berichte-route__controls > *,
-  .dd-berichte-route__preview > *,
-  .dd-patienten-route__card,
-  .dd-wissensbasis-route__entry,
-  .dd-review-route__queue-item,
-  .dd-import-route__history-item,
-  .dd-auswertung-route__value-card
+  .gf-import-route__kpis > *,
+  .gf-auswertung-route__kpis > *,
+  .gf-review-route__kpis > *,
+  .gf-patienten-route__kpis > *,
+  .gf-wissensbasis-route__kpis > *,
+  .gf-berichte-route__controls > *,
+  .gf-berichte-route__preview > *,
+  .gf-patienten-route__card,
+  .gf-wissensbasis-route__entry,
+  .gf-review-route__queue-item,
+  .gf-import-route__history-item,
+  .gf-auswertung-route__value-card
 ):nth-child(4) {
   animation-delay: 270ms;
 }
 
 :where(
-  .dd-import-route__kpis > *,
-  .dd-auswertung-route__kpis > *,
-  .dd-review-route__kpis > *,
-  .dd-patienten-route__kpis > *,
-  .dd-wissensbasis-route__kpis > *,
-  .dd-berichte-route__controls > *,
-  .dd-berichte-route__preview > *,
-  .dd-patienten-route__card,
-  .dd-wissensbasis-route__entry,
-  .dd-review-route__queue-item,
-  .dd-import-route__history-item,
-  .dd-auswertung-route__value-card
+  .gf-import-route__kpis > *,
+  .gf-auswertung-route__kpis > *,
+  .gf-review-route__kpis > *,
+  .gf-patienten-route__kpis > *,
+  .gf-wissensbasis-route__kpis > *,
+  .gf-berichte-route__controls > *,
+  .gf-berichte-route__preview > *,
+  .gf-patienten-route__card,
+  .gf-wissensbasis-route__entry,
+  .gf-review-route__queue-item,
+  .gf-import-route__history-item,
+  .gf-auswertung-route__value-card
 ):nth-child(n + 5) {
   animation-delay: 320ms;
 }
@@ -205,7 +205,7 @@
    04   Keyframes
    ========================================================================== */
 
-@keyframes dd-page-section-in {
+@keyframes gf-page-section-in {
   from {
     opacity: 0;
     filter: blur(5px);
@@ -219,7 +219,7 @@
   }
 }
 
-@keyframes dd-page-item-in {
+@keyframes gf-page-item-in {
   from {
     opacity: 0;
     transform: translateY(14px) scale(0.985);
@@ -237,26 +237,26 @@
 
 @media (prefers-reduced-motion: reduce) {
   :where(
-    .dd-import-route,
-    .dd-auswertung-route,
-    .dd-review-route,
-    .dd-patienten-route,
-    .dd-wissensbasis-route,
-    .dd-berichte-route
+    .gf-import-route,
+    .gf-auswertung-route,
+    .gf-review-route,
+    .gf-patienten-route,
+    .gf-wissensbasis-route,
+    .gf-berichte-route
   ) > *,
   :where(
-    .dd-import-route__kpis > *,
-    .dd-auswertung-route__kpis > *,
-    .dd-review-route__kpis > *,
-    .dd-patienten-route__kpis > *,
-    .dd-wissensbasis-route__kpis > *,
-    .dd-berichte-route__controls > *,
-    .dd-berichte-route__preview > *,
-    .dd-patienten-route__card,
-    .dd-wissensbasis-route__entry,
-    .dd-review-route__queue-item,
-    .dd-import-route__history-item,
-    .dd-auswertung-route__value-card
+    .gf-import-route__kpis > *,
+    .gf-auswertung-route__kpis > *,
+    .gf-review-route__kpis > *,
+    .gf-patienten-route__kpis > *,
+    .gf-wissensbasis-route__kpis > *,
+    .gf-berichte-route__controls > *,
+    .gf-berichte-route__preview > *,
+    .gf-patienten-route__card,
+    .gf-wissensbasis-route__entry,
+    .gf-review-route__queue-item,
+    .gf-import-route__history-item,
+    .gf-auswertung-route__value-card
   ) {
     animation: none !important;
     filter: none !important;
@@ -267,26 +267,26 @@
 
 @media print {
   :where(
-    .dd-import-route,
-    .dd-auswertung-route,
-    .dd-review-route,
-    .dd-patienten-route,
-    .dd-wissensbasis-route,
-    .dd-berichte-route
+    .gf-import-route,
+    .gf-auswertung-route,
+    .gf-review-route,
+    .gf-patienten-route,
+    .gf-wissensbasis-route,
+    .gf-berichte-route
   ) > *,
   :where(
-    .dd-import-route__kpis > *,
-    .dd-auswertung-route__kpis > *,
-    .dd-review-route__kpis > *,
-    .dd-patienten-route__kpis > *,
-    .dd-wissensbasis-route__kpis > *,
-    .dd-berichte-route__controls > *,
-    .dd-berichte-route__preview > *,
-    .dd-patienten-route__card,
-    .dd-wissensbasis-route__entry,
-    .dd-review-route__queue-item,
-    .dd-import-route__history-item,
-    .dd-auswertung-route__value-card
+    .gf-import-route__kpis > *,
+    .gf-auswertung-route__kpis > *,
+    .gf-review-route__kpis > *,
+    .gf-patienten-route__kpis > *,
+    .gf-wissensbasis-route__kpis > *,
+    .gf-berichte-route__controls > *,
+    .gf-berichte-route__preview > *,
+    .gf-patienten-route__card,
+    .gf-wissensbasis-route__entry,
+    .gf-review-route__queue-item,
+    .gf-import-route__history-item,
+    .gf-auswertung-route__value-card
   ) {
     animation: none !important;
     filter: none !important;

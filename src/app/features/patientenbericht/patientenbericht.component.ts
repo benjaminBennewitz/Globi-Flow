@@ -10,7 +10,7 @@ import { Patientenbericht } from '../../core/models/patientenbericht.model';
 
 /** Berichtsvorschau für Patientinnen und Patienten. */
 @Component({
-  selector: 'dd-patientenbericht',
+  selector: 'gf-patientenbericht',
   imports: [],
   templateUrl: './patientenbericht.component.html',
   styleUrl: './patientenbericht.component.scss',

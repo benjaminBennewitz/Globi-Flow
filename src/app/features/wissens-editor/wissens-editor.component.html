@@ -1,24 +1,24 @@
 <!-- src/app/features/wissens-editor/wissens-editor.component.html -->
 
-<section class="dd-knowledge dd-section-panel" id="wissen" aria-labelledby="wissen-title">
-  <header class="dd-section-heading">
-    <span class="dd-eyebrow">Wissensdatenbank</span>
+<section class="gf-knowledge gf-section-panel" id="wissen" aria-labelledby="wissen-title">
+  <header class="gf-section-heading">
+    <span class="gf-eyebrow">Wissensdatenbank</span>
     <h2 id="wissen-title">Kontrollierte Texte statt Laufzeit-KI.</h2>
     <p>Patiententexte, Arztinformationen, Quellen und Disclaimer werden versioniert gepflegt.</p>
   </header>
 
-  <div class="dd-knowledge__grid">
+  <div class="gf-knowledge__grid">
     @for (eintrag of wissenseintraege; track eintrag.id) {
-      <article class="dd-knowledge__card dd-neu-card">
+      <article class="gf-knowledge__card gf-neu-card">
         <header>
           <div>
-            <span class="dd-chip dd-chip--success">v{{ eintrag.version }} · {{ eintrag.status }}</span>
+            <span class="gf-chip gf-chip--success">v{{ eintrag.version }} · {{ eintrag.status }}</span>
             <h3>{{ eintrag.anzeigename }}</h3>
           </div>
           <span>{{ eintrag.kategorie }}</span>
         </header>
         <p>{{ eintrag.patientKurztext }}</p>
-        <div class="dd-knowledge__preview dd-neu-inset">
+        <div class="gf-knowledge__preview gf-neu-inset">
           <strong>Patientenvorschau</strong>
           <p>{{ eintrag.patientLangtext }}</p>
         </div>

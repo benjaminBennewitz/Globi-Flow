@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="40" viewBox="0 0 260 40" role="img" aria-label="Angular: 21.2">
+<rect width="260" height="40" rx="20" fill="#f2f3fb"/>
+<rect x="2" y="2" width="256" height="36" rx="18" fill="#f9f9ff"/>
+<rect x="2" y="2" width="92" height="36" rx="18" fill="#00478d"/>
+<text x="48" y="25" text-anchor="middle" font-family="Inter, Arial" font-size="12" font-weight="800" fill="#ffffff">Angular</text>
+<text x="112" y="25" font-family="Inter, Arial" font-size="12" font-weight="800" fill="#191c21">21.2</text>
+</svg>

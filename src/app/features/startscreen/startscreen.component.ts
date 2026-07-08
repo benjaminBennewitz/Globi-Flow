@@ -12,7 +12,7 @@ import { DashboardTrend, Laborwert, LaborwertGruppe, LaborwertStatus } from '../
 
 /** Startscreen im Stil der finalen Datenauswertungs-Screens. */
 @Component({
-  selector: 'dd-startscreen',
+  selector: 'gf-startscreen',
   imports: [DecimalPipe],
   templateUrl: './startscreen.component.html',
   styleUrl: './startscreen.component.scss',
@@ -65,7 +65,7 @@ export class StartscreenComponent {
     const gesamt = Math.max(normal + auffaellig + review, 1);
     const normalGrad = (normal / gesamt) * 360;
     const auffaelligGrad = normalGrad + (auffaellig / gesamt) * 360;
-    return `conic-gradient(var(--dd-status-normal) 0deg ${normalGrad}deg, var(--dd-status-high) ${normalGrad}deg ${auffaelligGrad}deg, var(--dd-status-review) ${auffaelligGrad}deg 360deg)`;
+    return `conic-gradient(var(--gf-status-normal) 0deg ${normalGrad}deg, var(--gf-status-high) ${normalGrad}deg ${auffaelligGrad}deg, var(--gf-status-review) ${auffaelligGrad}deg 360deg)`;
   }
 
   /** Gibt eine Statusklasse für Laborwerte zurück. */

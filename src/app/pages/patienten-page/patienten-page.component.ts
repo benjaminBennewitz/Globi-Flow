@@ -17,7 +17,7 @@ type PatientenSortierung = 'aktualisiert' | 'review' | 'name';
 
 /** Route `/patienten` für Testpersonen, Befunde und globale Auswahl. */
 @Component({
-  selector: 'dd-patienten-page',
+  selector: 'gf-patienten-page',
   imports: [IconActionComponent, RouterLink, SecureSearchComponent],
   templateUrl: './patienten-page.component.html',
   styleUrl: './patienten-page.component.scss',

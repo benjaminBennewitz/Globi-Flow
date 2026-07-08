@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "globi-flow-frontend": {
+    "globi-flow": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -12,12 +12,12 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "dd",
+      "prefix": "gf",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/globi-flow-frontend",
+            "outputPath": "dist/globi-flow",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
@@ -70,10 +70,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "globi-flow-frontend:build:production"
+              "buildTarget": "globi-flow:build:production"
             },
             "development": {
-              "buildTarget": "globi-flow-frontend:build:development"
+              "buildTarget": "globi-flow:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -87,4 +87,4 @@
       }
     }
   }
-}
+}

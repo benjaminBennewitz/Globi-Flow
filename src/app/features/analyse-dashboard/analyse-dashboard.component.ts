@@ -10,7 +10,7 @@ import { DashboardTrend, Laborwert, LaborwertGruppe, LaborwertStatus } from '../
 
 /** Dashboard-Komponente mit Fokus auf Werte, Graphen und Trends. */
 @Component({
-  selector: 'dd-analyse-dashboard',
+  selector: 'gf-analyse-dashboard',
   imports: [],
   templateUrl: './analyse-dashboard.component.html',
   styleUrl: './analyse-dashboard.component.scss',

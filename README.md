@@ -1,6 +1,74 @@
-# Globi Flow Frontend
+<div align="center">
+  <img src="src/assets/img/globiflow-logo.webp" alt="Globi Flow Logo" width="118" />
 
-Angular 21 frontend basis for the local Globi Flow lab-results assistant.
+  <h1>Globi Flow</h1>
+
+  <p><strong>Lokales Laborwerte-Assistenzsystem für Import, ärztliche Prüfung und verständliche Patientenberichte.</strong></p>
+
+  <p><a href="https://github.com/benjaminBennewitz/Globi-Flow.git">Repository</a></p>
+
+  <br>
+
+  <img alt="Angular 21.2" src="docs/readme/badge-angular.svg" width="170">
+  <img alt="Local First" src="docs/readme/badge-local.svg" width="170">
+  <img alt="Medical Review" src="docs/readme/badge-review.svg" width="170">
+</div>
+
+---
+
+## Projektidee
+
+Globi Flow ist ein lokales Frontend für einen vollständigen Laborwerte-Workflow. Die App trennt Import, Analyse, ärztliche Prüfung und Patientenbericht klar voneinander. Ziel ist eine nachvollziehbare Struktur für Testdaten-Laborbefunde, ohne echte Patientendaten und ohne externe Analyse- oder OCR-Services.
+
+<table>
+  <tr>
+    <td width="33%"><strong>Import</strong><br>PDF hochladen, Demo starten, Confidence erfassen und Rohdaten sichtbar machen.</td>
+    <td width="33%"><strong>Review</strong><br>Unsichere Werte prüfen, korrigieren und für Auswertungen freigeben.</td>
+    <td width="33%"><strong>Report</strong><br>Freigegebene Werte patientenverständlich als HTML-/Print-Ansicht darstellen.</td>
+  </tr>
+</table>
+
+## Designsystem
+
+Die Oberfläche nutzt ein helles, gebrochenes Soft-UI-System mit medizinischem Blau, warmem Akzent und klaren Statusfarben. Die wichtigsten Tokens sind direkt aus dem Designsystem übernommen.
+
+![Globi Flow Farbpalette](docs/readme/globi-flow-palette.svg)
+
+## Preview
+
+| Übersicht | Review | Patientenbericht |
+|---|---|---|
+| ![Globi Flow Übersicht](docs/readme/globi-flow-overview.svg) | ![Globi Flow Review](docs/readme/globi-flow-review.svg) | ![Globi Flow Patientenbericht](docs/readme/globi-flow-report.svg) |
+
+## Workflow
+
+```text
+Testdaten-PDF / Demo
+        ↓
+Lokaler Importjob
+        ↓
+PDF-Textanalyse oder lokale OCR
+        ↓
+Normalisierung von Wert, Einheit und Referenzbereich
+        ↓
+Confidence Score + Review Queue
+        ↓
+Ärztliche Prüfung und Freigabe
+        ↓
+Dashboard, Verlauf und Patientenbericht
+```
+
+## Aktuelle Frontend-Routen
+
+| Route | Zweck |
+|---|---|
+| `/uebersicht` | Praxisübersicht mit Kennzahlen, Verlauf und Aufgaben |
+| `/patienten` | Testpersonen, aktiver Patient und Befundkontext |
+| `/importe` | Upload, Demo-Import, Importstatus und Fortschritt |
+| `/review` | Prüfschleuse für unsichere Laborwerte |
+| `/auswertung` | Analyseansicht mit Gruppen, Trends und Auffälligkeiten |
+| `/wissensbasis` | Pflege kontrollierter Erklärtexte und Quellen |
+| `/berichte` | Patientengerechte HTML-/Print-Vorschau |
 
 ## Start
 
@@ -9,34 +77,40 @@ npm install
 npm start
 ```
 
-## Pflichtdateien
+Die lokale Entwicklung läuft standardmäßig auf Port `4300`.
 
-- Angular workspace configuration
-- SCSS design system structure
-- Local font integration paths
-- Material Symbols integration
-- Strict robots exclusion
-- PowerShell tree generator
-- Project tools documentation
+```powershell
+npm run build:prod
+```
 
+Der Production-Build wird nach `dist/globi-flow` geschrieben.
 
-## Produktkern
+## Projektstruktur
 
-Die App soll zwei Aufgaben klar trennen:
+```text
+src/app/core        Modelle, Mockdaten, API-Endpunkte, Security-Utilities
+src/app/features    Wiederverwendbare Feature-Komponenten
+src/app/pages       Routen-Komponenten
+src/app/shared      Navigation, Suche, Toasts und UI-Bausteine
+src/styles          Globale Tokens, Basis, Utilities und Animationen
+src/assets          Logo, Favicon, Fonts und Testdaten-PDF
+```
 
-1. **Daten belastbar machen**: Befunde importieren, Werte erkennen, Einheiten und Referenzbereiche normalisieren, Confidence bewerten und unsichere Werte in eine ärztliche Prüfschleuse geben.
-2. **Geprüfte Daten verständlich machen**: geprüfte Werte priorisieren, Verläufe und Referenzbereiche vergleichbar anzeigen und daraus einen patientenverständlichen Bericht erzeugen.
+## Fachliche Leitplanken
 
-Der Hauptworkflow lautet: **Patienten → Importe → Prüfen → Analyse → Patientenbericht**. Die Wissensbasis ist kein Arbeitsschritt im Tagesworkflow, sondern ein Verwaltungsbereich für kontrollierte Erklärtexte, Quellen und Disclaimer.
+- Es werden ausschließlich künstliche Testdaten genutzt.
+- Die App stellt keine Diagnosen.
+- Medizinische Bewertung und Freigabe bleiben beim Arzt.
+- Wissensinhalte stammen aus kontrollierten Einträgen, nicht aus Laufzeit-KI-Ausgaben.
+- PDF-Analyse und OCR sind für lokale Verarbeitung vorgesehen.
 
-## UX-Leitlinie
+## Rebranding-Stand
 
-- `/importe` beantwortet: Welche Rohdaten wurden erkannt und wie sicher ist der Import?
-- `/review` beantwortet: Welche erkannten Werte müssen korrigiert oder bestätigt werden?
-- `/auswertung` beantwortet: Welche geprüften Daten sind auffällig, vergleichbar und im Verlauf relevant?
-- `/berichte` beantwortet: Was darf dem Patienten verständlich und druckfertig gezeigt werden?
-
+- Angular-Projektname: `globi-flow`
+- Angular-Selector-Prefix: `gf`
+- CSS-/SCSS-Token-Prefix: `gf`
+- Repository: `https://github.com/benjaminBennewitz/Globi-Flow.git`
 
 ## Version
 
-Die Basis nutzt Angular 21.2.x wie das Portfolio-Projekt.
+Angular `21.2.x`

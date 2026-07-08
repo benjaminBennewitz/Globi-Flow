@@ -14,7 +14,7 @@ import { ToastService } from '../../shared/services/toast.service';
 
 /** Route `/berichte` für Berichtsvorschau und Printansicht. */
 @Component({
-  selector: 'dd-berichte-page',
+  selector: 'gf-berichte-page',
   imports: [],
   templateUrl: './berichte-page.component.html',
   styleUrl: './berichte-page.component.scss',

@@ -1,5 +1,5 @@
 {
-  "name": "globi-flow-frontend",
+  "name": "globi-flow",
   "version": "0.1.0",
   "description": "Angular frontend for the local Globi Flow lab-results assistant.",
   "author": "Benjamin Bennewitz",
@@ -31,6 +31,6 @@
     "jsdom": "^29.1.1",
     "sass": "^1.93.0",
     "typescript": "~5.9.3",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.10"
   }
 }

@@ -1,28 +1,28 @@
 <!-- src/app/app.component.html -->
 
 @if (startanimationSichtbar()) {
-  <section class="dd-startup" [class.is-leaving]="startanimationSchliesst()" aria-label="Globi Flow wird geladen" aria-live="polite">
-    <div class="dd-startup__content">
-      <div class="dd-startup__logo-wrap" aria-hidden="true">
-        <span class="dd-startup__spin"></span>
-        <span class="dd-startup__glow"></span>
-        <img class="dd-startup__logo" src="assets/img/globiflow-logo.webp" width="132" height="132" alt="" decoding="async">
+  <section class="gf-startup" [class.is-leaving]="startanimationSchliesst()" aria-label="Globi Flow wird geladen" aria-live="polite">
+    <div class="gf-startup__content">
+      <div class="gf-startup__logo-wrap" aria-hidden="true">
+        <span class="gf-startup__spin"></span>
+        <span class="gf-startup__glow"></span>
+        <img class="gf-startup__logo" src="assets/img/globiflow-logo.webp" width="132" height="132" alt="" decoding="async">
       </div>
 
-      <p class="dd-startup__eyebrow">Lokale Laboranalyse</p>
+      <p class="gf-startup__eyebrow">Lokale Laboranalyse</p>
       <h1>Globi Flow</h1>
-      <p class="dd-startup__text">Laborwerte werden vorbereitet. Verläufe, Review und Bericht laden.</p>
+      <p class="gf-startup__text">Laborwerte werden vorbereitet. Verläufe, Review und Bericht laden.</p>
 
-      <div class="dd-startup__progress-meta">
+      <div class="gf-startup__progress-meta">
         <span>Systemstart</span>
-        <strong class="dd-data-text">{{ startFortschritt() }}%</strong>
+        <strong class="gf-data-text">{{ startFortschritt() }}%</strong>
       </div>
 
-      <div class="dd-startup__progress" role="progressbar" aria-label="Startfortschritt" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="startFortschritt()">
+      <div class="gf-startup__progress" role="progressbar" aria-label="Startfortschritt" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="startFortschritt()">
         <span [style.width.%]="startFortschritt()"></span>
       </div>
 
-      <div class="dd-startup__steps" aria-hidden="true">
+      <div class="gf-startup__steps" aria-hidden="true">
         <span>Import</span>
         <span>Analyse</span>
         <span>Bericht</span>
@@ -31,10 +31,10 @@
   </section>
 }
 
-<dd-app-navigation />
+<gf-app-navigation />
 
-<main class="dd-app-main">
+<main class="gf-app-main">
   <router-outlet />
 </main>
 
-<dd-toast-container />
+<gf-toast-container />

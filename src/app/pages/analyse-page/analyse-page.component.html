@@ -5,15 +5,15 @@
   @let overlayWerte = sichtbareWerte.slice(0, 4);
   @let referenzWerte = sichtbareWerte.slice(0, 3);
 
-  <section class="dd-auswertung-route" aria-labelledby="auswertung-title">
-    <header class="dd-auswertung-route__headline">
+  <section class="gf-auswertung-route" aria-labelledby="auswertung-title">
+    <header class="gf-auswertung-route__headline">
       <div>
-        <span class="dd-eyebrow">Fachliche Analyse</span>
+        <span class="gf-eyebrow">Fachliche Analyse</span>
         <h1 id="auswertung-title">Auswertung</h1>
         <p>Laborwerte priorisieren, Referenzbereiche prüfen und Verläufe zwischen Befunden vergleichen.</p>
       </div>
 
-      <div class="dd-auswertung-route__context">
+      <div class="gf-auswertung-route__context">
         <article>
           <span>Testperson</span>
           <strong>{{ patientContext.aktiverPatient().name }}</strong>
@@ -29,8 +29,8 @@
       </div>
     </header>
 
-    <section class="dd-auswertung-route__filters dd-neu-card" aria-label="Auswertungsfilter">
-      <div class="dd-auswertung-route__patient-context">
+    <section class="gf-auswertung-route__filters gf-neu-card" aria-label="Auswertungsfilter">
+      <div class="gf-auswertung-route__patient-context">
         <span>Aktiver Patient</span>
         <strong>{{ patientContext.aktiverPatient().name }}</strong>
         <small>{{ patientContext.aktiverPatient().nummer }} · über Topbar oder Patientenroute wechseln</small>
@@ -38,7 +38,7 @@
 
       <div>
         <span>Gruppe</span>
-        <div class="dd-auswertung-route__chips">
+        <div class="gf-auswertung-route__chips">
           <button type="button" [class.is-active]="aktiveGruppe() === 'alle'" (click)="gruppeSetzen('alle')">Alle</button>
           @for (gruppe of ansicht.gruppen; track gruppe.key) {
             <button type="button" [class.is-active]="aktiveGruppe() === gruppe.name" (click)="gruppeSetzen(gruppe.name)">{{ gruppe.name }}</button>
@@ -48,22 +48,22 @@
 
       <div>
         <span>Status</span>
-        <div class="dd-auswertung-route__chips">
+        <div class="gf-auswertung-route__chips">
           @for (filter of statusFilter; track filter.key) {
             <button type="button" [class.is-active]="aktiverStatus() === filter.key" (click)="statusSetzen(filter.key)">{{ filter.label }}</button>
           }
         </div>
       </div>
 
-      <button class="dd-auswertung-route__toggle" type="button" [class.is-active]="nurGepruefteWerte()" (click)="gepruefteUmschalten()">
+      <button class="gf-auswertung-route__toggle" type="button" [class.is-active]="nurGepruefteWerte()" (click)="gepruefteUmschalten()">
         <span class="material-symbols-outlined" aria-hidden="true">verified</span>
         Nur geprüfte Werte
       </button>
     </section>
 
-    <div class="dd-auswertung-route__kpis">
+    <div class="gf-auswertung-route__kpis">
       @for (kennzahl of kennzahlen(ansicht); track kennzahl.label) {
-        <article class="dd-auswertung-route__kpi is-{{ kennzahl.status }}" tabindex="0">
+        <article class="gf-auswertung-route__kpi is-{{ kennzahl.status }}" tabindex="0">
           <span>{{ kennzahl.label }}</span>
           <strong>{{ kennzahl.wert }}</strong>
           <small>{{ kennzahl.hinweis }}</small>
@@ -72,21 +72,21 @@
       }
     </div>
 
-    <section class="dd-auswertung-route__prep dd-neu-card" aria-labelledby="prep-title">
-      <header class="dd-auswertung-route__prep-head">
+    <section class="gf-auswertung-route__prep gf-neu-card" aria-labelledby="prep-title">
+      <header class="gf-auswertung-route__prep-head">
         <div>
-          <span class="dd-eyebrow">Datenaufbereitung</span>
+          <span class="gf-eyebrow">Datenaufbereitung</span>
           <h2 id="prep-title">Was ist aus dem Befund wirklich nutzbar?</h2>
           <p>Diese Ebene zeigt vor der fachlichen Interpretation, wie belastbar, vergleichbar und berichtsfähig die erkannten Werte sind.</p>
         </div>
-        <a class="dd-button dd-button--secondary" [routerLink]="analyseZielRoute(ansicht)">{{ naechsterAnalyseSchritt(ansicht) }}</a>
+        <a class="gf-button gf-button--secondary" [routerLink]="analyseZielRoute(ansicht)">{{ naechsterAnalyseSchritt(ansicht) }}</a>
       </header>
 
-      <div class="dd-auswertung-route__prep-grid">
-        <article class="dd-auswertung-route__score">
+      <div class="gf-auswertung-route__prep-grid">
+        <article class="gf-auswertung-route__score">
           <span>Aufbereitungsscore</span>
-          <div class="dd-auswertung-route__score-ring" [style.background]="scoreGradient(ansicht)" aria-label="Aufbereitungsscore">
-            <span class="dd-auswertung-route__ring-content">
+          <div class="gf-auswertung-route__score-ring" [style.background]="scoreGradient(ansicht)" aria-label="Aufbereitungsscore">
+            <span class="gf-auswertung-route__ring-content">
               <strong>{{ aufbereitungsScore(ansicht) }}%</strong>
               <small>bereinigt</small>
             </span>
@@ -94,10 +94,10 @@
           <p>Confidence minus Review-Risiko. Dieser Wert sagt nicht, ob jemand gesund ist, sondern ob die Daten sauber genug für Verlauf und Bericht sind.</p>
         </article>
 
-        <article class="dd-auswertung-route__distribution">
+        <article class="gf-auswertung-route__distribution">
           <span>Statusverteilung</span>
-          <div class="dd-auswertung-route__distribution-donut" [style.background]="verteilungsGradient(ansicht)" aria-label="Statusverteilung">
-            <span class="dd-auswertung-route__ring-content">
+          <div class="gf-auswertung-route__distribution-donut" [style.background]="verteilungsGradient(ansicht)" aria-label="Statusverteilung">
+            <span class="gf-auswertung-route__ring-content">
               <strong>{{ ansicht.werte.length }}</strong>
               <small>Werte</small>
             </span>
@@ -109,7 +109,7 @@
           </dl>
         </article>
 
-        <article class="dd-auswertung-route__overlay">
+        <article class="gf-auswertung-route__overlay">
           <header>
             <div>
               <span>Überlagerbarer Verlauf</span>
@@ -118,31 +118,31 @@
             <small>{{ ansicht.zeitraum }}</small>
           </header>
 
-          <div class="dd-auswertung-route__overlay-chart">
+          <div class="gf-auswertung-route__overlay-chart">
             <svg viewBox="0 0 700 260" role="img" aria-label="Normalisierte Verlaufslinien der priorisierten Werte">
-              <rect class="dd-auswertung-route__overlay-frame" x="86" y="38" width="540" height="164" rx="18"></rect>
-              <rect class="dd-auswertung-route__overlay-band is-high" x="86" y="38" width="540" height="58" rx="18"></rect>
-              <rect class="dd-auswertung-route__overlay-band is-ok" x="86" y="96" width="540" height="62"></rect>
-              <rect class="dd-auswertung-route__overlay-band is-low" x="86" y="158" width="540" height="44" rx="18"></rect>
-              <path class="dd-auswertung-route__overlay-grid" d="M86 202 H626 M86 158 H626 M86 96 H626 M86 38 H626"></path>
-              <path class="dd-auswertung-route__overlay-reference" d="M86 96 H626 M86 158 H626"></path>
+              <rect class="gf-auswertung-route__overlay-frame" x="86" y="38" width="540" height="164" rx="18"></rect>
+              <rect class="gf-auswertung-route__overlay-band is-high" x="86" y="38" width="540" height="58" rx="18"></rect>
+              <rect class="gf-auswertung-route__overlay-band is-ok" x="86" y="96" width="540" height="62"></rect>
+              <rect class="gf-auswertung-route__overlay-band is-low" x="86" y="158" width="540" height="44" rx="18"></rect>
+              <path class="gf-auswertung-route__overlay-grid" d="M86 202 H626 M86 158 H626 M86 96 H626 M86 38 H626"></path>
+              <path class="gf-auswertung-route__overlay-reference" d="M86 96 H626 M86 158 H626"></path>
               <text x="66" y="42">hoch</text>
               <text x="66" y="131">ok</text>
               <text x="66" y="204">niedrig</text>
 
               @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
-                <path class="dd-auswertung-route__overlay-line {{ overlayFarbKlasse(index) }}" pathLength="100" [attr.d]="normalisierteVerlaufPfad(eintrag)"></path>
-                <circle class="dd-auswertung-route__overlay-point {{ overlayFarbKlasse(index) }}" [attr.cx]="normalisierterLetzterPunktX(eintrag)" [attr.cy]="normalisierterLetzterPunktY(eintrag)" r="4.6"></circle>
+                <path class="gf-auswertung-route__overlay-line {{ overlayFarbKlasse(index) }}" pathLength="100" [attr.d]="normalisierteVerlaufPfad(eintrag)"></path>
+                <circle class="gf-auswertung-route__overlay-point {{ overlayFarbKlasse(index) }}" [attr.cx]="normalisierterLetzterPunktX(eintrag)" [attr.cy]="normalisierterLetzterPunktY(eintrag)" r="4.6"></circle>
               }
 
               @if (overlayWerte[0]; as basisWert) {
                 @for (punkt of basisWert.verlauf; track punkt.datum; let index = $index) {
-                  <text class="dd-auswertung-route__overlay-label" [attr.x]="normalisierterPunktX(basisWert, index)" y="236">{{ punkt.label }}</text>
+                  <text class="gf-auswertung-route__overlay-label" [attr.x]="normalisierterPunktX(basisWert, index)" y="236">{{ punkt.label }}</text>
                 }
               }
             </svg>
 
-            <div class="dd-auswertung-route__overlay-current" aria-label="Aktuelle normalisierte Werte">
+            <div class="gf-auswertung-route__overlay-current" aria-label="Aktuelle normalisierte Werte">
               <span>Aktuell</span>
               @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
                 <button class="{{ overlayFarbKlasse(index) }}" type="button" (click)="wertAuswaehlen(eintrag)">
@@ -153,7 +153,7 @@
             </div>
           </div>
 
-          <div class="dd-auswertung-route__overlay-legend">
+          <div class="gf-auswertung-route__overlay-legend">
             @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
               <button type="button" (click)="wertAuswaehlen(eintrag)">
                 <span class="{{ overlayFarbKlasse(index) }}"></span>
@@ -164,8 +164,8 @@
         </article>
       </div>
 
-      <div class="dd-auswertung-route__prep-lists">
-        <article class="dd-auswertung-route__trend-panel">
+      <div class="gf-auswertung-route__prep-lists">
+        <article class="gf-auswertung-route__trend-panel">
           <header>
             <h3>Tendenzen</h3>
             <span>{{ trendAnzahl(ansicht) }} relevant</span>
@@ -182,7 +182,7 @@
           </div>
         </article>
 
-        <article class="dd-auswertung-route__range-panel">
+        <article class="gf-auswertung-route__range-panel">
           <header>
             <h3>Referenzfelder</h3>
             <span>aktuell gegen Normbereich</span>
@@ -192,7 +192,7 @@
               <button type="button" (click)="wertAuswaehlen(eintrag)">
                 <strong>{{ eintrag.name }}</strong>
                 <small>{{ messwert(eintrag.wert, eintrag.einheit) }}</small>
-                <span class="dd-auswertung-route__mini-range">
+                <span class="gf-auswertung-route__mini-range">
                   <i></i>
                   <b [style.left]="normalisiertePosition(eintrag)"></b>
                 </span>
@@ -201,7 +201,7 @@
           </div>
         </article>
 
-        <article class="dd-auswertung-route__next">
+        <article class="gf-auswertung-route__next">
           <span>Nächster sinnvoller Schritt</span>
           <strong>{{ naechsterAnalyseSchritt(ansicht) }}</strong>
           <p>{{ analyseFokusText(ansicht) }}</p>
@@ -210,8 +210,8 @@
     </section>
 
     @if (aktiverWert(ansicht); as wert) {
-      <div class="dd-auswertung-route__main">
-        <section class="dd-auswertung-route__priority dd-neu-card" aria-labelledby="priority-title">
+      <div class="gf-auswertung-route__main">
+        <section class="gf-auswertung-route__priority gf-neu-card" aria-labelledby="priority-title">
           <header>
             <div>
               <h2 id="priority-title">Priorisierte Auffälligkeiten</h2>
@@ -219,10 +219,10 @@
             </div>
           </header>
 
-          <div class="dd-auswertung-route__value-list">
+          <div class="gf-auswertung-route__value-list">
             @for (eintrag of sichtbareWerte; track eintrag.id) {
-              <button class="dd-auswertung-route__value-row" [class.is-active]="eintrag.id === wert.id" type="button" (click)="wertAuswaehlen(eintrag)">
-                <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
+              <button class="gf-auswertung-route__value-row" [class.is-active]="eintrag.id === wert.id" type="button" (click)="wertAuswaehlen(eintrag)">
+                <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
                 <strong>{{ eintrag.name }}</strong>
                 <span>{{ messwert(eintrag.wert, eintrag.einheit) }}</span>
                 <small>{{ delta(eintrag.veraenderungAbsolut, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent) }}%</small>
@@ -232,17 +232,17 @@
           </div>
         </section>
 
-        <section class="dd-auswertung-route__detail dd-neu-card" aria-labelledby="detail-title">
+        <section class="gf-auswertung-route__detail gf-neu-card" aria-labelledby="detail-title">
           <header>
             <div>
-              <span class="dd-chip {{ statusKlasse(wert.status) }}">{{ wert.status }}</span>
+              <span class="gf-chip {{ statusKlasse(wert.status) }}">{{ wert.status }}</span>
               <h2 id="detail-title">{{ wert.name }}</h2>
               <p>{{ wert.hinweis }}</p>
             </div>
             <strong>{{ messwert(wert.wert, wert.einheit) }}</strong>
           </header>
 
-          <dl class="dd-auswertung-route__meta">
+          <dl class="gf-auswertung-route__meta">
             <div>
               <dt>Referenz</dt>
               <dd>{{ messwert(wert.referenzMin, wert.einheit) }} – {{ messwert(wert.referenzMax, wert.einheit) }}</dd>
@@ -261,43 +261,43 @@
             </div>
           </dl>
 
-          <div class="dd-auswertung-route__range" aria-label="Referenzbereich">
-            <span class="dd-auswertung-route__range-line"></span>
-            <span class="dd-auswertung-route__range-ref" [style.left]="referenzStart(wert)" [style.width]="referenzBreite(wert)"></span>
-            <span class="dd-auswertung-route__range-marker" [style.left]="markerPosition(wert)"></span>
+          <div class="gf-auswertung-route__range" aria-label="Referenzbereich">
+            <span class="gf-auswertung-route__range-line"></span>
+            <span class="gf-auswertung-route__range-ref" [style.left]="referenzStart(wert)" [style.width]="referenzBreite(wert)"></span>
+            <span class="gf-auswertung-route__range-marker" [style.left]="markerPosition(wert)"></span>
           </div>
 
-          <div class="dd-auswertung-route__range-labels">
+          <div class="gf-auswertung-route__range-labels">
             <span>niedrig</span>
             <span>Referenzbereich</span>
             <span>erhöht</span>
           </div>
 
-          <svg class="dd-auswertung-route__chart" [class.is-animation-a]="diagrammAnimationsToken() % 2 === 0" [class.is-animation-b]="diagrammAnimationsToken() % 2 === 1" viewBox="0 0 480 180" role="img" [attr.aria-label]="wert.name + ' Verlauf'">
+          <svg class="gf-auswertung-route__chart" [class.is-animation-a]="diagrammAnimationsToken() % 2 === 0" [class.is-animation-b]="diagrammAnimationsToken() % 2 === 1" viewBox="0 0 480 180" role="img" [attr.aria-label]="wert.name + ' Verlauf'">
             <line x1="46" y1="154" x2="438" y2="154"></line>
             <rect x="46" [attr.y]="referenzBandY(wert)" width="392" [attr.height]="referenzBandHoehe(wert)" rx="10"></rect>
-            <path class="dd-auswertung-route__chart-line" pathLength="100" [attr.d]="verlaufPfad(wert)"></path>
+            <path class="gf-auswertung-route__chart-line" pathLength="100" [attr.d]="verlaufPfad(wert)"></path>
             @for (punkt of wert.verlauf; track punkt.datum; let index = $index) {
-              <circle class="dd-auswertung-route__chart-point" [attr.cx]="punktX(wert, index)" [attr.cy]="punktY(wert, punkt.wert)" r="3.6" [style.animation-delay.ms]="240 + index * 90"></circle>
+              <circle class="gf-auswertung-route__chart-point" [attr.cx]="punktX(wert, index)" [attr.cy]="punktY(wert, punkt.wert)" r="3.6" [style.animation-delay.ms]="240 + index * 90"></circle>
               <text [attr.x]="punktX(wert, index)" y="172">{{ punkt.label }}</text>
             }
           </svg>
         </section>
       </div>
 
-      <section class="dd-auswertung-route__comparison dd-neu-card" aria-labelledby="comparison-title">
+      <section class="gf-auswertung-route__comparison gf-neu-card" aria-labelledby="comparison-title">
         <header>
           <div>
             <h2 id="comparison-title">Befundvergleich</h2>
             <p>Aktueller Befund gegen vorherigen Befund mit absoluter und prozentualer Veränderung.</p>
           </div>
-          <a class="dd-button dd-button--secondary" routerLink="/review">Review öffnen</a>
+          <a class="gf-button gf-button--secondary" routerLink="/review">Review öffnen</a>
         </header>
 
-        <div class="dd-auswertung-route__comparison-grid">
+        <div class="gf-auswertung-route__comparison-grid">
           @for (eintrag of sichtbareWerte.slice(0, 6); track eintrag.id) {
             <article>
-              <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
+              <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
               <strong>{{ eintrag.name }}</strong>
               <p>{{ messwert(eintrag.vorherigerWert, eintrag.einheit) }} → {{ messwert(eintrag.wert, eintrag.einheit) }}</p>
               <small class="{{ trendKlasse(eintrag.trend) }}">{{ delta(eintrag.veraenderungAbsolut, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent) }}%</small>
@@ -307,7 +307,7 @@
       </section>
     }
 
-    <section class="dd-auswertung-route__groups dd-neu-card" aria-labelledby="groups-title">
+    <section class="gf-auswertung-route__groups gf-neu-card" aria-labelledby="groups-title">
       <header>
         <div>
           <h2 id="groups-title">Gruppenmatrix</h2>
@@ -315,14 +315,14 @@
         </div>
       </header>
 
-      <div class="dd-auswertung-route__group-grid">
+      <div class="gf-auswertung-route__group-grid">
         @for (gruppe of ansicht.gruppen; track gruppe.key) {
           <article>
             <header>
               <strong>{{ gruppe.name }}</strong>
               <span>{{ gruppenGesamt(gruppe) }} Werte</span>
             </header>
-            <div class="dd-auswertung-route__segments" aria-hidden="true">
+            <div class="gf-auswertung-route__segments" aria-hidden="true">
               <span class="is-normal" [style.width]="gruppenBreite(gruppe.normal, gruppe)"></span>
               <span class="is-niedrig" [style.width]="gruppenBreite(gruppe.niedrig, gruppe)"></span>
               <span class="is-hoch" [style.width]="gruppenBreite(gruppe.hoch, gruppe)"></span>

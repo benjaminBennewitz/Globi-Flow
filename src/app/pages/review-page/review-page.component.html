@@ -6,29 +6,29 @@
 @let kandidat = aktiverKandidat(ansicht);
 @let sichtbare = sichtbareKandidaten(ansicht);
 
-<section class="dd-review-route" aria-labelledby="review-title">
-  <header class="dd-review-route__headline">
+<section class="gf-review-route" aria-labelledby="review-title">
+  <header class="gf-review-route__headline">
     <div>
-      <span class="dd-eyebrow">Ärztliche Prüfschleuse</span>
+      <span class="gf-eyebrow">Ärztliche Prüfschleuse</span>
       <h1 id="review-title">Review</h1>
       <p>Erkannte Laborwerte prüfen, korrigieren und eindeutig dem global ausgewählten Patienten zuordnen.</p>
     </div>
 
-    <aside class="dd-review-route__assignment" aria-label="Aktuelle Patientenzuordnung">
+    <aside class="gf-review-route__assignment" aria-label="Aktuelle Patientenzuordnung">
       <span>Aktiver globaler Kontext</span>
       <strong>{{ patient.name }}</strong>
       <small>{{ befund?.datum || 'kein Befund' }} · {{ befund?.name || 'noch keine Datei' }}</small>
     </aside>
   </header>
 
-  <section class="dd-review-route__context dd-neu-card" aria-label="Review-Kontext">
-    <div class="dd-review-route__patient-locked">
+  <section class="gf-review-route__context gf-neu-card" aria-label="Review-Kontext">
+    <div class="gf-review-route__patient-locked">
       <span>Patient / Testperson</span>
       <strong>{{ patient.name }}</strong>
       <small>{{ patient.nummer }} · Wechsel über Topbar oder Patientenroute</small>
     </div>
 
-    <div class="dd-review-route__befund">
+    <div class="gf-review-route__befund">
       <span>Befund / Importjob</span>
       <div>
         @for (eintrag of patient.befundListe; track eintrag.id) {
@@ -42,16 +42,16 @@
       </div>
     </div>
 
-    <div class="dd-review-route__progress">
+    <div class="gf-review-route__progress">
       <span>Fortschritt</span>
       <strong>{{ fortschritt(ansicht) }}%</strong>
       <i><b [style.width.%]="fortschritt(ansicht)"></b></i>
     </div>
   </section>
 
-  <div class="dd-review-route__kpis">
+  <div class="gf-review-route__kpis">
     @for (kennzahl of kennzahlen(ansicht); track kennzahl.label) {
-      <article class="dd-review-route__kpi is-{{ kennzahl.status }}" tabindex="0">
+      <article class="gf-review-route__kpi is-{{ kennzahl.status }}" tabindex="0">
         <span>{{ kennzahl.label }}</span>
         <strong>{{ kennzahl.wert }}</strong>
         <small>{{ kennzahl.hinweis }}</small>
@@ -60,22 +60,22 @@
     }
   </div>
 
-  <section class="dd-review-route__filters dd-neu-card" aria-label="Review-Filter">
+  <section class="gf-review-route__filters gf-neu-card" aria-label="Review-Filter">
     <nav>
       @for (filter of filterOptionen; track filter.key) {
         <button type="button" [class.is-active]="aktiverFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
       }
     </nav>
 
-    <div class="dd-review-route__bulk">
-      <button class="dd-button dd-button--secondary" type="button" (click)="sichereWerteBestaetigen()">Sichere Werte bestätigen</button>
-      <button class="dd-button dd-button--primary" type="button" (click)="gepruefteUebernehmen()">Geprüfte übernehmen</button>
+    <div class="gf-review-route__bulk">
+      <button class="gf-button gf-button--secondary" type="button" (click)="sichereWerteBestaetigen()">Sichere Werte bestätigen</button>
+      <button class="gf-button gf-button--primary" type="button" (click)="gepruefteUebernehmen()">Geprüfte übernehmen</button>
     </div>
   </section>
 
   @if (kandidat) {
-    <div class="dd-review-route__workspace">
-      <section class="dd-review-route__queue dd-neu-card" aria-labelledby="queue-title">
+    <div class="gf-review-route__workspace">
+      <section class="gf-review-route__queue gf-neu-card" aria-labelledby="queue-title">
         <header>
           <div>
             <h2 id="queue-title">Review-Warteschlange</h2>
@@ -83,10 +83,10 @@
           </div>
         </header>
 
-        <div class="dd-review-route__queue-list">
+        <div class="gf-review-route__queue-list">
           @for (eintrag of sichtbare; track eintrag.id) {
-            <button class="dd-review-route__queue-item {{ statusKlasse(eintrag.status) }}" [class.is-active]="eintrag.id === kandidat.id" type="button" (click)="kandidatSetzen(eintrag)">
-              <span class="dd-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</span>
+            <button class="gf-review-route__queue-item {{ statusKlasse(eintrag.status) }}" [class.is-active]="eintrag.id === kandidat.id" type="button" (click)="kandidatSetzen(eintrag)">
+              <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</span>
               <strong>{{ eintrag.anzeigename }}</strong>
               <small>{{ eintrag.erkannterWert }} {{ eintrag.erkannteEinheit }} · {{ eintrag.confidence }}%</small>
               <i>{{ quelleLabel(eintrag) }}</i>
@@ -95,20 +95,20 @@
         </div>
       </section>
 
-      <section class="dd-review-route__original dd-neu-card" aria-labelledby="original-title">
+      <section class="gf-review-route__original gf-neu-card" aria-labelledby="original-title">
         <header>
           <div>
             <h2 id="original-title">Originalausschnitt</h2>
             <p>{{ kandidat.originalLabel }}</p>
           </div>
-          <div class="dd-review-route__zoom">
+          <div class="gf-review-route__zoom">
             <button type="button" aria-label="Zoom verringern" (click)="zoomRaus()">−</button>
             <span>{{ (originalZoom() * 100).toFixed(0) }}%</span>
             <button type="button" aria-label="Zoom erhöhen" (click)="zoomRein()">+</button>
           </div>
         </header>
 
-        <div class="dd-review-route__paper" [style.--review-zoom]="originalZoom()">
+        <div class="gf-review-route__paper" [style.--review-zoom]="originalZoom()">
           <div>
             <span>Laborwert</span>
             <span>Ergebnis</span>
@@ -122,23 +122,23 @@
           <small>{{ kandidat.originalText }}</small>
         </div>
 
-        <article class="dd-review-route__raw">
+        <article class="gf-review-route__raw">
           <span>Rohtext</span>
           <p>{{ kandidat.originalText }}</p>
         </article>
       </section>
 
-      <aside class="dd-review-route__form dd-neu-card" aria-labelledby="form-title">
+      <aside class="gf-review-route__form gf-neu-card" aria-labelledby="form-title">
         <header>
           <div>
-            <span class="dd-chip {{ statusKlasse(kandidat.status) }}">{{ statusLabel(kandidat.status) }}</span>
+            <span class="gf-chip {{ statusKlasse(kandidat.status) }}">{{ statusLabel(kandidat.status) }}</span>
             <h2 id="form-title">Korrekturformular</h2>
             <p>{{ patient.name }} · {{ befund?.datum || 'kein Befund' }}</p>
           </div>
           <strong>{{ kandidat.confidence }}%</strong>
         </header>
 
-        <div class="dd-review-route__form-grid">
+        <div class="gf-review-route__form-grid">
           <label>
             <span>Laborwert-Key</span>
             <input type="text" [value]="kandidat.laborwertKey" (input)="textfeldSetzen(kandidat.id, 'laborwertKey', $event)">
@@ -165,12 +165,12 @@
           </label>
         </div>
 
-        <label class="dd-review-route__comment">
+        <label class="gf-review-route__comment">
           <span>Kommentar</span>
           <textarea rows="3" [value]="kandidat.kommentar" placeholder="Ärztlichen Review-Kommentar ergänzen" (input)="textfeldSetzen(kandidat.id, 'kommentar', $event)"></textarea>
         </label>
 
-        <section class="dd-review-route__checks" aria-label="Plausibilitätschecks">
+        <section class="gf-review-route__checks" aria-label="Plausibilitätschecks">
           <h3>Plausibilitätschecks</h3>
           @for (check of kandidat.checks; track check.id) {
             <article class="{{ statusKlasse(check.status) }}">
@@ -183,22 +183,22 @@
           }
         </section>
 
-        <section class="dd-review-route__parser" aria-label="Parserhinweise">
+        <section class="gf-review-route__parser" aria-label="Parserhinweise">
           <h3>Parserhinweise</h3>
           @for (hinweis of kandidat.parserHinweise; track hinweis) {
             <p>{{ hinweis }}</p>
           }
         </section>
 
-        <div class="dd-review-route__actions">
-          <button class="dd-button dd-button--secondary" type="button" (click)="kandidatZurueckstellen(kandidat)">Zurückstellen</button>
-          <button class="dd-button dd-button--secondary" type="button" (click)="korrekturSpeichern(kandidat)">Korrektur speichern</button>
-          <button class="dd-button dd-button--primary" type="button" (click)="speichernUndWeiter(kandidat)">Speichern und weiter</button>
+        <div class="gf-review-route__actions">
+          <button class="gf-button gf-button--secondary" type="button" (click)="kandidatZurueckstellen(kandidat)">Zurückstellen</button>
+          <button class="gf-button gf-button--secondary" type="button" (click)="korrekturSpeichern(kandidat)">Korrektur speichern</button>
+          <button class="gf-button gf-button--primary" type="button" (click)="speichernUndWeiter(kandidat)">Speichern und weiter</button>
         </div>
       </aside>
     </div>
   } @else {
-    <section class="dd-review-route__empty dd-neu-card">
+    <section class="gf-review-route__empty gf-neu-card">
       <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
       <h2>Keine Reviewwerte im aktuellen Kontext</h2>
       <p>Wähle über die Topbar oder die Patientenroute eine andere Testperson oder einen anderen Befund.</p>

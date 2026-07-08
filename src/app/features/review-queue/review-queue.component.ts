@@ -10,7 +10,7 @@ import { ReviewEintrag } from '../../core/models/review-eintrag.model';
 
 /** Review-Komponente für unsichere Importwerte. */
 @Component({
-  selector: 'dd-review-queue',
+  selector: 'gf-review-queue',
   imports: [],
   templateUrl: './review-queue.component.html',
   styleUrl: './review-queue.component.scss',

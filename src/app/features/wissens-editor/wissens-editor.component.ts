@@ -10,7 +10,7 @@ import { Wissenseintrag } from '../../core/models/wissenseintrag.model';
 
 /** Editor-Vorschau für kontrollierte Wissenstexte. */
 @Component({
-  selector: 'dd-wissens-editor',
+  selector: 'gf-wissens-editor',
   imports: [],
   templateUrl: './wissens-editor.component.html',
   styleUrl: './wissens-editor.component.scss',

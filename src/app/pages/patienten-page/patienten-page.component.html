@@ -1,20 +1,20 @@
 <!-- src/app/pages/patienten-page/patienten-page.component.html -->
 
-<section class="dd-patienten-route" aria-labelledby="patienten-title">
-  <header class="dd-patienten-route__headline">
+<section class="gf-patienten-route" aria-labelledby="patienten-title">
+  <header class="gf-patienten-route__headline">
     <div>
-      <span class="dd-eyebrow">Zentraler Arbeitskontext</span>
+      <span class="gf-eyebrow">Zentraler Arbeitskontext</span>
       <h1 id="patienten-title">Patienten</h1>
       <p>Testpersonen verwalten, aktive Zuordnung setzen und hinterlegte Befunde kontrollieren.</p>
     </div>
 
-    <button class="dd-button dd-button--primary" type="button" (click)="modalOeffnen()">
+    <button class="gf-button gf-button--primary" type="button" (click)="modalOeffnen()">
       <span class="material-symbols-outlined" aria-hidden="true">person_add</span>
       Testperson anlegen
     </button>
   </header>
 
-  <section class="dd-patienten-route__active dd-neu-card" aria-label="Aktiver Patient">
+  <section class="gf-patienten-route__active gf-neu-card" aria-label="Aktiver Patient">
     <span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
     <div>
       <small>Aktiver Arbeitskontext</small>
@@ -32,27 +32,27 @@
     }
   </section>
 
-  <section class="dd-patienten-route__toolbar dd-neu-card" aria-label="Patientenfilter">
-    <dd-secure-search label="Patienten durchsuchen" placeholder="Name, ID, Lebensstil oder Befundstatus suchen" [value]="patientContext.patientenSuche()" (valueChange)="sucheSetzen($event)"></dd-secure-search>
+  <section class="gf-patienten-route__toolbar gf-neu-card" aria-label="Patientenfilter">
+    <gf-secure-search label="Patienten durchsuchen" placeholder="Name, ID, Lebensstil oder Befundstatus suchen" [value]="patientContext.patientenSuche()" (valueChange)="sucheSetzen($event)"></gf-secure-search>
 
-    <div class="dd-patienten-route__chips" aria-label="Filter">
+    <div class="gf-patienten-route__chips" aria-label="Filter">
       @for (filter of filterOptionen; track filter.key) {
         <button type="button" [class.is-active]="patientContext.patientenFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
       }
     </div>
 
-    <div class="dd-patienten-route__sort" aria-label="Sortierung">
+    <div class="gf-patienten-route__sort" aria-label="Sortierung">
       @for (option of sortierOptionen; track option.key) {
         <button type="button" [class.is-active]="sortierung() === option.key" (click)="sortierungSetzen(option.key)">{{ option.label }}</button>
       }
     </div>
   </section>
 
-  <section class="dd-patienten-route__grid" aria-label="Patientenliste">
+  <section class="gf-patienten-route__grid" aria-label="Patientenliste">
     @for (patient of sichtbarePatienten(); track patient.id) {
-      <article class="dd-patienten-route__card dd-neu-card" [class.is-selected]="patient.id === patientContext.aktiverPatient().id">
+      <article class="gf-patienten-route__card gf-neu-card" [class.is-selected]="patient.id === patientContext.aktiverPatient().id">
         <header>
-          <span class="dd-chip {{ statusKlasse(patient.status) }}">{{ statusLabel(patient.status) }}</span>
+          <span class="gf-chip {{ statusKlasse(patient.status) }}">{{ statusLabel(patient.status) }}</span>
           <strong>{{ patient.name }}</strong>
           <small>{{ patient.nummer }} · {{ patient.kontext }}</small>
         </header>
@@ -72,9 +72,9 @@
           </div>
         </dl>
 
-        <p class="dd-patienten-route__lifestyle">{{ patient.lebensstil }}</p>
+        <p class="gf-patienten-route__lifestyle">{{ patient.lebensstil }}</p>
 
-        <section class="dd-patienten-route__reports" aria-label="Hinterlegte Befunde">
+        <section class="gf-patienten-route__reports" aria-label="Hinterlegte Befunde">
           @for (befund of patient.befundListe; track befund.id) {
             <button type="button" [class.is-active]="befund.id === patientContext.aktiverBefund()?.id" (click)="patientAuswaehlen(patient); patientContext.befundSetzen(befund)">
               <span>{{ befund.datum }}</span>
@@ -87,9 +87,9 @@
         </section>
 
         <footer>
-          <button class="dd-button dd-button--secondary" type="button" (click)="patientAuswaehlen(patient)">Auswählen</button>
-          <a class="dd-button dd-button--secondary" routerLink="/review" (click)="patientAuswaehlen(patient)">Review</a>
-          <a class="dd-button dd-button--primary" routerLink="/auswertung" (click)="patientAuswaehlen(patient)">Auswertung</a>
+          <button class="gf-button gf-button--secondary" type="button" (click)="patientAuswaehlen(patient)">Auswählen</button>
+          <a class="gf-button gf-button--secondary" routerLink="/review" (click)="patientAuswaehlen(patient)">Review</a>
+          <a class="gf-button gf-button--primary" routerLink="/auswertung" (click)="patientAuswaehlen(patient)">Auswertung</a>
         </footer>
       </article>
     }
@@ -97,17 +97,17 @@
 </section>
 
 @if (modalOffen()) {
-  <section class="dd-patienten-route__modal" role="dialog" aria-modal="true" aria-labelledby="patient-modal-title">
-    <div class="dd-patienten-route__modal-card">
+  <section class="gf-patienten-route__modal" role="dialog" aria-modal="true" aria-labelledby="patient-modal-title">
+    <div class="gf-patienten-route__modal-card">
       <header>
         <div>
           <h2 id="patient-modal-title">Testperson anlegen</h2>
           <p>Neue lokale Testperson für Import, Review und Auswertung vorbereiten.</p>
         </div>
-        <dd-icon-action icon="close" label="Modal schließen" tone="danger" (action)="modalSchliessen()"></dd-icon-action>
+        <gf-icon-action icon="close" label="Modal schließen" tone="danger" (action)="modalSchliessen()"></gf-icon-action>
       </header>
 
-      <div class="dd-patienten-route__form">
+      <div class="gf-patienten-route__form">
         <label>
           <span>Anzeigename</span>
           <input type="text" placeholder="z. B. Mara" [value]="neuerVorname()" (input)="vornameAendern($event)">
@@ -124,15 +124,15 @@
           <span>Geburtsdatum</span>
           <input type="text" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()" (input)="geburtsdatumAendern($event)">
         </label>
-        <div class="dd-patienten-route__field dd-patienten-route__select-field">
+        <div class="gf-patienten-route__field gf-patienten-route__select-field">
           <span>Geschlecht</span>
-          <button class="dd-patienten-route__select-trigger" type="button" aria-haspopup="listbox" [attr.aria-expanded]="geschlechtAuswahlOffen()" (click)="geschlechtAuswahlUmschalten()">
+          <button class="gf-patienten-route__select-trigger" type="button" aria-haspopup="listbox" [attr.aria-expanded]="geschlechtAuswahlOffen()" (click)="geschlechtAuswahlUmschalten()">
             <strong>{{ geschlechtLabel(neuesGeschlecht()) }}</strong>
             <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
           </button>
 
           @if (geschlechtAuswahlOffen()) {
-            <div class="dd-patienten-route__select-menu" role="listbox" aria-label="Geschlecht auswählen">
+            <div class="gf-patienten-route__select-menu" role="listbox" aria-label="Geschlecht auswählen">
               @for (option of geschlechtOptionen; track option.key) {
                 <button type="button" role="option" [attr.aria-selected]="neuesGeschlecht() === option.key" [class.is-active]="neuesGeschlecht() === option.key" (click)="geschlechtSetzen(option.key)">
                   {{ option.label }}
@@ -160,9 +160,9 @@
       </div>
 
       <footer>
-        <button class="dd-button dd-button--secondary" type="button" (click)="modalSchliessen()">Abbrechen</button>
-        <button class="dd-button dd-button--secondary" type="button" (click)="patientAnlegen(false)">Speichern</button>
-        <button class="dd-button dd-button--primary" type="button" (click)="patientAnlegen(true)">Speichern und auswählen</button>
+        <button class="gf-button gf-button--secondary" type="button" (click)="modalSchliessen()">Abbrechen</button>
+        <button class="gf-button gf-button--secondary" type="button" (click)="patientAnlegen(false)">Speichern</button>
+        <button class="gf-button gf-button--primary" type="button" (click)="patientAnlegen(true)">Speichern und auswählen</button>
       </footer>
     </div>
   </section>

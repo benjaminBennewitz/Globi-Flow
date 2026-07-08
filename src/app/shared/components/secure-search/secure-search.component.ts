@@ -10,7 +10,7 @@ import { normalisiereSichereSuche } from '../../../core/security/sichere-suche.u
 
 /** Einheitliches Suchfeld für sichere lokale und spätere API-Suchen. */
 @Component({
-  selector: 'dd-secure-search',
+  selector: 'gf-secure-search',
   imports: [],
   templateUrl: './secure-search.component.html',
   styleUrl: './secure-search.component.scss',

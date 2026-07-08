@@ -68,7 +68,7 @@ interface Wissensformular {
 
 /** Route `/wissensbasis` für kontrollierte Erklärungstexte. */
 @Component({
-  selector: 'dd-wissensbasis-page',
+  selector: 'gf-wissensbasis-page',
   imports: [IconActionComponent, SecureSearchComponent],
   templateUrl: './wissensbasis-page.component.html',
   styleUrl: './wissensbasis-page.component.scss',

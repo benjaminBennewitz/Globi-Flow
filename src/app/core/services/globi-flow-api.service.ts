@@ -1,8 +1,8 @@
-/* src/app/core/services/daten-dashboard-api.service.ts */
+/* src/app/core/services/globi-flow-api.service.ts */
 
 /**
  * @file Kapselt die Datenversorgung und bleibt für die spätere REST-API vorbereitet.
- * @module DatenDashboardApiService
+ * @module GlobiFlowApiService
  */
 
 import { Injectable } from '@angular/core';
@@ -27,7 +27,7 @@ import { MOCK_UEBERSICHT } from '../mocks/uebersicht.mock';
 
 /** API-bereiter Datenservice ohne lokale Persistenz. */
 @Injectable({ providedIn: 'root' })
-export class DatenDashboardApiService {
+export class GlobiFlowApiService {
   /** Zentrale API-Routen für die spätere Backend-Anbindung. */
   private readonly apiEndpunkte = API_ENDPUNKTE;
 

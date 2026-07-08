@@ -12,7 +12,7 @@ import { ToastContainerComponent } from './shared/components/toast-container/toa
 
 /** Root-Komponente der Anwendung mit Shell, RouterOutlet, Startanimation und globalen Toasts. */
 @Component({
-  selector: 'dd-root',
+  selector: 'gf-root',
   imports: [RouterOutlet, AppNavigationComponent, ToastContainerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

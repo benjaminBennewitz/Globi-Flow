@@ -12,84 +12,84 @@
    01   Bericht
    ========================================================================== */
 
-.dd-report {
+.gf-report {
   display: grid;
-  gap: var(--dd-space-4);
+  gap: var(--gf-space-4);
 }
 
 /* ==========================================================================
    02   Papier
    ========================================================================== */
 
-.dd-report__paper {
+.gf-report__paper {
   display: grid;
-  gap: var(--dd-space-4);
-  border-radius: var(--dd-radius-2xl);
+  gap: var(--gf-space-4);
+  border-radius: var(--gf-radius-2xl);
   padding: clamp(1.5rem, 4vw, 4rem);
-  background: var(--dd-color-surface-high);
-  color: var(--dd-color-text);
-  box-shadow: var(--dd-shadow-raised);
+  background: var(--gf-color-surface-high);
+  color: var(--gf-color-text);
+  box-shadow: var(--gf-shadow-raised);
 }
 
-.dd-report__header {
+.gf-report__header {
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: var(--dd-space-4);
-  border-bottom: 1px solid var(--dd-color-border);
-  padding-bottom: var(--dd-space-4);
+  gap: var(--gf-space-4);
+  border-bottom: 1px solid var(--gf-color-border);
+  padding-bottom: var(--gf-space-4);
 }
 
-.dd-report__header span {
-  color: var(--dd-color-text-muted);
+.gf-report__header span {
+  color: var(--gf-color-text-muted);
   font-size: 0.78rem;
   font-weight: 850;
   text-transform: uppercase;
 }
 
-.dd-report__header h3 {
+.gf-report__header h3 {
   margin: 0.25rem 0 0;
   font-size: clamp(1.7rem, 4vw, 3rem);
 }
 
-.dd-report__header strong {
-  color: var(--dd-color-primary);
+.gf-report__header strong {
+  color: var(--gf-color-primary);
   font-size: 1rem;
 }
 
-.dd-report__summary {
-  border-radius: var(--dd-radius-xl);
-  padding: var(--dd-space-4);
-  background: var(--dd-color-primary-soft);
+.gf-report__summary {
+  border-radius: var(--gf-radius-xl);
+  padding: var(--gf-space-4);
+  background: var(--gf-color-primary-soft);
 }
 
 /* ==========================================================================
    03   Abschnitte
    ========================================================================== */
 
-.dd-report__sections {
+.gf-report__sections {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--dd-space-3);
+  gap: var(--gf-space-3);
 }
 
-.dd-report__sections section,
-.dd-report__questions {
-  border-radius: var(--dd-radius-xl);
-  padding: var(--dd-space-4);
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-inset);
+.gf-report__sections section,
+.gf-report__questions {
+  border-radius: var(--gf-radius-xl);
+  padding: var(--gf-space-4);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-inset);
 }
 
-.dd-report h4 {
-  margin: 0 0 var(--dd-space-2);
-  color: var(--dd-color-text);
+.gf-report h4 {
+  margin: 0 0 var(--gf-space-2);
+  color: var(--gf-color-text);
   font-size: 1.05rem;
 }
 
-.dd-report p {
+.gf-report p {
   margin: 0;
-  color: var(--dd-color-text-muted);
+  color: var(--gf-color-text-muted);
   line-height: 1.62;
 }
 
@@ -97,38 +97,38 @@
    04   Fragen
    ========================================================================== */
 
-.dd-report__questions ul {
+.gf-report__questions ul {
   display: grid;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.dd-report__questions li {
+.gf-report__questions li {
   display: grid;
   gap: 0.25rem;
-  border-radius: var(--dd-radius-lg);
-  padding: var(--dd-space-3);
-  background: var(--dd-color-surface-high);
+  border-radius: var(--gf-radius-lg);
+  padding: var(--gf-space-3);
+  background: var(--gf-color-surface-high);
 }
 
-.dd-report__questions span {
-  color: var(--dd-color-primary);
+.gf-report__questions span {
+  color: var(--gf-color-primary);
   font-size: 0.76rem;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.dd-report footer {
-  border-top: 1px solid var(--dd-color-border);
-  padding-top: var(--dd-space-4);
+.gf-report footer {
+  border-top: 1px solid var(--gf-color-border);
+  padding-top: var(--gf-space-4);
 }
 
-.dd-report footer strong {
+.gf-report footer strong {
   display: block;
-  margin-bottom: var(--dd-space-2);
-  color: var(--dd-color-danger);
+  margin-bottom: var(--gf-space-2);
+  color: var(--gf-color-danger);
 }
 
 /* ==========================================================================
@@ -136,17 +136,17 @@
    ========================================================================== */
 
 @media (max-width: 920px) {
-  .dd-report__sections {
+  .gf-report__sections {
     grid-template-columns: 1fr;
   }
 }
 
 @media print {
-  .dd-report {
+  .gf-report {
     display: block;
   }
 
-  .dd-report__paper {
+  .gf-report__paper {
     box-shadow: none;
   }
 }

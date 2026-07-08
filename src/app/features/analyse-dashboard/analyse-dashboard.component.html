@@ -1,38 +1,38 @@
 <!-- src/app/features/analyse-dashboard/analyse-dashboard.component.html -->
 
-<section class="dd-analysis dd-section-panel" id="dashboard" aria-labelledby="dashboard-title">
-  <header class="dd-section-heading dd-analysis__heading">
+<section class="gf-analysis gf-section-panel" id="dashboard" aria-labelledby="dashboard-title">
+  <header class="gf-section-heading gf-analysis__heading">
     <div>
-      <span class="dd-eyebrow">Analyse Dashboard</span>
+      <span class="gf-eyebrow">Analyse Dashboard</span>
       <h2 id="dashboard-title">Die Datenauswertung steht visuell im Mittelpunkt.</h2>
       <p>Referenzbereiche, Verlaufslinien und Balken wachsen dezent ein und bleiben informativ lesbar.</p>
     </div>
-    <button class="dd-button dd-button--secondary" type="button" (click)="datensaetzeUmschalten()">
+    <button class="gf-button gf-button--secondary" type="button" (click)="datensaetzeUmschalten()">
       {{ alleDatensaetzeSichtbar ? 'Datensätze einklappen' : 'Alle Datensätze anzeigen' }}
     </button>
   </header>
 
   @if (aktiverLaborwert; as laborwert) {
-    <article class="dd-analysis__focus">
-      <div class="dd-analysis__focus-copy">
-        <span class="dd-chip {{ statusKlasse(laborwert.status) }}">{{ laborwert.status }}</span>
+    <article class="gf-analysis__focus">
+      <div class="gf-analysis__focus-copy">
+        <span class="gf-chip {{ statusKlasse(laborwert.status) }}">{{ laborwert.status }}</span>
         <h3>{{ laborwert.name }}</h3>
-        <strong class="dd-data-text">{{ laborwert.wert }} {{ laborwert.einheit }}</strong>
+        <strong class="gf-data-text">{{ laborwert.wert }} {{ laborwert.einheit }}</strong>
         <p>{{ laborwert.hinweis }}</p>
       </div>
 
-      <div class="dd-analysis__range" aria-label="Referenzbereich">
-        <div class="dd-analysis__range-line">
-          <span class="dd-analysis__range-band"></span>
-          <span class="dd-analysis__range-marker" [style.left]="wertPosition(laborwert)"></span>
+      <div class="gf-analysis__range" aria-label="Referenzbereich">
+        <div class="gf-analysis__range-line">
+          <span class="gf-analysis__range-band"></span>
+          <span class="gf-analysis__range-marker" [style.left]="wertPosition(laborwert)"></span>
         </div>
-        <div class="dd-analysis__range-labels">
+        <div class="gf-analysis__range-labels">
           <span>{{ laborwert.referenzMin }} {{ laborwert.einheit }}</span>
           <span>{{ laborwert.referenzMax }} {{ laborwert.einheit }}</span>
         </div>
       </div>
 
-      <svg class="dd-analysis__hero-chart" viewBox="0 0 300 150" role="img" aria-label="Animierte Verlaufsgrafik">
+      <svg class="gf-analysis__hero-chart" viewBox="0 0 300 150" role="img" aria-label="Animierte Verlaufsgrafik">
         <path d="M16 128 H284" />
         <path d="M16 32 H284" />
         <polyline [attr.points]="punkteFuerTrend(laborwert.trend)" />
@@ -40,10 +40,10 @@
     </article>
   }
 
-  <div class="dd-analysis__grid">
-    <div class="dd-analysis__groups dd-neu-card">
+  <div class="gf-analysis__grid">
+    <div class="gf-analysis__groups gf-neu-card">
       <h3>Wertgruppen</h3>
-      <div class="dd-analysis__bars">
+      <div class="gf-analysis__bars">
         @for (gruppe of gruppen; track gruppe.key) {
           <article>
             <div>
@@ -56,7 +56,7 @@
       </div>
     </div>
 
-    <div class="dd-analysis__trends dd-neu-card">
+    <div class="gf-analysis__trends gf-neu-card">
       <h3>Verläufe</h3>
       @for (trend of trends; track trend.key) {
         <article>
@@ -72,15 +72,15 @@
     </div>
   </div>
 
-  <div class="dd-analysis__datasets">
+  <div class="gf-analysis__datasets">
     @for (laborwert of laborwerte; track laborwert.id) {
-      <article class="dd-dataset dd-analysis__dataset" [class.is-open]="alleDatensaetzeSichtbar" tabindex="0">
+      <article class="gf-dataset gf-analysis__dataset" [class.is-open]="alleDatensaetzeSichtbar" tabindex="0">
         <header>
           <div>
-            <span class="dd-chip {{ statusKlasse(laborwert.status) }}">{{ laborwert.status }}</span>
+            <span class="gf-chip {{ statusKlasse(laborwert.status) }}">{{ laborwert.status }}</span>
             <h3>{{ laborwert.name }}</h3>
           </div>
-          <strong class="dd-data-text">{{ laborwert.wert }} {{ laborwert.einheit }}</strong>
+          <strong class="gf-data-text">{{ laborwert.wert }} {{ laborwert.einheit }}</strong>
         </header>
         <p>{{ laborwert.hinweis }}</p>
         <dl>

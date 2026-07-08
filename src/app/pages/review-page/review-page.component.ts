@@ -23,7 +23,7 @@ type ReviewTextFeld = 'laborwertKey' | 'anzeigename' | 'korrigierteEinheit' | 'k
 
 /** Route `/review` für ärztliche Qualitätssicherung. */
 @Component({
-  selector: 'dd-review-page',
+  selector: 'gf-review-page',
   imports: [],
   templateUrl: './review-page.component.html',
   styleUrl: './review-page.component.scss',

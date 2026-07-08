@@ -13,128 +13,128 @@
    01   Dashboard
    ========================================================================== */
 
-.dd-analysis {
+.gf-analysis {
   display: grid;
-  gap: var(--dd-space-4);
+  gap: var(--gf-space-4);
 }
 
-.dd-analysis__heading {
+.gf-analysis__heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: var(--dd-space-4);
+  gap: var(--gf-space-4);
 }
 
 /* ==========================================================================
    02   Fokusgrafik
    ========================================================================== */
 
-.dd-analysis__focus {
+.gf-analysis__focus {
   display: grid;
   grid-template-columns: minmax(250px, 0.72fr) minmax(300px, 1fr) minmax(280px, 0.92fr);
-  gap: var(--dd-space-4);
+  gap: var(--gf-space-4);
   align-items: center;
-  border-radius: var(--dd-radius-2xl);
-  padding: var(--dd-space-5);
-  background: var(--dd-color-surface);
-  box-shadow: var(--dd-shadow-raised);
+  border-radius: var(--gf-radius-2xl);
+  padding: var(--gf-space-5);
+  background: var(--gf-color-surface);
+  box-shadow: var(--gf-shadow-raised);
 }
 
-.dd-analysis__focus-copy {
+.gf-analysis__focus-copy {
   display: grid;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
 }
 
-.dd-analysis__focus-copy h3 {
+.gf-analysis__focus-copy h3 {
   margin: 0;
-  color: var(--dd-color-text);
+  color: var(--gf-color-text);
   font-size: 1.55rem;
 }
 
-.dd-analysis__focus-copy strong {
-  color: var(--dd-color-text);
+.gf-analysis__focus-copy strong {
+  color: var(--gf-color-text);
   font-size: clamp(2.8rem, 7vw, 5.6rem);
   font-weight: 950;
   letter-spacing: -0.07em;
   line-height: 0.9;
 }
 
-.dd-analysis__focus-copy p {
+.gf-analysis__focus-copy p {
   margin: 0;
-  color: var(--dd-color-text-muted);
+  color: var(--gf-color-text-muted);
   line-height: 1.55;
 }
 
-.dd-analysis__hero-chart {
+.gf-analysis__hero-chart {
   width: 100%;
   min-height: 220px;
-  border-radius: var(--dd-radius-xl);
-  padding: var(--dd-space-3);
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-inset);
+  border-radius: var(--gf-radius-xl);
+  padding: var(--gf-space-3);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-inset);
 }
 
-.dd-analysis__hero-chart path {
+.gf-analysis__hero-chart path {
   fill: none;
-  stroke: var(--dd-color-border);
+  stroke: var(--gf-color-border);
   stroke-width: 2;
 }
 
-.dd-analysis__hero-chart polyline {
+.gf-analysis__hero-chart polyline {
   fill: none;
-  stroke: var(--dd-color-primary);
+  stroke: var(--gf-color-primary);
   stroke-dasharray: 620;
   stroke-dashoffset: 620;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 9;
-  animation: dd-draw-line 1100ms var(--dd-ease-out) 180ms both;
+  animation: gf-draw-line 1100ms var(--gf-ease-out) 180ms both;
 }
 
 /* ==========================================================================
    03   Referenzbereich
    ========================================================================== */
 
-.dd-analysis__range {
+.gf-analysis__range {
   display: grid;
-  gap: var(--dd-space-3);
+  gap: var(--gf-space-3);
 }
 
-.dd-analysis__range-line {
+.gf-analysis__range-line {
   position: relative;
   height: 72px;
-  border-radius: var(--dd-radius-pill);
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-inset);
+  border-radius: var(--gf-radius-pill);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-inset);
 }
 
-.dd-analysis__range-band {
+.gf-analysis__range-band {
   position: absolute;
   inset: 24px 16%;
-  border-radius: var(--dd-radius-pill);
-  background: linear-gradient(90deg, var(--dd-color-success), var(--dd-color-warning), var(--dd-color-danger));
+  border-radius: var(--gf-radius-pill);
+  background: linear-gradient(90deg, var(--gf-color-success), var(--gf-color-warning), var(--gf-color-danger));
   transform: scaleX(0);
   transform-origin: left center;
-  animation: dd-grow-x 900ms var(--dd-ease-out) both;
+  animation: gf-grow-x 900ms var(--gf-ease-out) both;
 }
 
-.dd-analysis__range-marker {
+.gf-analysis__range-marker {
   position: absolute;
   top: 50%;
   width: 34px;
   height: 34px;
-  border: 7px solid var(--dd-color-surface);
-  border-radius: var(--dd-radius-pill);
-  background: var(--dd-color-primary);
-  box-shadow: var(--dd-shadow-soft);
+  border: 7px solid var(--gf-color-surface);
+  border-radius: var(--gf-radius-pill);
+  background: var(--gf-color-primary);
+  box-shadow: var(--gf-shadow-soft);
   transform: translate(-50%, -50%);
-  animation: dd-soft-pop 520ms var(--dd-ease-pop) 520ms both;
+  animation: gf-soft-pop 520ms var(--gf-ease-pop) 520ms both;
 }
 
-.dd-analysis__range-labels {
+.gf-analysis__range-labels {
   display: flex;
   justify-content: space-between;
-  color: var(--dd-color-text-muted);
+  color: var(--gf-color-text-muted);
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -143,179 +143,179 @@
    04   Gruppen und Trends
    ========================================================================== */
 
-.dd-analysis__grid {
+.gf-analysis__grid {
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: var(--dd-space-4);
+  gap: var(--gf-space-4);
 }
 
-.dd-analysis__groups,
-.dd-analysis__trends {
+.gf-analysis__groups,
+.gf-analysis__trends {
   display: grid;
-  gap: var(--dd-space-4);
-  padding: var(--dd-space-4);
+  gap: var(--gf-space-4);
+  padding: var(--gf-space-4);
 }
 
-.dd-analysis__groups h3,
-.dd-analysis__trends h3 {
+.gf-analysis__groups h3,
+.gf-analysis__trends h3 {
   margin: 0;
   font-size: 1.25rem;
 }
 
-.dd-analysis__bars {
+.gf-analysis__bars {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--dd-space-3);
+  gap: var(--gf-space-3);
   align-items: end;
   min-height: 260px;
 }
 
-.dd-analysis__bars article {
+.gf-analysis__bars article {
   display: grid;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
   min-width: 0;
 }
 
-.dd-analysis__bars article > div {
+.gf-analysis__bars article > div {
   display: flex;
   height: 190px;
   align-items: end;
-  border-radius: var(--dd-radius-xl);
-  padding: var(--dd-space-2);
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-inset);
+  border-radius: var(--gf-radius-xl);
+  padding: var(--gf-space-2);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-inset);
 }
 
-.dd-analysis__bars article > div span {
+.gf-analysis__bars article > div span {
   display: block;
   width: 100%;
   min-height: 18%;
-  border-radius: var(--dd-radius-lg);
-  background: linear-gradient(180deg, var(--dd-color-tertiary), var(--dd-color-primary));
+  border-radius: var(--gf-radius-lg);
+  background: linear-gradient(180deg, var(--gf-color-tertiary), var(--gf-color-primary));
   transform: scaleY(0);
   transform-origin: bottom center;
-  animation: dd-grow-y 850ms var(--dd-ease-out) both;
+  animation: gf-grow-y 850ms var(--gf-ease-out) both;
 }
 
-.dd-analysis__bars strong {
+.gf-analysis__bars strong {
   overflow: hidden;
-  color: var(--dd-color-text);
+  color: var(--gf-color-text);
   font-size: 0.9rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.dd-analysis__bars small {
-  color: var(--dd-color-text-muted);
+.gf-analysis__bars small {
+  color: var(--gf-color-text-muted);
   font-size: 0.76rem;
   font-weight: 750;
 }
 
-.dd-analysis__trends article {
+.gf-analysis__trends article {
   display: grid;
-  gap: var(--dd-space-2);
-  border-radius: var(--dd-radius-xl);
-  padding: var(--dd-space-3);
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-inset);
+  gap: var(--gf-space-2);
+  border-radius: var(--gf-radius-xl);
+  padding: var(--gf-space-3);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-inset);
 }
 
-.dd-analysis__trends header {
+.gf-analysis__trends header {
   display: flex;
   justify-content: space-between;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
 }
 
-.dd-analysis__trends strong {
+.gf-analysis__trends strong {
   font-size: 0.92rem;
 }
 
-.dd-analysis__trends span {
-  color: var(--dd-color-text-muted);
+.gf-analysis__trends span {
+  color: var(--gf-color-text-muted);
   font-size: 0.8rem;
   font-weight: 800;
 }
 
-.dd-analysis__trends svg {
+.gf-analysis__trends svg {
   width: 100%;
   height: 92px;
 }
 
-.dd-analysis__trends polyline {
+.gf-analysis__trends polyline {
   fill: none;
-  stroke: var(--dd-color-primary);
+  stroke: var(--gf-color-primary);
   stroke-dasharray: 520;
   stroke-dashoffset: 520;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 7;
-  animation: dd-draw-line 980ms var(--dd-ease-out) both;
+  animation: gf-draw-line 980ms var(--gf-ease-out) both;
 }
 
 /* ==========================================================================
    05   Datensätze
    ========================================================================== */
 
-.dd-analysis__datasets {
+.gf-analysis__datasets {
   display: grid;
   grid-template-columns: repeat(5, minmax(230px, 1fr));
-  gap: var(--dd-space-3);
+  gap: var(--gf-space-3);
   overflow-x: auto;
   padding: 0.25rem;
 }
 
-.dd-analysis__dataset {
+.gf-analysis__dataset {
   display: grid;
-  gap: var(--dd-space-3);
+  gap: var(--gf-space-3);
   min-width: 230px;
-  padding: var(--dd-space-3);
+  padding: var(--gf-space-3);
 }
 
-.dd-analysis__dataset header {
+.gf-analysis__dataset header {
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
 }
 
-.dd-analysis__dataset h3 {
-  margin: var(--dd-space-2) 0 0;
+.gf-analysis__dataset h3 {
+  margin: var(--gf-space-2) 0 0;
   font-size: 1rem;
 }
 
-.dd-analysis__dataset header strong {
-  color: var(--dd-color-text);
+.gf-analysis__dataset header strong {
+  color: var(--gf-color-text);
   font-size: 1.2rem;
   font-weight: 950;
   text-align: right;
 }
 
-.dd-analysis__dataset p {
+.gf-analysis__dataset p {
   margin: 0;
-  color: var(--dd-color-text-muted);
+  color: var(--gf-color-text-muted);
   line-height: 1.48;
 }
 
-.dd-analysis__dataset dl {
+.gf-analysis__dataset dl {
   display: grid;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
   margin: 0;
 }
 
-.dd-analysis__dataset div {
+.gf-analysis__dataset div {
   min-width: 0;
 }
 
-.dd-analysis__dataset dt {
-  color: var(--dd-color-text-soft);
+.gf-analysis__dataset dt {
+  color: var(--gf-color-text-soft);
   font-size: 0.72rem;
   font-weight: 850;
   text-transform: uppercase;
 }
 
-.dd-analysis__dataset dd {
+.gf-analysis__dataset dd {
   margin: 0.1rem 0 0;
-  color: var(--dd-color-text);
+  color: var(--gf-color-text);
   font-size: 0.86rem;
   font-weight: 800;
 }
@@ -325,23 +325,23 @@
    ========================================================================== */
 
 @media (max-width: 1180px) {
-  .dd-analysis__focus,
-  .dd-analysis__grid {
+  .gf-analysis__focus,
+  .gf-analysis__grid {
     grid-template-columns: 1fr;
   }
 
-  .dd-analysis__heading {
+  .gf-analysis__heading {
     align-items: start;
     flex-direction: column;
   }
 }
 
 @media (max-width: 680px) {
-  .dd-analysis__focus {
-    padding: var(--dd-space-4);
+  .gf-analysis__focus {
+    padding: var(--gf-space-4);
   }
 
-  .dd-analysis__bars {
+  .gf-analysis__bars {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

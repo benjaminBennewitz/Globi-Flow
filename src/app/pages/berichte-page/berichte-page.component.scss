@@ -14,137 +14,137 @@
    01   Route und Steuerung
    ========================================================================== */
 
-.dd-berichte-route {
+.gf-berichte-route {
   display: grid;
-  gap: var(--dd-space-4);
-  width: min(100%, var(--dd-max-width));
+  gap: var(--gf-space-4);
+  width: min(100%, var(--gf-max-width));
   margin-inline: auto;
 }
 
-.dd-berichte-route__headline {
+.gf-berichte-route__headline {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: var(--dd-space-4);
+  gap: var(--gf-space-4);
 }
 
-.dd-berichte-route__headline h1 {
+.gf-berichte-route__headline h1 {
   margin: 0.6rem 0 0;
-  color: var(--dd-color-text);
+  color: var(--gf-color-text);
   font-size: clamp(2rem, 3.2vw, 3.15rem);
   font-weight: 850;
   letter-spacing: -0.045em;
   line-height: 1.05;
 }
 
-.dd-berichte-route__headline p,
-.dd-berichte-route p {
+.gf-berichte-route__headline p,
+.gf-berichte-route p {
   margin: 0;
-  color: var(--dd-color-text-muted);
+  color: var(--gf-color-text-muted);
   line-height: 1.55;
 }
 
-.dd-berichte-route__headline-actions {
+.gf-berichte-route__headline-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
   justify-content: flex-end;
 }
 
-.dd-berichte-route__controls {
+.gf-berichte-route__controls {
   display: grid;
   grid-template-columns: repeat(3, minmax(160px, 1fr)) minmax(280px, 1.2fr);
-  gap: var(--dd-space-3);
+  gap: var(--gf-space-3);
   align-items: stretch;
-  padding: var(--dd-space-4);
+  padding: var(--gf-space-4);
 }
 
-.dd-berichte-route__controls article,
-.dd-berichte-route__controls section {
+.gf-berichte-route__controls article,
+.gf-berichte-route__controls section {
   display: grid;
-  gap: var(--dd-space-1);
-  border-radius: var(--dd-radius-lg);
-  padding: var(--dd-space-3);
-  background: var(--dd-color-bg);
-  box-shadow: var(--dd-shadow-soft);
+  gap: var(--gf-space-1);
+  border-radius: var(--gf-radius-lg);
+  padding: var(--gf-space-3);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-soft);
 }
 
-.dd-berichte-route__controls span,
-.dd-berichte-route__controls small {
-  color: var(--dd-color-text-muted);
+.gf-berichte-route__controls span,
+.gf-berichte-route__controls small {
+  color: var(--gf-color-text-muted);
   font-size: 0.76rem;
   font-weight: 820;
 }
 
-.dd-berichte-route__controls strong {
-  color: var(--dd-color-text);
+.gf-berichte-route__controls strong {
+  color: var(--gf-color-text);
 }
 
-.dd-berichte-route__controls h2 {
+.gf-berichte-route__controls h2 {
   margin: 0;
-  color: var(--dd-color-text);
+  color: var(--gf-color-text);
   font-size: 1rem;
 }
 
-.dd-berichte-route__checks {
+.gf-berichte-route__checks {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--dd-space-2);
+  gap: var(--gf-space-2);
 }
 
-.dd-berichte-route__checks span {
+.gf-berichte-route__checks span {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  border-radius: var(--dd-radius-pill);
+  border-radius: var(--gf-radius-pill);
   padding: 0.34rem 0.64rem;
-  background: var(--dd-color-error-soft);
-  color: var(--dd-color-danger);
+  background: var(--gf-color-error-soft);
+  color: var(--gf-color-danger);
   font-weight: 850;
 }
 
-.dd-berichte-route__checks span.is-ok {
-  background: var(--dd-color-success-soft);
-  color: var(--dd-color-success);
+.gf-berichte-route__checks span.is-ok {
+  background: var(--gf-color-success-soft);
+  color: var(--gf-color-success);
 }
 
-.dd-berichte-route__checks i {
+.gf-berichte-route__checks i {
   font-size: 1rem;
   font-style: normal;
 }
 
 
 
-.dd-berichte-route__headline-actions .dd-button:disabled {
+.gf-berichte-route__headline-actions .gf-button:disabled {
   cursor: not-allowed;
   opacity: 0.56;
 }
 
-.dd-berichte-route__review-warning {
+.gf-berichte-route__review-warning {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr);
-  gap: var(--dd-space-3);
+  gap: var(--gf-space-3);
   align-items: center;
-  padding: var(--dd-space-4);
-  background: var(--dd-color-error-soft);
+  padding: var(--gf-space-4);
+  background: var(--gf-color-error-soft);
 }
 
-.dd-berichte-route__review-warning > span {
+.gf-berichte-route__review-warning > span {
   display: grid;
   width: 44px;
   height: 44px;
   place-items: center;
-  border-radius: var(--dd-radius-lg);
-  background: var(--dd-color-bg);
-  color: var(--dd-color-danger);
-  box-shadow: var(--dd-shadow-soft);
+  border-radius: var(--gf-radius-lg);
+  background: var(--gf-color-bg);
+  color: var(--gf-color-danger);
+  box-shadow: var(--gf-shadow-soft);
 }
 
-.dd-berichte-route__review-warning strong {
-  color: var(--dd-color-danger);
+.gf-berichte-route__review-warning strong {
+  color: var(--gf-color-danger);
 }
 
-.dd-berichte-route__review-warning p {
+.gf-berichte-route__review-warning p {
   margin: 0.2rem 0 0;
 }
 
@@ -152,13 +152,13 @@
    02   A4-Vorschau
    ========================================================================== */
 
-.dd-berichte-route__preview {
+.gf-berichte-route__preview {
   display: grid;
   justify-items: center;
-  gap: var(--dd-space-5);
+  gap: var(--gf-space-5);
 }
 
-.dd-berichte-route__page {
+.gf-berichte-route__page {
   display: grid;
   align-content: start;
   gap: 9mm;
@@ -172,13 +172,13 @@
   box-shadow: 0 24px 72px rgba(25, 28, 33, 0.22);
 }
 
-.dd-berichte-route__page h2,
-.dd-berichte-route__page h3 {
+.gf-berichte-route__page h2,
+.gf-berichte-route__page h3 {
   margin: 0;
   color: #191c21;
 }
 
-.dd-berichte-route__page p {
+.gf-berichte-route__page p {
   color: #424752;
 }
 
@@ -186,8 +186,8 @@
    03   Seite 1
    ========================================================================== */
 
-.dd-berichte-route__report-header,
-.dd-berichte-route__page-title {
+.gf-berichte-route__report-header,
+.gf-berichte-route__page-title {
   display: flex;
   align-items: start;
   justify-content: space-between;
@@ -196,12 +196,12 @@
   padding-bottom: 7mm;
 }
 
-.dd-berichte-route__report-header span,
-.dd-berichte-route__page-title span,
-.dd-berichte-route__patient-grid span,
-.dd-berichte-route__summary span,
-.dd-berichte-route__value-card span,
-.dd-berichte-route__sources span {
+.gf-berichte-route__report-header span,
+.gf-berichte-route__page-title span,
+.gf-berichte-route__patient-grid span,
+.gf-berichte-route__summary span,
+.gf-berichte-route__value-card span,
+.gf-berichte-route__sources span {
   color: #005eb8;
   font-size: 8.5pt;
   font-weight: 850;
@@ -209,15 +209,15 @@
   text-transform: uppercase;
 }
 
-.dd-berichte-route__report-header h2,
-.dd-berichte-route__page-title h2 {
+.gf-berichte-route__report-header h2,
+.gf-berichte-route__page-title h2 {
   margin-top: 1.5mm;
   font-size: 24pt;
   letter-spacing: -0.04em;
   line-height: 1.05;
 }
 
-.dd-berichte-route__report-brand {
+.gf-berichte-route__report-brand {
   display: inline-grid;
   grid-template-columns: 11mm auto;
   gap: 2.4mm;
@@ -231,24 +231,24 @@
   font-weight: 900;
 }
 
-.dd-berichte-route__report-brand img {
+.gf-berichte-route__report-brand img {
   display: block;
   width: 11mm;
   height: 11mm;
   object-fit: contain;
 }
 
-.dd-berichte-route__report-brand figcaption {
+.gf-berichte-route__report-brand figcaption {
   white-space: nowrap;
 }
 
-.dd-berichte-route__patient-grid {
+.gf-berichte-route__patient-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4mm;
 }
 
-.dd-berichte-route__patient-grid article {
+.gf-berichte-route__patient-grid article {
   display: grid;
   gap: 1mm;
   border-radius: 4mm;
@@ -256,16 +256,16 @@
   background: #f2f3fb;
 }
 
-.dd-berichte-route__patient-grid strong {
+.gf-berichte-route__patient-grid strong {
   color: #191c21;
   font-size: 10.5pt;
 }
 
-.dd-berichte-route__patient-grid small {
+.gf-berichte-route__patient-grid small {
   color: #5b606b;
 }
 
-.dd-berichte-route__summary {
+.gf-berichte-route__summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 42mm;
   gap: 6mm;
@@ -274,13 +274,13 @@
   background: #eef4ff;
 }
 
-.dd-berichte-route__summary h3 {
+.gf-berichte-route__summary h3 {
   margin: 1.5mm 0 2mm;
   font-size: 17pt;
   line-height: 1.12;
 }
 
-.dd-berichte-route__summary aside {
+.gf-berichte-route__summary aside {
   display: grid;
   grid-template-columns: 1fr;
   align-content: center;
@@ -290,30 +290,30 @@
   background: #ffffff;
 }
 
-.dd-berichte-route__summary aside strong {
+.gf-berichte-route__summary aside strong {
   color: #00478d;
   font-size: 18pt;
   line-height: 1;
 }
 
-.dd-berichte-route__category-chart,
-.dd-berichte-route__recommendations {
+.gf-berichte-route__category-chart,
+.gf-berichte-route__recommendations {
   display: grid;
   gap: 3mm;
 }
 
-.dd-berichte-route__category-chart article {
+.gf-berichte-route__category-chart article {
   display: grid;
   gap: 1.5mm;
 }
 
-.dd-berichte-route__category-chart header {
+.gf-berichte-route__category-chart header {
   display: flex;
   justify-content: space-between;
   gap: 4mm;
 }
 
-.dd-berichte-route__category-chart div {
+.gf-berichte-route__category-chart div {
   display: flex;
   height: 4.5mm;
   overflow: hidden;
@@ -321,27 +321,27 @@
   background: #e7e8f0;
 }
 
-.dd-berichte-route__category-chart .is-normal {
+.gf-berichte-route__category-chart .is-normal {
   background: #2f8f5b;
 }
 
-.dd-berichte-route__category-chart .is-alert {
+.gf-berichte-route__category-chart .is-alert {
   background: #ba1a1a;
 }
 
-.dd-berichte-route__category-chart .is-review {
+.gf-berichte-route__category-chart .is-review {
   background: #a85b00;
 }
 
-.dd-berichte-route__recommendations {
+.gf-berichte-route__recommendations {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.dd-berichte-route__recommendations h3 {
+.gf-berichte-route__recommendations h3 {
   grid-column: 1 / -1;
 }
 
-.dd-berichte-route__recommendations article {
+.gf-berichte-route__recommendations article {
   display: grid;
   gap: 1.5mm;
   border-radius: 4mm;
@@ -349,15 +349,15 @@
   background: #f2f3fb;
 }
 
-.dd-berichte-route__recommendations article.is-wichtig {
+.gf-berichte-route__recommendations article.is-wichtig {
   background: #ffdad6;
 }
 
-.dd-berichte-route__recommendations article.is-beachten {
+.gf-berichte-route__recommendations article.is-beachten {
   background: #fff1dc;
 }
 
-.dd-berichte-route__recommendations strong {
+.gf-berichte-route__recommendations strong {
   color: #191c21;
 }
 
@@ -365,13 +365,13 @@
    04   Ergebnisse
    ========================================================================== */
 
-.dd-berichte-route__value-list {
+.gf-berichte-route__value-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 4mm;
 }
 
-.dd-berichte-route__value-card {
+.gf-berichte-route__value-card {
   display: grid;
   gap: 2.4mm;
   break-inside: avoid;
@@ -381,67 +381,67 @@
   background: #f9f9ff;
 }
 
-.dd-berichte-route__value-card header {
+.gf-berichte-route__value-card header {
   display: flex;
   align-items: start;
   justify-content: space-between;
   gap: 3mm;
 }
 
-.dd-berichte-route__value-card h3 {
+.gf-berichte-route__value-card h3 {
   margin-top: 1mm;
   font-size: 13pt;
 }
 
-.dd-berichte-route__value-card header > strong {
+.gf-berichte-route__value-card header > strong {
   border-radius: 999px;
   padding: 1.2mm 2.4mm;
   font-size: 7.6pt;
   letter-spacing: 0.06em;
 }
 
-.dd-berichte-route__value-card header > strong.is-normal {
+.gf-berichte-route__value-card header > strong.is-normal {
   background: #dff6e8;
   color: #2f8f5b;
 }
 
-.dd-berichte-route__value-card header > strong.is-hoch,
-.dd-berichte-route__value-card header > strong.is-niedrig {
+.gf-berichte-route__value-card header > strong.is-hoch,
+.gf-berichte-route__value-card header > strong.is-niedrig {
   background: #ffdad6;
   color: #ba1a1a;
 }
 
-.dd-berichte-route__value-card header > strong.is-review {
+.gf-berichte-route__value-card header > strong.is-review {
   background: #fff1dc;
   color: #a85b00;
 }
 
-.dd-berichte-route__value-main {
+.gf-berichte-route__value-main {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 3mm;
 }
 
-.dd-berichte-route__value-main strong {
+.gf-berichte-route__value-main strong {
   color: #00478d;
   font-size: 15pt;
 }
 
-.dd-berichte-route__value-main small,
-.dd-berichte-route__value-card > small {
+.gf-berichte-route__value-main small,
+.gf-berichte-route__value-card > small {
   color: #5b606b;
   font-size: 8.5pt;
 }
 
-.dd-berichte-route__range {
+.gf-berichte-route__range {
   position: relative;
   height: 6mm;
   border-radius: 999px;
   background: #e1e2ea;
 }
 
-.dd-berichte-route__range-ref {
+.gf-berichte-route__range-ref {
   position: absolute;
   top: 1.4mm;
   bottom: 1.4mm;
@@ -449,7 +449,7 @@
   background: #a9c7ff;
 }
 
-.dd-berichte-route__range i {
+.gf-berichte-route__range i {
   position: absolute;
   top: -1mm;
   width: 2.2mm;
@@ -463,33 +463,33 @@
    05   Verlauf und Quellen
    ========================================================================== */
 
-.dd-berichte-route__trend-grid {
+.gf-berichte-route__trend-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 4mm;
 }
 
-.dd-berichte-route__trend-grid article,
-.dd-berichte-route__questions,
-.dd-berichte-route__sources,
-.dd-berichte-route__disclaimer {
+.gf-berichte-route__trend-grid article,
+.gf-berichte-route__questions,
+.gf-berichte-route__sources,
+.gf-berichte-route__disclaimer {
   border-radius: 4mm;
   padding: 4mm;
   background: #f2f3fb;
 }
 
-.dd-berichte-route__trend-grid header {
+.gf-berichte-route__trend-grid header {
   display: flex;
   justify-content: space-between;
   gap: 3mm;
 }
 
-.dd-berichte-route__trend-grid svg {
+.gf-berichte-route__trend-grid svg {
   width: 100%;
   height: 28mm;
 }
 
-.dd-berichte-route__trend-grid polyline {
+.gf-berichte-route__trend-grid polyline {
   fill: none;
   stroke: #00478d;
   stroke-linecap: round;
@@ -497,26 +497,26 @@
   stroke-width: 3;
 }
 
-.dd-berichte-route__questions ol {
+.gf-berichte-route__questions ol {
   display: grid;
   gap: 2mm;
   margin: 3mm 0 0;
   padding-left: 5mm;
 }
 
-.dd-berichte-route__questions li {
+.gf-berichte-route__questions li {
   color: #424752;
   line-height: 1.45;
 }
 
-.dd-berichte-route__sources div {
+.gf-berichte-route__sources div {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 3mm;
   margin-top: 3mm;
 }
 
-.dd-berichte-route__sources article {
+.gf-berichte-route__sources article {
   display: grid;
   gap: 1mm;
   border-radius: 3mm;
@@ -524,11 +524,11 @@
   background: #ffffff;
 }
 
-.dd-berichte-route__disclaimer {
+.gf-berichte-route__disclaimer {
   background: #ffdad6;
 }
 
-.dd-berichte-route__disclaimer strong {
+.gf-berichte-route__disclaimer strong {
   color: #ba1a1a;
 }
 
@@ -548,32 +548,32 @@
     background: #ffffff !important;
   }
 
-  dd-app-navigation,
-  dd-toast-container,
-  .dd-berichte-route__headline,
-  .dd-berichte-route__review-warning,
-  .dd-berichte-route__controls {
+  gf-app-navigation,
+  gf-toast-container,
+  .gf-berichte-route__headline,
+  .gf-berichte-route__review-warning,
+  .gf-berichte-route__controls {
     display: none !important;
   }
 
-  .dd-app-main {
+  .gf-app-main {
     display: block !important;
     min-height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  .dd-berichte-route {
+  .gf-berichte-route {
     display: block !important;
     width: auto !important;
     margin: 0 !important;
   }
 
-  .dd-berichte-route__preview {
+  .gf-berichte-route__preview {
     display: block !important;
   }
 
-  .dd-berichte-route__page {
+  .gf-berichte-route__page {
     width: 210mm !important;
     min-height: 297mm !important;
     margin: 0 !important;
@@ -583,7 +583,7 @@
     page-break-after: always;
   }
 
-  .dd-berichte-route__page:last-child {
+  .gf-berichte-route__page:last-child {
     page-break-after: auto;
   }
 }
@@ -593,34 +593,34 @@
    ========================================================================== */
 
 @media (max-width: 1240px) {
-  .dd-berichte-route__controls {
+  .gf-berichte-route__controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .dd-berichte-route__page {
+  .gf-berichte-route__page {
     width: min(100%, 210mm);
   }
 }
 
 @media (max-width: 760px) {
-  .dd-berichte-route__headline,
-  .dd-berichte-route__report-header,
-  .dd-berichte-route__page-title {
+  .gf-berichte-route__headline,
+  .gf-berichte-route__report-header,
+  .gf-berichte-route__page-title {
     display: grid;
   }
 
-  .dd-berichte-route__controls,
-  .dd-berichte-route__patient-grid,
-  .dd-berichte-route__summary,
-  .dd-berichte-route__recommendations,
-  .dd-berichte-route__value-list,
-  .dd-berichte-route__trend-grid,
-  .dd-berichte-route__sources div {
+  .gf-berichte-route__controls,
+  .gf-berichte-route__patient-grid,
+  .gf-berichte-route__summary,
+  .gf-berichte-route__recommendations,
+  .gf-berichte-route__value-list,
+  .gf-berichte-route__trend-grid,
+  .gf-berichte-route__sources div {
     grid-template-columns: 1fr;
   }
 
-  .dd-berichte-route__page {
+  .gf-berichte-route__page {
     min-height: auto;
-    padding: var(--dd-space-4);
+    padding: var(--gf-space-4);
   }
 }

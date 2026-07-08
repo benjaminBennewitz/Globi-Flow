@@ -15,7 +15,7 @@ import { SecureSearchComponent } from '../secure-search/secure-search.component'
 
 /** Hauptnavigation mit eigenständigen Routen und Overlays. */
 @Component({
-  selector: 'dd-app-navigation',
+  selector: 'gf-app-navigation',
   imports: [IconActionComponent, RouterLink, RouterLinkActive, SecureSearchComponent],
   templateUrl: './app-navigation.component.html',
   styleUrl: './app-navigation.component.scss',
@@ -40,8 +40,8 @@ export class AppNavigationComponent {
   /** Synchronisiert die Breite der App-Shell mit dem Sidebarzustand. */
   public constructor() {
     effect(() => {
-      const breite = this.navigationEingeklappt() ? 'var(--dd-sidebar-collapsed-width)' : 'var(--dd-sidebar-width)';
-      this.dokument.documentElement.style.setProperty('--dd-sidebar-current-width', breite);
+      const breite = this.navigationEingeklappt() ? 'var(--gf-sidebar-collapsed-width)' : 'var(--gf-sidebar-width)';
+      this.dokument.documentElement.style.setProperty('--gf-sidebar-current-width', breite);
     });
   }
 
