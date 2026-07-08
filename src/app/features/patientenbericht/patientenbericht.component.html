@@ -1,52 +1,52 @@
 <!-- src/app/features/patientenbericht/patientenbericht.component.html -->
 
 @if (bericht; as daten) {
-  <section class="gf-report gf-section-panel" id="bericht" aria-labelledby="bericht-title">
-    <header class="gf-section-heading">
-      <span class="gf-eyebrow">Patientenbericht</span>
-      <h2 id="bericht-title">Freigegebene Daten verständlich und druckfreundlich zusammenfassen.</h2>
-      <p>Die Berichtsvorschau ist bewusst ruhiger als das Arzt-Dashboard und nutzt klare Sprache.</p>
+<section class="gf-report gf-section-panel" id="bericht" aria-labelledby="bericht-title">
+  <header class="gf-section-heading">
+    <span class="gf-eyebrow">Patientenbericht</span>
+    <h2 id="bericht-title">Freigegebene Daten verständlich und druckfreundlich zusammenfassen.</h2>
+    <p>Die Berichtsvorschau ist bewusst ruhiger als das Arzt-Dashboard und nutzt klare Sprache.</p>
+  </header>
+
+  <article class="gf-report__paper">
+    <header class="gf-report__header">
+      <div>
+        <span>Bericht für</span>
+        <h3>{{ daten.testperson }}</h3>
+      </div>
+      <strong>{{ daten.berichtsdatum }}</strong>
     </header>
 
-    <article class="gf-report__paper">
-      <header class="gf-report__header">
-        <div>
-          <span>Bericht für</span>
-          <h3>{{ daten.testperson }}</h3>
-        </div>
-        <strong>{{ daten.berichtsdatum }}</strong>
-      </header>
+    <section class="gf-report__summary">
+      <h4>Zusammenfassung</h4>
+      <p>{{ daten.zusammenfassung }}</p>
+    </section>
 
-      <section class="gf-report__summary">
-        <h4>Zusammenfassung</h4>
-        <p>{{ daten.zusammenfassung }}</p>
+    <div class="gf-report__sections">
+      @for (abschnitt of daten.abschnitte; track abschnitt.key) {
+      <section>
+        <h4>{{ abschnitt.titel }}</h4>
+        <p>{{ abschnitt.text }}</p>
       </section>
+      }
+    </div>
 
-      <div class="gf-report__sections">
-        @for (abschnitt of daten.abschnitte; track abschnitt.key) {
-          <section>
-            <h4>{{ abschnitt.titel }}</h4>
-            <p>{{ abschnitt.text }}</p>
-          </section>
+    <section class="gf-report__questions">
+      <h4>Fragen für das Arztgespräch</h4>
+      <ul>
+        @for (frage of daten.fragen; track frage.id) {
+        <li>
+          <span>{{ frage.bereich }}</span>
+          <p>{{ frage.frage }}</p>
+        </li>
         }
-      </div>
+      </ul>
+    </section>
 
-      <section class="gf-report__questions">
-        <h4>Fragen für das Arztgespräch</h4>
-        <ul>
-          @for (frage of daten.fragen; track frage.id) {
-            <li>
-              <span>{{ frage.bereich }}</span>
-              <p>{{ frage.frage }}</p>
-            </li>
-          }
-        </ul>
-      </section>
-
-      <footer>
-        <strong>Disclaimer</strong>
-        <p>{{ daten.disclaimer }}</p>
-      </footer>
-    </article>
-  </section>
+    <footer>
+      <strong>Disclaimer</strong>
+      <p>{{ daten.disclaimer }}</p>
+    </footer>
+  </article>
+</section>
 }

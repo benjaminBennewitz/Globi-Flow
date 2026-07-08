@@ -6,10 +6,10 @@
  */
 
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
-import { MOCK_BERICHT } from '../../core/mocks/berichte.mock';
 import { BerichtLaborwert, BerichtViewModel, BerichtWertStatus } from '../../core/models/bericht.model';
 import { Patient, PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
+import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { ToastService } from '../../shared/services/toast.service';
 
 /** Route `/berichte` für Berichtsvorschau und Printansicht. */
@@ -28,14 +28,22 @@ export class BerichtePageComponent {
   /** Toast-Service für Freigabehinweise. */
   private readonly toastService = inject(ToastService);
 
-  /** Druckfertiger Mockbericht bis zur API-Anbindung. */
-  public readonly bericht = signal<BerichtViewModel>(MOCK_BERICHT);
+  /** API-Service für Berichtsdaten. */
+  private readonly globiFlowApi = inject(GlobiFlowApiService);
+
+  /** Druckfertige Berichtsdaten aus der API. */
+  public readonly bericht = signal<BerichtViewModel>({ id: '', berichtsdatum: '', version: '1.0', gesamtstatus: '', gesamttext: '', gepruefteWerte: 0, normaleWerte: 0, auffaelligeWerte: 0, reviewWerte: 0, werte: [], kategorien: [], empfehlungen: [], fragen: [], quellen: [], disclaimer: '' });
 
   /** Aktiver Patient. */
   public readonly patient = computed(() => this.patientContext.aktiverPatient());
 
   /** Aktiver Befund. */
   public readonly befund = computed(() => this.patientContext.aktiverBefund());
+
+  /** Lädt die Berichtsdaten aus der API. */
+  public constructor() {
+    this.globiFlowApi.ladeBericht().subscribe((bericht: BerichtViewModel) => this.bericht.set(bericht));
+  }
 
   /** Auffällige oder prüfpflichtige Werte für die interne Kurzsicht. */
   public readonly auffaelligeWerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status !== 'normal'));

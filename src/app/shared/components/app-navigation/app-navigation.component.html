@@ -1,12 +1,16 @@
 <!-- src/app/shared/components/app-navigation/app-navigation.component.html -->
 
 <aside class="gf-sidebar" [class.is-collapsed]="navigationEingeklappt()" aria-label="Hauptnavigation">
-  <button class="gf-sidebar__toggle" type="button" [attr.aria-label]="navigationEingeklappt() ? 'Sidebar ausklappen' : 'Sidebar einklappen'" [attr.aria-expanded]="!navigationEingeklappt()" (click)="navigationUmschalten()">
-    <span class="material-symbols-outlined" aria-hidden="true">{{ navigationEingeklappt() ? 'menu_open' : 'left_panel_close' }}</span>
+  <button class="gf-sidebar__toggle" type="button"
+    [attr.aria-label]="navigationEingeklappt() ? 'Sidebar ausklappen' : 'Sidebar einklappen'"
+    [attr.aria-expanded]="!navigationEingeklappt()" (click)="navigationUmschalten()">
+    <span class="material-symbols-outlined" aria-hidden="true">{{ navigationEingeklappt() ? 'menu_open' :
+      'left_panel_close' }}</span>
   </button>
 
   <a class="gf-sidebar__brand" routerLink="/uebersicht" aria-label="Globi Flow Start">
-    <img class="gf-sidebar__brand-logo" src="assets/img/globiflow-logo.webp" width="48" height="48" alt="" aria-hidden="true" decoding="async">
+    <img class="gf-sidebar__brand-logo" src="assets/img/globiflow-logo.webp" width="48" height="48" alt=""
+      aria-hidden="true" decoding="async">
     <span class="gf-sidebar__brand-copy">
       <strong>Globi<br>Flow</strong>
       <span class="gf-sidebar__brand-subline">Laborwerte im Fluss</span>
@@ -14,7 +18,8 @@
   </a>
 
   <nav class="gf-sidebar__nav" aria-label="Projektbereiche">
-    <a routerLink="/uebersicht" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Übersicht">
+    <a routerLink="/uebersicht" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+      aria-label="Übersicht">
       <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
       <span class="gf-sidebar__nav-text">Übersicht</span>
     </a>
@@ -61,17 +66,21 @@
 
 <header class="gf-topbar" aria-label="Kopfleiste">
   <form class="gf-topbar__search-wrap" role="search" (submit)="sucheAbsenden($event)">
-    <gf-secure-search label="Patient suchen" placeholder="Patient suchen (ID, Name, Geb.-Datum) ..." [value]="suchbegriff()" (valueChange)="suchwertSetzen($event)"></gf-secure-search>
+    <gf-secure-search label="Patient suchen" placeholder="Patient suchen (ID, Name, Geb.-Datum) ..."
+      [value]="suchbegriff()" (valueChange)="suchwertSetzen($event)"></gf-secure-search>
   </form>
 
-  <button class="gf-topbar__patient" type="button" [class.has-patient]="patientContext.aktiverPatient()" aria-label="Aktiven Patienten wechseln" (click)="modalOeffnen('patient')">
+  <button class="gf-topbar__patient" type="button" [class.has-patient]="patientContext.aktiverPatient()"
+    aria-label="Aktiven Patienten wechseln" (click)="modalOeffnen('patient')">
     <span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
     <strong>{{ patientContext.aktiverPatient().name }}</strong>
-    <small>{{ patientContext.aktiverPatient().nummer }} · {{ patientContext.aktiverBefund()?.datum || 'kein Befund' }}</small>
+    <small>{{ patientContext.aktiverPatient().nummer }} · {{ patientContext.aktiverBefund()?.datum || 'kein Befund'
+      }}</small>
   </button>
 
   <div class="gf-topbar__actions">
-    <button class="gf-topbar__icon" type="button" aria-label="Benachrichtigungen öffnen" (click)="modalOeffnen('alarm')">
+    <button class="gf-topbar__icon" type="button" aria-label="Benachrichtigungen öffnen"
+      (click)="modalOeffnen('alarm')">
       <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
     </button>
     <button class="gf-topbar__icon" type="button" aria-label="Einstellungen öffnen" (click)="modalOeffnen('settings')">
@@ -85,90 +94,97 @@
 </header>
 
 @if (aktivesModal) {
-  <section class="gf-header-modal" [class.is-patient]="aktivesModal === 'patient'" role="dialog" aria-modal="false" [attr.aria-labelledby]="aktivesModal === 'alarm' ? 'alarm-title' : aktivesModal === 'settings' ? 'settings-title' : 'patient-title'">
-    <gf-icon-action icon="close" label="Overlay schließen" tone="danger" (action)="modalSchliessen()"></gf-icon-action>
+<section class="gf-header-modal" [class.is-patient]="aktivesModal === 'patient'" role="dialog" aria-modal="false"
+  [attr.aria-labelledby]="aktivesModal === 'alarm' ? 'alarm-title' : aktivesModal === 'settings' ? 'settings-title' : 'patient-title'">
+  <gf-icon-action icon="close" label="Overlay schließen" tone="danger" (action)="modalSchliessen()"></gf-icon-action>
 
-    @if (aktivesModal === 'patient') {
-      <header>
-        <span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
-        <div>
-          <h2 id="patient-title">Patient auswählen</h2>
-          <p>Globaler Arbeitskontext für Import, Review, Auswertung und Berichte.</p>
-        </div>
-      </header>
+  @if (aktivesModal === 'patient') {
+  <header>
+    <span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
+    <div>
+      <h2 id="patient-title">Patient auswählen</h2>
+      <p>Globaler Arbeitskontext für Import, Review, Auswertung und Berichte.</p>
+    </div>
+  </header>
 
-      <gf-secure-search label="Patientenliste durchsuchen" placeholder="Name, ID oder Kontext suchen" [value]="patientContext.patientenSuche()" (valueChange)="patientSucheSetzen($event)"></gf-secure-search>
+  <gf-secure-search label="Patientenliste durchsuchen" placeholder="Name, ID oder Kontext suchen"
+    [value]="patientContext.patientenSuche()" (valueChange)="patientSucheSetzen($event)"></gf-secure-search>
 
-      <div class="gf-header-modal__patient-filters">
-        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'alle'" (click)="patientFilterSetzen('alle')">Alle</button>
-        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'review'" (click)="patientFilterSetzen('review')">Review</button>
-        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'demo'" (click)="patientFilterSetzen('demo')">Demo</button>
-        <button type="button" [class.is-active]="patientContext.patientenFilter() === 'ocr'" (click)="patientFilterSetzen('ocr')">OCR</button>
-      </div>
+  <div class="gf-header-modal__patient-filters">
+    <button type="button" [class.is-active]="patientContext.patientenFilter() === 'alle'"
+      (click)="patientFilterSetzen('alle')">Alle</button>
+    <button type="button" [class.is-active]="patientContext.patientenFilter() === 'review'"
+      (click)="patientFilterSetzen('review')">Review</button>
+    <button type="button" [class.is-active]="patientContext.patientenFilter() === 'demo'"
+      (click)="patientFilterSetzen('demo')">Demo</button>
+    <button type="button" [class.is-active]="patientContext.patientenFilter() === 'ocr'"
+      (click)="patientFilterSetzen('ocr')">OCR</button>
+  </div>
 
-      <div class="gf-header-modal__patient-list">
-        @for (patient of patientContext.gefiltertePatienten(); track patient.id) {
-          <button type="button" [class.is-active]="patient.id === patientContext.aktiverPatient().id" (click)="patientContext.patientSetzen(patient); modalSchliessen()">
-            <strong>{{ patient.name }}</strong>
-            <span>{{ patient.nummer }} · {{ patient.kontext }}</span>
-            <small>{{ patient.offeneReviews }} Review</small>
-          </button>
-        }
-      </div>
-
-      <a class="gf-button gf-button--secondary" routerLink="/patienten" (click)="modalSchliessen()">Patienten verwalten</a>
-    } @else if (aktivesModal === 'alarm') {
-      <header>
-        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
-        <div>
-          <h2 id="alarm-title">Benachrichtigungen</h2>
-          <p>Dringende Hinweise aus Import, Review und Berichtserstellung.</p>
-        </div>
-      </header>
-
-      <div class="gf-header-modal__list">
-        <article>
-          <span class="gf-header-modal__badge is-danger">Kritisch</span>
-          <strong>Review seit 8 Tagen offen</strong>
-          <p>Ein Befund mit auffälligen Werten wartet auf ärztliche Prüfung.</p>
-        </article>
-        <article>
-          <span class="gf-header-modal__badge is-warning">Prüfen</span>
-          <strong>Niedrige OCR-Confidence</strong>
-          <p>Ein bildbasierter Befund sollte im Originalausschnitt geprüft werden.</p>
-        </article>
-        <article>
-          <span class="gf-header-modal__badge is-info">Bereit</span>
-          <strong>Bericht bereit zur Freigabe</strong>
-          <p>Ein Patientenbericht wurde vollständig vorbereitet.</p>
-        </article>
-      </div>
-    } @else {
-      <header>
-        <span class="material-symbols-outlined" aria-hidden="true">settings</span>
-        <div>
-          <h2 id="settings-title">Einstellungen</h2>
-          <p>Vorbereitete Oberfläche für spätere Benutzer- und Systemoptionen.</p>
-        </div>
-      </header>
-
-      <div class="gf-header-modal__settings">
-        <label class="gf-header-modal__switch">
-          <input type="checkbox">
-          <span class="gf-header-modal__toggle" aria-hidden="true"></span>
-          <strong>Kompakte Tabellen</strong>
-        </label>
-        <label class="gf-header-modal__switch">
-          <input type="checkbox">
-          <span class="gf-header-modal__toggle" aria-hidden="true"></span>
-          <strong>Animationen reduzieren</strong>
-        </label>
-        <label class="gf-header-modal__switch">
-          <input type="checkbox" checked>
-          <span class="gf-header-modal__toggle" aria-hidden="true"></span>
-          <strong>Review-Hinweise priorisieren</strong>
-        </label>
-      </div>
+  <div class="gf-header-modal__patient-list">
+    @for (patient of patientContext.gefiltertePatienten(); track patient.id) {
+    <button type="button" [class.is-active]="patient.id === patientContext.aktiverPatient().id"
+      (click)="patientContext.patientSetzen(patient); modalSchliessen()">
+      <strong>{{ patient.name }}</strong>
+      <span>{{ patient.nummer }} · {{ patient.kontext }}</span>
+      <small>{{ patient.offeneReviews }} Review</small>
+    </button>
     }
-  </section>
+  </div>
+
+  <a class="gf-button gf-button--secondary" routerLink="/patienten" (click)="modalSchliessen()">Patienten verwalten</a>
+  } @else if (aktivesModal === 'alarm') {
+  <header>
+    <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+    <div>
+      <h2 id="alarm-title">Benachrichtigungen</h2>
+      <p>Dringende Hinweise aus Import, Review und Berichtserstellung.</p>
+    </div>
+  </header>
+
+  <div class="gf-header-modal__list">
+    <article>
+      <span class="gf-header-modal__badge is-danger">Kritisch</span>
+      <strong>Review seit 8 Tagen offen</strong>
+      <p>Ein Befund mit auffälligen Werten wartet auf ärztliche Prüfung.</p>
+    </article>
+    <article>
+      <span class="gf-header-modal__badge is-warning">Prüfen</span>
+      <strong>Niedrige OCR-Confidence</strong>
+      <p>Ein bildbasierter Befund sollte im Originalausschnitt geprüft werden.</p>
+    </article>
+    <article>
+      <span class="gf-header-modal__badge is-info">Bereit</span>
+      <strong>Bericht bereit zur Freigabe</strong>
+      <p>Ein Patientenbericht wurde vollständig vorbereitet.</p>
+    </article>
+  </div>
+  } @else {
+  <header>
+    <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+    <div>
+      <h2 id="settings-title">Einstellungen</h2>
+      <p>Vorbereitete Oberfläche für spätere Benutzer- und Systemoptionen.</p>
+    </div>
+  </header>
+
+  <div class="gf-header-modal__settings">
+    <label class="gf-header-modal__switch">
+      <input type="checkbox">
+      <span class="gf-header-modal__toggle" aria-hidden="true"></span>
+      <strong>Kompakte Tabellen</strong>
+    </label>
+    <label class="gf-header-modal__switch">
+      <input type="checkbox">
+      <span class="gf-header-modal__toggle" aria-hidden="true"></span>
+      <strong>Animationen reduzieren</strong>
+    </label>
+    <label class="gf-header-modal__switch">
+      <input type="checkbox" checked>
+      <span class="gf-header-modal__toggle" aria-hidden="true"></span>
+      <strong>Review-Hinweise priorisieren</strong>
+    </label>
+  </div>
+  }
+</section>
 }

@@ -39,19 +39,19 @@
   animation: gf-toast-in 220ms var(--gf-ease-out) both;
 }
 
-.gf-toast > .material-symbols-outlined {
+.gf-toast>.material-symbols-outlined {
   color: var(--gf-color-primary);
 }
 
-.gf-toast.is-success > .material-symbols-outlined {
+.gf-toast.is-success>.material-symbols-outlined {
   color: var(--gf-color-success);
 }
 
-.gf-toast.is-warning > .material-symbols-outlined {
+.gf-toast.is-warning>.material-symbols-outlined {
   color: var(--gf-color-warning);
 }
 
-.gf-toast.is-danger > .material-symbols-outlined {
+.gf-toast.is-danger>.material-symbols-outlined {
   color: var(--gf-color-danger);
 }
 

@@ -145,7 +145,7 @@
   transition: color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.gf-sidebar__nav a > .material-symbols-outlined {
+.gf-sidebar__nav a>.material-symbols-outlined {
   flex: 0 0 auto;
   font-size: 1.24rem;
 }
@@ -348,7 +348,7 @@
   text-align: left;
 }
 
-.gf-topbar__patient > span {
+.gf-topbar__patient>span {
   grid-row: span 2;
   color: var(--gf-color-primary);
 }
@@ -400,7 +400,7 @@
   width: min(520px, calc(100vw - var(--gf-space-4)));
 }
 
-.gf-header-modal > gf-icon-action {
+.gf-header-modal>gf-icon-action {
   position: absolute;
   top: var(--gf-space-3);
   right: var(--gf-space-3);
@@ -417,7 +417,7 @@
   background: var(--gf-color-bg-soft);
 }
 
-.gf-header-modal header > .material-symbols-outlined {
+.gf-header-modal header>.material-symbols-outlined {
   display: grid;
   width: 44px;
   height: 44px;
@@ -536,16 +536,16 @@
   transition: background-color 180ms ease, transform 180ms ease;
 }
 
-.gf-header-modal__switch input:checked + .gf-header-modal__toggle {
+.gf-header-modal__switch input:checked+.gf-header-modal__toggle {
   background: var(--gf-color-primary-soft);
 }
 
-.gf-header-modal__switch input:checked + .gf-header-modal__toggle::before {
+.gf-header-modal__switch input:checked+.gf-header-modal__toggle::before {
   background: var(--gf-color-primary);
   transform: translateX(24px);
 }
 
-.gf-header-modal__switch input:focus-visible + .gf-header-modal__toggle {
+.gf-header-modal__switch input:focus-visible+.gf-header-modal__toggle {
   box-shadow: var(--gf-focus-ring), var(--gf-shadow-inset);
 }
 

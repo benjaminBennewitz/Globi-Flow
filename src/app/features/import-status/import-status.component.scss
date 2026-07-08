@@ -156,7 +156,7 @@
   gap: var(--gf-space-2);
 }
 
-.gf-import__steps li > span {
+.gf-import__steps li>span {
   width: 18px;
   height: 18px;
   margin-top: 0.2rem;
@@ -165,7 +165,7 @@
   box-shadow: var(--gf-shadow-soft);
 }
 
-.gf-import__steps li.is-done > span {
+.gf-import__steps li.is-done>span {
   background: var(--gf-color-success);
 }
 

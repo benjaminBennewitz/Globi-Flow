@@ -1,264 +1,284 @@
 <!-- src/app/pages/uebersicht-page/uebersicht-page.component.html -->
 
 @if (uebersicht$ | async; as uebersicht) {
-  <section class="gf-overview" aria-labelledby="overview-title">
-    <header class="gf-overview__headline">
+<section class="gf-overview" aria-labelledby="overview-title">
+  <header class="gf-overview__headline">
+    <div>
+      <h1 id="overview-title">Übersicht</h1>
+    </div>
+    <button class="gf-button gf-button--secondary" type="button" (click)="datenAktualisieren()">
+      <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+      Daten aktualisieren
+    </button>
+  </header>
+
+  <section class="gf-overview__workflow gf-neu-card" aria-labelledby="workflow-title">
+    <header>
       <div>
-        <h1 id="overview-title">Übersicht</h1>
+        <span class="gf-eyebrow">Geführter Kernworkflow</span>
+        <h2 id="workflow-title">Vom Laborbefund zur verständlichen Patientenansicht</h2>
+        <p>Die App hat zwei klare Aufgaben: Rohdaten zuverlässig aufbereiten und geprüfte Ergebnisse so erklären, dass
+          Arzt und Patient denselben Stand sehen.</p>
       </div>
-      <button class="gf-button gf-button--secondary" type="button" (click)="datenAktualisieren()">
-        <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
-        Daten aktualisieren
-      </button>
+      <a class="gf-button gf-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
+        <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+        Workflow starten
+      </a>
     </header>
 
-    <section class="gf-overview__workflow gf-neu-card" aria-labelledby="workflow-title">
+    <div class="gf-overview__workflow-track">
+      @for (schritt of workflowSchritte; track schritt.nummer) {
+      <a class="gf-overview__workflow-step is-{{ schritt.status }}" [routerLink]="schritt.route">
+        <span class="gf-overview__workflow-icon material-symbols-outlined" aria-hidden="true">{{ schritt.icon }}</span>
+        <small>{{ schritt.nummer }}</small>
+        <strong>{{ schritt.titel }}</strong>
+        <p>{{ schritt.text }}</p>
+      </a>
+      }
+    </div>
+  </section>
+
+  <div class="gf-overview__kpis" aria-label="Allgemeine Kennzahlen">
+    <article class="gf-overview__kpi" tabindex="0">
+      <span>Patienten gesamt</span>
+      <strong>{{ uebersicht.kennzahlen.patientenGesamt }}</strong>
+      <small>Testpersonen im System</small>
+      <i class="material-symbols-outlined" aria-hidden="true">groups</i>
+    </article>
+    <article class="gf-overview__kpi" tabindex="0">
+      <span>Berichte gesamt</span>
+      <strong>{{ uebersicht.kennzahlen.berichteGesamt }}</strong>
+      <small>Importierte Laborbefunde</small>
+      <i class="material-symbols-outlined" aria-hidden="true">folder_open</i>
+    </article>
+    <article class="gf-overview__kpi is-success" tabindex="0">
+      <span>Geprüfte Importe</span>
+      <strong>{{ uebersicht.kennzahlen.importeGeprueft }}</strong>
+      <small>Ärztlich kontrolliert</small>
+      <i class="material-symbols-outlined" aria-hidden="true">task_alt</i>
+    </article>
+    <article class="gf-overview__kpi is-warning" tabindex="0">
+      <span>Ungeprüfte Importe</span>
+      <strong>{{ uebersicht.kennzahlen.importeUngeprueft }}</strong>
+      <small>Warten auf Review</small>
+      <i class="material-symbols-outlined" aria-hidden="true">pending_actions</i>
+    </article>
+    <article class="gf-overview__kpi is-danger" tabindex="0">
+      <span>Review offen</span>
+      <strong>{{ uebersicht.kennzahlen.reviewOffen }}</strong>
+      <small>Priorisierte Prüfungen</small>
+      <i class="material-symbols-outlined" aria-hidden="true">emergency_home</i>
+    </article>
+  </div>
+
+  <div class="gf-overview__main">
+    <article class="gf-overview__chart gf-neu-card">
       <header>
         <div>
-          <span class="gf-eyebrow">Geführter Kernworkflow</span>
-          <h2 id="workflow-title">Vom Laborbefund zur verständlichen Patientenansicht</h2>
-          <p>Die App hat zwei klare Aufgaben: Rohdaten zuverlässig aufbereiten und geprüfte Ergebnisse so erklären, dass Arzt und Patient denselben Stand sehen.</p>
+          <h2>Gesundheitsverlauf aller Patienten</h2>
         </div>
-        <a class="gf-button gf-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
-          <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
-          Workflow starten
-        </a>
+        <div class="gf-overview__chart-actions">
+          <div class="gf-overview__year-switch" aria-label="Jahr wählen">
+            @for (jahr of jahre; track jahr) {
+            <button type="button" [class.is-active]="ausgewaehltesJahr === jahr" (click)="jahrAendern(jahr)">{{ jahr
+              }}</button>
+            }
+          </div>
+
+          <div class="gf-custom-select">
+            <button type="button" (click)="monatsmenueUmschalten('von')">
+              <span>Von</span>
+              <strong>{{ monatsLabel(monatVon) }}</strong>
+              <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
+            </button>
+
+            @if (aktivesMonatsmenue === 'von') {
+            <div class="gf-custom-select__menu">
+              @for (monat of monate; track monat.wert) {
+              <button type="button" [class.is-active]="monatVon === monat.wert" (click)="monatVonSetzen(monat.wert)">{{
+                monat.label }}</button>
+              }
+            </div>
+            }
+          </div>
+
+          <div class="gf-custom-select">
+            <button type="button" (click)="monatsmenueUmschalten('bis')">
+              <span>Bis</span>
+              <strong>{{ monatsLabel(monatBis) }}</strong>
+              <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
+            </button>
+
+            @if (aktivesMonatsmenue === 'bis') {
+            <div class="gf-custom-select__menu">
+              @for (monat of monate; track monat.wert) {
+              <button type="button" [class.is-active]="monatBis === monat.wert" (click)="monatBisSetzen(monat.wert)">{{
+                monat.label }}</button>
+              }
+            </div>
+            }
+          </div>
+        </div>
       </header>
 
-      <div class="gf-overview__workflow-track">
-        @for (schritt of workflowSchritte; track schritt.nummer) {
-          <a class="gf-overview__workflow-step is-{{ schritt.status }}" [routerLink]="schritt.route">
-            <span class="gf-overview__workflow-icon material-symbols-outlined" aria-hidden="true">{{ schritt.icon }}</span>
-            <small>{{ schritt.nummer }}</small>
-            <strong>{{ schritt.titel }}</strong>
-            <p>{{ schritt.text }}</p>
-          </a>
+      <div class="gf-overview__legend">
+        <span class="is-good">Unauffällig</span>
+        <span class="is-bad">Auffällig</span>
+      </div>
+
+      <div class="gf-overview__chart-scroll" #chartScroller (pointerdown)="chartDragStart($event, chartScroller)"
+        (pointermove)="chartDragMove($event, chartScroller)" (pointerup)="chartDragEnd($event, chartScroller)"
+        (pointercancel)="chartDragEnd($event, chartScroller)" (pointerleave)="chartDragEnd($event, chartScroller)">
+        <svg viewBox="0 0 1160 300" role="img" aria-label="Aggregierter Gesundheitsverlauf">
+          <path class="gf-overview__chart-grid" d="M54 238 H1106 M54 182 H1106 M54 126 H1106 M54 70 H1106" />
+          <polyline class="gf-overview__chart-line is-good"
+            [attr.points]="verlaufPunkte(uebersicht.gesundheitsverlauf, 'unauffaellig')" />
+          <polyline class="gf-overview__chart-line is-bad"
+            [attr.points]="verlaufPunkte(uebersicht.gesundheitsverlauf, 'auffaellig')" />
+
+          @for (punkt of sichtbarerVerlauf(uebersicht.gesundheitsverlauf); track punkt.jahr + '-' + punkt.monat; let
+          index = $index) {
+          <g class="gf-overview__point is-good">
+            <circle [attr.cx]="punktX(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), index)"
+              [attr.cy]="punktY(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), punkt.unauffaellig)" r="6" />
+            <title>{{ punkt.label }} {{ punkt.jahr }} · Unauffällig: {{ punkt.unauffaellig }}</title>
+          </g>
+          <g class="gf-overview__point is-bad">
+            <circle [attr.cx]="punktX(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), index)"
+              [attr.cy]="punktY(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), punkt.auffaellig)" r="6" />
+            <title>{{ punkt.label }} {{ punkt.jahr }} · Auffällig: {{ punkt.auffaellig }}</title>
+          </g>
+          <text [attr.x]="punktX(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), index)" y="274">{{ punkt.label
+            }}</text>
+          }
+        </svg>
+      </div>
+    </article>
+
+    <aside class="gf-overview__urgent gf-neu-card">
+      <header>
+        <h2>Dringend prüfen</h2>
+        <span>{{ uebersicht.dringendeHinweise.length }} Hinweise</span>
+      </header>
+
+      @for (hinweis of uebersicht.dringendeHinweise; track hinweis.id) {
+      <button class="gf-overview__urgent-item {{ statusKlasse(hinweis.status) }}" type="button"
+        (click)="hinweisOverlayOeffnen($event, hinweis.id)">
+        <span class="material-symbols-outlined" aria-hidden="true">{{ hinweisIcon(hinweis) }}</span>
+        <div>
+          <strong>{{ hinweis.titel }}</strong>
+          <p>{{ hinweis.beschreibung }}</p>
+          <small>Offen seit: {{ hinweis.seit }}</small>
+        </div>
+        <i class="material-symbols-outlined" aria-hidden="true">open_in_new</i>
+      </button>
+      }
+    </aside>
+
+    <article class="gf-overview__activity gf-neu-card">
+      <header>
+        <div>
+          <h2>Letzte Aktivitäten</h2>
+        </div>
+        <button class="gf-button gf-button--ghost" type="button" (click)="aktivitaetenOverlayOeffnen($event)">Protokoll
+          öffnen</button>
+      </header>
+
+      <div class="gf-overview__timeline">
+        @for (aktivitaet of uebersicht.aktivitaeten.slice(0, 4); track aktivitaet.id) {
+        <article class="{{ statusKlasse(aktivitaet.status) }}">
+          <time>{{ aktivitaet.zeitpunkt }}</time>
+          <div>
+            <strong>{{ aktivitaet.titel }}</strong>
+            <p>{{ aktivitaet.beschreibung }}</p>
+          </div>
+        </article>
         }
       </div>
-    </section>
+    </article>
 
-    <div class="gf-overview__kpis" aria-label="Allgemeine Kennzahlen">
-      <article class="gf-overview__kpi" tabindex="0">
-        <span>Patienten gesamt</span>
-        <strong>{{ uebersicht.kennzahlen.patientenGesamt }}</strong>
-        <small>Testpersonen im System</small>
-        <i class="material-symbols-outlined" aria-hidden="true">groups</i>
-      </article>
-      <article class="gf-overview__kpi" tabindex="0">
-        <span>Berichte gesamt</span>
-        <strong>{{ uebersicht.kennzahlen.berichteGesamt }}</strong>
-        <small>Importierte Laborbefunde</small>
-        <i class="material-symbols-outlined" aria-hidden="true">folder_open</i>
-      </article>
-      <article class="gf-overview__kpi is-success" tabindex="0">
-        <span>Geprüfte Importe</span>
-        <strong>{{ uebersicht.kennzahlen.importeGeprueft }}</strong>
-        <small>Ärztlich kontrolliert</small>
-        <i class="material-symbols-outlined" aria-hidden="true">task_alt</i>
-      </article>
-      <article class="gf-overview__kpi is-warning" tabindex="0">
-        <span>Ungeprüfte Importe</span>
-        <strong>{{ uebersicht.kennzahlen.importeUngeprueft }}</strong>
-        <small>Warten auf Review</small>
-        <i class="material-symbols-outlined" aria-hidden="true">pending_actions</i>
-      </article>
-      <article class="gf-overview__kpi is-danger" tabindex="0">
-        <span>Review offen</span>
-        <strong>{{ uebersicht.kennzahlen.reviewOffen }}</strong>
-        <small>Priorisierte Prüfungen</small>
-        <i class="material-symbols-outlined" aria-hidden="true">emergency_home</i>
-      </article>
+    <article class="gf-overview__quick gf-neu-card">
+      <h2>Schnellaktionen</h2>
+      <a class="gf-button gf-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
+        <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
+        Import starten
+      </a>
+      <a class="gf-button gf-button--secondary" routerLink="/review">
+        <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
+        Review öffnen
+      </a>
+      <a class="gf-button gf-button--secondary" routerLink="/berichte">
+        <span class="material-symbols-outlined" aria-hidden="true">article</span>
+        Berichte prüfen
+      </a>
+    </article>
+  </div>
+
+  @if (aktualisierungAktiv()) {
+  <section class="gf-overview__loading" role="status" aria-live="polite">
+    <div>
+      <span class="gf-overview__spinner"></span>
+      <strong>Daten werden aktualisiert</strong>
     </div>
-
-    <div class="gf-overview__main">
-      <article class="gf-overview__chart gf-neu-card">
-        <header>
-          <div>
-            <h2>Gesundheitsverlauf aller Patienten</h2>
-          </div>
-          <div class="gf-overview__chart-actions">
-            <div class="gf-overview__year-switch" aria-label="Jahr wählen">
-              @for (jahr of jahre; track jahr) {
-                <button type="button" [class.is-active]="ausgewaehltesJahr === jahr" (click)="jahrAendern(jahr)">{{ jahr }}</button>
-              }
-            </div>
-
-            <div class="gf-custom-select">
-              <button type="button" (click)="monatsmenueUmschalten('von')">
-                <span>Von</span>
-                <strong>{{ monatsLabel(monatVon) }}</strong>
-                <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
-              </button>
-
-              @if (aktivesMonatsmenue === 'von') {
-                <div class="gf-custom-select__menu">
-                  @for (monat of monate; track monat.wert) {
-                    <button type="button" [class.is-active]="monatVon === monat.wert" (click)="monatVonSetzen(monat.wert)">{{ monat.label }}</button>
-                  }
-                </div>
-              }
-            </div>
-
-            <div class="gf-custom-select">
-              <button type="button" (click)="monatsmenueUmschalten('bis')">
-                <span>Bis</span>
-                <strong>{{ monatsLabel(monatBis) }}</strong>
-                <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
-              </button>
-
-              @if (aktivesMonatsmenue === 'bis') {
-                <div class="gf-custom-select__menu">
-                  @for (monat of monate; track monat.wert) {
-                    <button type="button" [class.is-active]="monatBis === monat.wert" (click)="monatBisSetzen(monat.wert)">{{ monat.label }}</button>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-        </header>
-
-        <div class="gf-overview__legend">
-          <span class="is-good">Unauffällig</span>
-          <span class="is-bad">Auffällig</span>
-        </div>
-
-        <div class="gf-overview__chart-scroll" #chartScroller (pointerdown)="chartDragStart($event, chartScroller)" (pointermove)="chartDragMove($event, chartScroller)" (pointerup)="chartDragEnd($event, chartScroller)" (pointercancel)="chartDragEnd($event, chartScroller)" (pointerleave)="chartDragEnd($event, chartScroller)">
-          <svg viewBox="0 0 1160 300" role="img" aria-label="Aggregierter Gesundheitsverlauf">
-            <path class="gf-overview__chart-grid" d="M54 238 H1106 M54 182 H1106 M54 126 H1106 M54 70 H1106" />
-            <polyline class="gf-overview__chart-line is-good" [attr.points]="verlaufPunkte(uebersicht.gesundheitsverlauf, 'unauffaellig')" />
-            <polyline class="gf-overview__chart-line is-bad" [attr.points]="verlaufPunkte(uebersicht.gesundheitsverlauf, 'auffaellig')" />
-
-            @for (punkt of sichtbarerVerlauf(uebersicht.gesundheitsverlauf); track punkt.jahr + '-' + punkt.monat; let index = $index) {
-              <g class="gf-overview__point is-good">
-                <circle [attr.cx]="punktX(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), index)" [attr.cy]="punktY(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), punkt.unauffaellig)" r="6" />
-                <title>{{ punkt.label }} {{ punkt.jahr }} · Unauffällig: {{ punkt.unauffaellig }}</title>
-              </g>
-              <g class="gf-overview__point is-bad">
-                <circle [attr.cx]="punktX(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), index)" [attr.cy]="punktY(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), punkt.auffaellig)" r="6" />
-                <title>{{ punkt.label }} {{ punkt.jahr }} · Auffällig: {{ punkt.auffaellig }}</title>
-              </g>
-              <text [attr.x]="punktX(sichtbarerVerlauf(uebersicht.gesundheitsverlauf), index)" y="274">{{ punkt.label }}</text>
-            }
-          </svg>
-        </div>
-      </article>
-
-      <aside class="gf-overview__urgent gf-neu-card">
-        <header>
-          <h2>Dringend prüfen</h2>
-          <span>{{ uebersicht.dringendeHinweise.length }} Hinweise</span>
-        </header>
-
-        @for (hinweis of uebersicht.dringendeHinweise; track hinweis.id) {
-          <button class="gf-overview__urgent-item {{ statusKlasse(hinweis.status) }}" type="button" (click)="hinweisOverlayOeffnen($event, hinweis.id)">
-            <span class="material-symbols-outlined" aria-hidden="true">{{ hinweisIcon(hinweis) }}</span>
-            <div>
-              <strong>{{ hinweis.titel }}</strong>
-              <p>{{ hinweis.beschreibung }}</p>
-              <small>Offen seit: {{ hinweis.seit }}</small>
-            </div>
-            <i class="material-symbols-outlined" aria-hidden="true">open_in_new</i>
-          </button>
-        }
-      </aside>
-
-      <article class="gf-overview__activity gf-neu-card">
-        <header>
-          <div>
-            <h2>Letzte Aktivitäten</h2>
-          </div>
-          <button class="gf-button gf-button--ghost" type="button" (click)="aktivitaetenOverlayOeffnen($event)">Protokoll öffnen</button>
-        </header>
-
-        <div class="gf-overview__timeline">
-          @for (aktivitaet of uebersicht.aktivitaeten.slice(0, 4); track aktivitaet.id) {
-            <article class="{{ statusKlasse(aktivitaet.status) }}">
-              <time>{{ aktivitaet.zeitpunkt }}</time>
-              <div>
-                <strong>{{ aktivitaet.titel }}</strong>
-                <p>{{ aktivitaet.beschreibung }}</p>
-              </div>
-            </article>
-          }
-        </div>
-      </article>
-
-      <article class="gf-overview__quick gf-neu-card">
-        <h2>Schnellaktionen</h2>
-        <a class="gf-button gf-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
-          <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
-          Import starten
-        </a>
-        <a class="gf-button gf-button--secondary" routerLink="/review">
-          <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
-          Review öffnen
-        </a>
-        <a class="gf-button gf-button--secondary" routerLink="/berichte">
-          <span class="material-symbols-outlined" aria-hidden="true">article</span>
-          Berichte prüfen
-        </a>
-      </article>
-    </div>
-
-    @if (aktualisierungAktiv()) {
-      <section class="gf-overview__loading" role="status" aria-live="polite">
-        <div>
-          <span class="gf-overview__spinner"></span>
-          <strong>Daten werden aktualisiert</strong>
-        </div>
-      </section>
-    }
-
-    @if (overlayTyp === 'hinweise') {
-      <section class="gf-cursor-overlay" [style.left.px]="overlayX" [style.top.px]="overlayY" role="dialog" aria-modal="false" aria-labelledby="hinweis-overlay-title">
-        <button class="gf-cursor-overlay__close" type="button" aria-label="Overlay schließen" (click)="overlaySchliessen()">
-          <span class="material-symbols-outlined" aria-hidden="true">close</span>
-        </button>
-
-        <header>
-          <h2 id="hinweis-overlay-title">Dringende Prüfungen</h2>
-        </header>
-
-        <div class="gf-cursor-overlay__list">
-          @for (hinweis of uebersicht.dringendeHinweise; track hinweis.id) {
-            <a class="{{ statusKlasse(hinweis.status) }}" [class.is-selected]="aktiverHinweisId === hinweis.id" routerLink="/review">
-              <strong>{{ hinweis.titel }}</strong>
-              <p>{{ hinweis.beschreibung }}</p>
-              <small>Offen seit: {{ hinweis.seit }}</small>
-            </a>
-          }
-        </div>
-      </section>
-    }
-
-    @if (overlayTyp === 'aktivitaeten') {
-      <section class="gf-cursor-overlay is-wide" [style.left.px]="overlayX" [style.top.px]="overlayY" role="dialog" aria-modal="false" aria-labelledby="activity-overlay-title">
-        <button class="gf-cursor-overlay__close" type="button" aria-label="Overlay schließen" (click)="overlaySchliessen()">
-          <span class="material-symbols-outlined" aria-hidden="true">close</span>
-        </button>
-
-        <header>
-          <h2 id="activity-overlay-title">Aktivitätsprotokoll</h2>
-        </header>
-
-        <nav class="gf-cursor-overlay__filters" aria-label="Tagesfilter">
-          <button type="button" [class.is-active]="aktivitaetsFilter === 'heute'" (click)="aktivitaetsFilterSetzen('heute')">Heute</button>
-          <button type="button" [class.is-active]="aktivitaetsFilter === 'gestern'" (click)="aktivitaetsFilterSetzen('gestern')">Gestern</button>
-          <button type="button" [class.is-active]="aktivitaetsFilter === 'drei_tage'" (click)="aktivitaetsFilterSetzen('drei_tage')">Letzte 3 Tage</button>
-          <button type="button" [class.is-active]="aktivitaetsFilter === 'sieben_tage'" (click)="aktivitaetsFilterSetzen('sieben_tage')">Letzte 7 Tage</button>
-        </nav>
-
-        <div class="gf-cursor-overlay__list">
-          @for (aktivitaet of gefilterteAktivitaeten(uebersicht.aktivitaeten); track aktivitaet.id) {
-            <article class="{{ statusKlasse(aktivitaet.status) }}">
-              <time>{{ aktivitaet.zeitpunkt }}</time>
-              <strong>{{ aktivitaet.titel }}</strong>
-              <p>{{ aktivitaet.beschreibung }}</p>
-            </article>
-          }
-        </div>
-      </section>
-    }
   </section>
-}
+  }
 
+  @if (overlayTyp === 'hinweise') {
+  <section class="gf-cursor-overlay" [style.left.px]="overlayX" [style.top.px]="overlayY" role="dialog"
+    aria-modal="false" aria-labelledby="hinweis-overlay-title">
+    <button class="gf-cursor-overlay__close" type="button" aria-label="Overlay schließen" (click)="overlaySchliessen()">
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+
+    <header>
+      <h2 id="hinweis-overlay-title">Dringende Prüfungen</h2>
+    </header>
+
+    <div class="gf-cursor-overlay__list">
+      @for (hinweis of uebersicht.dringendeHinweise; track hinweis.id) {
+      <a class="{{ statusKlasse(hinweis.status) }}" [class.is-selected]="aktiverHinweisId === hinweis.id"
+        routerLink="/review">
+        <strong>{{ hinweis.titel }}</strong>
+        <p>{{ hinweis.beschreibung }}</p>
+        <small>Offen seit: {{ hinweis.seit }}</small>
+      </a>
+      }
+    </div>
+  </section>
+  }
+
+  @if (overlayTyp === 'aktivitaeten') {
+  <section class="gf-cursor-overlay is-wide" [style.left.px]="overlayX" [style.top.px]="overlayY" role="dialog"
+    aria-modal="false" aria-labelledby="activity-overlay-title">
+    <button class="gf-cursor-overlay__close" type="button" aria-label="Overlay schließen" (click)="overlaySchliessen()">
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+
+    <header>
+      <h2 id="activity-overlay-title">Aktivitätsprotokoll</h2>
+    </header>
+
+    <nav class="gf-cursor-overlay__filters" aria-label="Tagesfilter">
+      <button type="button" [class.is-active]="aktivitaetsFilter === 'heute'"
+        (click)="aktivitaetsFilterSetzen('heute')">Heute</button>
+      <button type="button" [class.is-active]="aktivitaetsFilter === 'gestern'"
+        (click)="aktivitaetsFilterSetzen('gestern')">Gestern</button>
+      <button type="button" [class.is-active]="aktivitaetsFilter === 'drei_tage'"
+        (click)="aktivitaetsFilterSetzen('drei_tage')">Letzte 3 Tage</button>
+      <button type="button" [class.is-active]="aktivitaetsFilter === 'sieben_tage'"
+        (click)="aktivitaetsFilterSetzen('sieben_tage')">Letzte 7 Tage</button>
+    </nav>
+
+    <div class="gf-cursor-overlay__list">
+      @for (aktivitaet of gefilterteAktivitaeten(uebersicht.aktivitaeten); track aktivitaet.id) {
+      <article class="{{ statusKlasse(aktivitaet.status) }}">
+        <time>{{ aktivitaet.zeitpunkt }}</time>
+        <strong>{{ aktivitaet.titel }}</strong>
+        <p>{{ aktivitaet.beschreibung }}</p>
+      </article>
+      }
+    </div>
+  </section>
+  }
+</section>
+}

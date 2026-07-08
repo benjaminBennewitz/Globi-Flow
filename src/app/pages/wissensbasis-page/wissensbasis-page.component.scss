@@ -200,7 +200,7 @@ gf-secure-search {
   text-align: left;
 }
 
-.gf-wissensbasis-route__create-entry > span {
+.gf-wissensbasis-route__create-entry>span {
   grid-row: span 2;
   color: var(--gf-color-primary);
 }
@@ -325,7 +325,7 @@ gf-secure-search {
    06   Editor
    ========================================================================== */
 
-.gf-wissensbasis-route__editor > header {
+.gf-wissensbasis-route__editor>header {
   display: flex;
   align-items: start;
   justify-content: space-between;
@@ -416,7 +416,7 @@ gf-secure-search {
   gap: var(--gf-space-3);
 }
 
-.gf-wissensbasis-route__quality > div {
+.gf-wissensbasis-route__quality>div {
   display: grid;
   grid-template-columns: repeat(5, minmax(120px, 1fr));
   gap: var(--gf-space-2);
@@ -459,7 +459,7 @@ gf-secure-search {
   box-shadow: var(--gf-shadow-soft);
 }
 
-.gf-wissensbasis-route__source-list article > span {
+.gf-wissensbasis-route__source-list article>span {
   color: var(--gf-color-primary);
   font-size: 0.78rem;
   font-weight: 850;
@@ -621,6 +621,7 @@ gf-secure-search {
    ========================================================================== */
 
 @media (max-width: 1320px) {
+
   .gf-wissensbasis-route__toolbar,
   .gf-wissensbasis-route__workspace {
     grid-template-columns: 1fr;
@@ -631,14 +632,15 @@ gf-secure-search {
     min-height: 640px;
   }
 
-  .gf-wissensbasis-route__quality > div {
+  .gf-wissensbasis-route__quality>div {
     grid-template-columns: repeat(3, minmax(120px, 1fr));
   }
 }
 
 @media (max-width: 820px) {
+
   .gf-wissensbasis-route__headline,
-  .gf-wissensbasis-route__editor > header,
+  .gf-wissensbasis-route__editor>header,
   .gf-wissensbasis-route__sources header,
   .gf-wissensbasis-route__source-index-card header,
   .gf-wissensbasis-route__create-card header,
@@ -648,7 +650,7 @@ gf-secure-search {
 
   .gf-wissensbasis-route__kpis,
   .gf-wissensbasis-route__form,
-  .gf-wissensbasis-route__quality > div,
+  .gf-wissensbasis-route__quality>div,
   .gf-wissensbasis-route__source-form,
   .gf-wissensbasis-route__create-form {
     grid-template-columns: 1fr;

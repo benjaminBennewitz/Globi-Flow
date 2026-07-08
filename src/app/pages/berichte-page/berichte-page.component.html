@@ -17,7 +17,8 @@
         <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
         Vorschau aktualisieren
       </button>
-      <button class="gf-button gf-button--primary" type="button" [disabled]="offenePruefwerte().length > 0" (click)="drucken()">
+      <button class="gf-button gf-button--primary" type="button" [disabled]="offenePruefwerte().length > 0"
+        (click)="drucken()">
         <span class="material-symbols-outlined" aria-hidden="true">print</span>
         Drucken
       </button>
@@ -25,13 +26,14 @@
   </header>
 
   @if (offenePruefwerte().length > 0) {
-    <section class="gf-berichte-route__review-warning gf-neu-card" role="status">
-      <span class="material-symbols-outlined" aria-hidden="true">lock</span>
-      <div>
-        <strong>Finaler Druck noch gesperrt</strong>
-        <p>{{ offenePruefwerte().length }} Wert(e) sind noch nicht freigegeben. Die Vorschau bleibt sichtbar, der finale Druck wird blockiert.</p>
-      </div>
-    </section>
+  <section class="gf-berichte-route__review-warning gf-neu-card" role="status">
+    <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+    <div>
+      <strong>Finaler Druck noch gesperrt</strong>
+      <p>{{ offenePruefwerte().length }} Wert(e) sind noch nicht freigegeben. Die Vorschau bleibt sichtbar, der finale
+        Druck wird blockiert.</p>
+    </div>
+  </section>
   }
 
   <aside class="gf-berichte-route__controls gf-neu-card" aria-label="Berichtssteuerung">
@@ -54,10 +56,10 @@
       <h2>Freigabecheck</h2>
       <div class="gf-berichte-route__checks">
         @for (check of freigabeChecks(); track check.label) {
-          <span [class.is-ok]="check.ok">
-            <i class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error' }}</i>
-            {{ check.label }}
-          </span>
+        <span [class.is-ok]="check.ok">
+          <i class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error' }}</i>
+          {{ check.label }}
+        </span>
         }
       </div>
     </section>
@@ -119,29 +121,29 @@
       <section class="gf-berichte-route__category-chart">
         <h3>Wertgruppen im Überblick</h3>
         @for (kategorie of daten.kategorien; track kategorie.name) {
-          @let gesamt = kategorieGesamt(kategorie);
-          <article>
-            <header>
-              <strong>{{ kategorie.name }}</strong>
-              <small>{{ gesamt }} Werte</small>
-            </header>
-            <div>
-              <span class="is-normal" [style.width.%]="kategorieAnteil(kategorie.normal, gesamt)"></span>
-              <span class="is-alert" [style.width.%]="kategorieAnteil(kategorie.auffaellig, gesamt)"></span>
-              <span class="is-review" [style.width.%]="kategorieAnteil(kategorie.review, gesamt)"></span>
-            </div>
-          </article>
+        @let gesamt = kategorieGesamt(kategorie);
+        <article>
+          <header>
+            <strong>{{ kategorie.name }}</strong>
+            <small>{{ gesamt }} Werte</small>
+          </header>
+          <div>
+            <span class="is-normal" [style.width.%]="kategorieAnteil(kategorie.normal, gesamt)"></span>
+            <span class="is-alert" [style.width.%]="kategorieAnteil(kategorie.auffaellig, gesamt)"></span>
+            <span class="is-review" [style.width.%]="kategorieAnteil(kategorie.review, gesamt)"></span>
+          </div>
+        </article>
         }
       </section>
 
       <section class="gf-berichte-route__recommendations">
         <h3>Empfehlungen und Hinweise</h3>
         @for (empfehlung of daten.empfehlungen; track empfehlung.id) {
-          <article class="is-{{ empfehlung.prioritaet }}">
-            <span>{{ empfehlung.prioritaet }}</span>
-            <strong>{{ empfehlung.titel }}</strong>
-            <p>{{ empfehlung.text }}</p>
-          </article>
+        <article class="is-{{ empfehlung.prioritaet }}">
+          <span>{{ empfehlung.prioritaet }}</span>
+          <strong>{{ empfehlung.titel }}</strong>
+          <p>{{ empfehlung.text }}</p>
+        </article>
         }
       </section>
     </article>
@@ -155,28 +157,29 @@
 
       <section class="gf-berichte-route__value-list">
         @for (wert of druckWerte(); track wert.key) {
-          <article class="gf-berichte-route__value-card">
-            <header>
-              <div>
-                <span>{{ wert.gruppe }}</span>
-                <h3>{{ wert.name }}</h3>
-              </div>
-              <strong class="{{ statusKlasse(wert.status) }}">{{ statusLabel(wert.status) }}</strong>
-            </header>
-
-            <div class="gf-berichte-route__value-main">
-              <strong>{{ wert.wert }} {{ wert.einheit }}</strong>
-              <small>Referenz: {{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
+        <article class="gf-berichte-route__value-card">
+          <header>
+            <div>
+              <span>{{ wert.gruppe }}</span>
+              <h3>{{ wert.name }}</h3>
             </div>
+            <strong class="{{ statusKlasse(wert.status) }}">{{ statusLabel(wert.status) }}</strong>
+          </header>
 
-            <div class="gf-berichte-route__range" aria-hidden="true">
-              <span class="gf-berichte-route__range-ref" [style.left.%]="referenzStart(wert)" [style.width.%]="referenzBreite(wert)"></span>
-              <i [style.left.%]="markerPosition(wert)"></i>
-            </div>
+          <div class="gf-berichte-route__value-main">
+            <strong>{{ wert.wert }} {{ wert.einheit }}</strong>
+            <small>Referenz: {{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
+          </div>
 
-            <p>{{ wert.erklaerung }}</p>
-            <small>{{ wert.hinweis }}</small>
-          </article>
+          <div class="gf-berichte-route__range" aria-hidden="true">
+            <span class="gf-berichte-route__range-ref" [style.left.%]="referenzStart(wert)"
+              [style.width.%]="referenzBreite(wert)"></span>
+            <i [style.left.%]="markerPosition(wert)"></i>
+          </div>
+
+          <p>{{ wert.erklaerung }}</p>
+          <small>{{ wert.hinweis }}</small>
+        </article>
         }
       </section>
     </article>
@@ -190,16 +193,16 @@
 
       <section class="gf-berichte-route__trend-grid">
         @for (wert of trendWerte(); track wert.key) {
-          <article>
-            <header>
-              <strong>{{ wert.name }}</strong>
-              <span>{{ wert.trend }}</span>
-            </header>
-            <svg viewBox="0 0 100 38" role="img" [attr.aria-label]="'Verlauf von ' + wert.name">
-              <polyline [attr.points]="sparklinePunkte(wert)"></polyline>
-            </svg>
-            <p>{{ wert.hinweis }}</p>
-          </article>
+        <article>
+          <header>
+            <strong>{{ wert.name }}</strong>
+            <span>{{ wert.trend }}</span>
+          </header>
+          <svg viewBox="0 0 100 38" role="img" [attr.aria-label]="'Verlauf von ' + wert.name">
+            <polyline [attr.points]="sparklinePunkte(wert)"></polyline>
+          </svg>
+          <p>{{ wert.hinweis }}</p>
+        </article>
         }
       </section>
 
@@ -207,7 +210,7 @@
         <h3>Fragen für das Arztgespräch</h3>
         <ol>
           @for (frage of daten.fragen; track frage) {
-            <li>{{ frage }}</li>
+          <li>{{ frage }}</li>
           }
         </ol>
       </section>
@@ -216,11 +219,11 @@
         <h3>Quellen und Wissensbasis</h3>
         <div>
           @for (quelle of daten.quellen; track quelle.id) {
-            <article>
-              <span>{{ quelle.bereich }}</span>
-              <strong>{{ quelle.titel }}</strong>
-              <small>Stand {{ quelle.stand }}</small>
-            </article>
+          <article>
+            <span>{{ quelle.bereich }}</span>
+            <strong>{{ quelle.titel }}</strong>
+            <small>Stand {{ quelle.stand }}</small>
+          </article>
           }
         </div>
       </section>

@@ -38,17 +38,20 @@
   </section>
 
   <section class="gf-wissensbasis-route__toolbar gf-neu-card" aria-label="Wissensbasis-Filter">
-    <gf-secure-search label="Wissensbasis durchsuchen" placeholder="Laborwert, Kategorie, Text oder Quelle suchen" [value]="suche()" (valueChange)="sucheSetzen($event)"></gf-secure-search>
+    <gf-secure-search label="Wissensbasis durchsuchen" placeholder="Laborwert, Kategorie, Text oder Quelle suchen"
+      [value]="suche()" (valueChange)="sucheSetzen($event)"></gf-secure-search>
 
     <div class="gf-wissensbasis-route__chips" aria-label="Statusfilter">
       @for (status of statusOptionen; track status.key) {
-        <button type="button" [class.is-active]="statusFilter() === status.key" (click)="statusFilterSetzen(status.key)">{{ status.label }}</button>
+      <button type="button" [class.is-active]="statusFilter() === status.key"
+        (click)="statusFilterSetzen(status.key)">{{ status.label }}</button>
       }
     </div>
 
     <div class="gf-wissensbasis-route__chips" aria-label="Kategorienfilter">
       @for (kategorie of kategorien(); track kategorie) {
-        <button type="button" [class.is-active]="kategorieFilter() === kategorie" (click)="kategorieFilterSetzen(kategorie)">{{ kategorie }}</button>
+      <button type="button" [class.is-active]="kategorieFilter() === kategorie"
+        (click)="kategorieFilterSetzen(kategorie)">{{ kategorie }}</button>
       }
     </div>
   </section>
@@ -70,21 +73,25 @@
         </button>
 
         @for (eintrag of sichtbareEintraege(); track eintrag.id) {
-          <article class="gf-wissensbasis-route__entry" [class.is-active]="eintrag.id === aktiverEintrag().id">
-            <button type="button" class="gf-wissensbasis-route__entry-main" (click)="eintragAuswaehlen(eintrag)">
-              <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</span>
-              <strong>{{ eintrag.anzeigename }}</strong>
-              <small>{{ eintrag.laborwertKey }} · {{ eintrag.kategorie }}</small>
-              <i>v{{ eintrag.version }} · {{ eintrag.quellen.length }} Quellen</i>
-            </button>
+        <article class="gf-wissensbasis-route__entry" [class.is-active]="eintrag.id === aktiverEintrag().id">
+          <button type="button" class="gf-wissensbasis-route__entry-main" (click)="eintragAuswaehlen(eintrag)">
+            <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</span>
+            <strong>{{ eintrag.anzeigename }}</strong>
+            <small>{{ eintrag.laborwertKey }} · {{ eintrag.kategorie }}</small>
+            <i>v{{ eintrag.version }} · {{ eintrag.quellen.length }} Quellen</i>
+          </button>
 
-            <div class="gf-wissensbasis-route__entry-actions">
-              <gf-icon-action icon="edit" label="Eintrag bearbeiten" tone="primary" (action)="eintragAuswaehlen(eintrag)"></gf-icon-action>
-              <gf-icon-action icon="rule_settings" label="Zur Prüfung markieren" tone="warning" (action)="eintragStatusSetzen(eintrag.id, 'pruefung')"></gf-icon-action>
-              <gf-icon-action icon="verified" label="Eintrag freigeben" tone="success" (action)="eintragStatusSetzen(eintrag.id, 'freigegeben')"></gf-icon-action>
-              <gf-icon-action icon="delete" label="Eintrag löschen" tone="danger" (action)="loeschDialogOeffnen(eintrag.id)"></gf-icon-action>
-            </div>
-          </article>
+          <div class="gf-wissensbasis-route__entry-actions">
+            <gf-icon-action icon="edit" label="Eintrag bearbeiten" tone="primary"
+              (action)="eintragAuswaehlen(eintrag)"></gf-icon-action>
+            <gf-icon-action icon="rule_settings" label="Zur Prüfung markieren" tone="warning"
+              (action)="eintragStatusSetzen(eintrag.id, 'pruefung')"></gf-icon-action>
+            <gf-icon-action icon="verified" label="Eintrag freigeben" tone="success"
+              (action)="eintragStatusSetzen(eintrag.id, 'freigegeben')"></gf-icon-action>
+            <gf-icon-action icon="delete" label="Eintrag löschen" tone="danger"
+              (action)="loeschDialogOeffnen(eintrag.id)"></gf-icon-action>
+          </div>
+        </article>
         }
       </div>
     </section>
@@ -101,9 +108,12 @@
 
         <div class="gf-wissensbasis-route__editor-actions">
           <button class="gf-button gf-button--danger" type="button" (click)="eintragLoeschen()">Löschen</button>
-          <button class="gf-button gf-button--secondary" type="button" (click)="statusSetzenUndSpeichern('pruefung')">Zur Prüfung</button>
-          <button class="gf-button gf-button--secondary" type="button" (click)="statusSetzenUndSpeichern('freigegeben')">Freigeben</button>
-          <button class="gf-button gf-button--primary" type="button" (click)="entwurfSpeichern()">Änderungen speichern</button>
+          <button class="gf-button gf-button--secondary" type="button"
+            (click)="statusSetzenUndSpeichern('pruefung')">Zur Prüfung</button>
+          <button class="gf-button gf-button--secondary" type="button"
+            (click)="statusSetzenUndSpeichern('freigegeben')">Freigeben</button>
+          <button class="gf-button gf-button--primary" type="button" (click)="entwurfSpeichern()">Änderungen
+            speichern</button>
         </div>
       </header>
 
@@ -132,27 +142,33 @@
 
           <label class="is-wide">
             <span>Patientenerklärung kurz</span>
-            <textarea rows="3" [value]="form.patientKurztext" (input)="formularfeldSetzen('patientKurztext', $event)"></textarea>
+            <textarea rows="3" [value]="form.patientKurztext"
+              (input)="formularfeldSetzen('patientKurztext', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Patientenerklärung ausführlich</span>
-            <textarea rows="5" [value]="form.patientLangtext" (input)="formularfeldSetzen('patientLangtext', $event)"></textarea>
+            <textarea rows="5" [value]="form.patientLangtext"
+              (input)="formularfeldSetzen('patientLangtext', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Arztinformation</span>
-            <textarea rows="3" [value]="form.arztinformation" (input)="formularfeldSetzen('arztinformation', $event)"></textarea>
+            <textarea rows="3" [value]="form.arztinformation"
+              (input)="formularfeldSetzen('arztinformation', $event)"></textarea>
           </label>
           <label>
             <span>Ursachen niedrig</span>
-            <textarea rows="4" [value]="form.ursachenNiedrig" (input)="formularfeldSetzen('ursachenNiedrig', $event)"></textarea>
+            <textarea rows="4" [value]="form.ursachenNiedrig"
+              (input)="formularfeldSetzen('ursachenNiedrig', $event)"></textarea>
           </label>
           <label>
             <span>Ursachen hoch</span>
-            <textarea rows="4" [value]="form.ursachenHoch" (input)="formularfeldSetzen('ursachenHoch', $event)"></textarea>
+            <textarea rows="4" [value]="form.ursachenHoch"
+              (input)="formularfeldSetzen('ursachenHoch', $event)"></textarea>
           </label>
           <label>
             <span>Einflussfaktoren</span>
-            <textarea rows="4" [value]="form.einflussfaktoren" (input)="formularfeldSetzen('einflussfaktoren', $event)"></textarea>
+            <textarea rows="4" [value]="form.einflussfaktoren"
+              (input)="formularfeldSetzen('einflussfaktoren', $event)"></textarea>
           </label>
           <label>
             <span>Hinweise</span>
@@ -164,7 +180,8 @@
           </label>
           <label class="is-wide">
             <span>Änderungsnotiz</span>
-            <input type="text" placeholder="z. B. Patiententext vereinfacht" [value]="form.aenderungsnotiz" (input)="formularfeldSetzen('aenderungsnotiz', $event)">
+            <input type="text" placeholder="z. B. Patiententext vereinfacht" [value]="form.aenderungsnotiz"
+              (input)="formularfeldSetzen('aenderungsnotiz', $event)">
           </label>
         </form>
 
@@ -172,10 +189,11 @@
           <h3 id="quality-title">Qualitätschecks</h3>
           <div>
             @for (check of qualitaetsChecks(aktiverEintrag()); track check.label) {
-              <article [class.is-ok]="check.ok">
-                <span class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error' }}</span>
-                <strong>{{ check.label }}</strong>
-              </article>
+            <article [class.is-ok]="check.ok">
+              <span class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error'
+                }}</span>
+              <strong>{{ check.label }}</strong>
+            </article>
             }
           </div>
         </section>
@@ -190,28 +208,34 @@
 
           <div class="gf-wissensbasis-route__source-list">
             @for (quelle of form.quellen; track quelle.id) {
-              <article>
-                <span>{{ quelle.typ }}</span>
-                <strong>{{ quelle.titel }}</strong>
-                <small>{{ quelle.stand }} · {{ quelle.referenz }}</small>
-                <gf-icon-action icon="close" label="Quelle entfernen" tone="danger" (action)="quelleEntfernen(quelle.id)"></gf-icon-action>
-              </article>
+            <article>
+              <span>{{ quelle.typ }}</span>
+              <strong>{{ quelle.titel }}</strong>
+              <small>{{ quelle.stand }} · {{ quelle.referenz }}</small>
+              <gf-icon-action icon="close" label="Quelle entfernen" tone="danger"
+                (action)="quelleEntfernen(quelle.id)"></gf-icon-action>
+            </article>
             } @empty {
-              <p>Noch keine Quelle zugeordnet.</p>
+            <p>Noch keine Quelle zugeordnet.</p>
             }
           </div>
 
           <div class="gf-wissensbasis-route__source-form">
-            <input type="text" placeholder="Quellentitel" [value]="quellenTitel()" (input)="quellenFeldSetzen('titel', $event)">
+            <input type="text" placeholder="Quellentitel" [value]="quellenTitel()"
+              (input)="quellenFeldSetzen('titel', $event)">
             <select [value]="quellenTyp()" (change)="quellenTypSetzen($event)">
               @for (typ of quellenTypen; track typ.key) {
-                <option [value]="typ.key">{{ typ.label }}</option>
+              <option [value]="typ.key">{{ typ.label }}</option>
               }
             </select>
-            <input type="text" placeholder="Stand" [value]="quellenStand()" (input)="quellenFeldSetzen('stand', $event)">
-            <input type="text" placeholder="Referenz oder URL" [value]="quellenReferenz()" (input)="quellenFeldSetzen('referenz', $event)">
-            <input type="text" placeholder="Interner Hinweis" [value]="quellenHinweis()" (input)="quellenFeldSetzen('hinweis', $event)">
-            <button class="gf-button gf-button--secondary" type="button" (click)="quelleHinzufuegen()">Quelle hinzufügen</button>
+            <input type="text" placeholder="Stand" [value]="quellenStand()"
+              (input)="quellenFeldSetzen('stand', $event)">
+            <input type="text" placeholder="Referenz oder URL" [value]="quellenReferenz()"
+              (input)="quellenFeldSetzen('referenz', $event)">
+            <input type="text" placeholder="Interner Hinweis" [value]="quellenHinweis()"
+              (input)="quellenFeldSetzen('hinweis', $event)">
+            <button class="gf-button gf-button--secondary" type="button" (click)="quelleHinzufuegen()">Quelle
+              hinzufügen</button>
           </div>
         </section>
       </div>
@@ -220,81 +244,92 @@
 </section>
 
 @if (quellenindexOffen()) {
-  <section class="gf-wissensbasis-route__source-index" role="dialog" aria-modal="false" aria-labelledby="source-index-title">
-    <div class="gf-wissensbasis-route__source-index-card">
-      <header>
-        <div>
-          <h2 id="source-index-title">Quellenindex</h2>
-          <p>Alle in der Wissensbasis hinterlegten Quellen und ihre Zuordnung.</p>
-        </div>
-        <gf-icon-action icon="close" label="Quellenindex schließen" tone="danger" (action)="quellenindexUmschalten()"></gf-icon-action>
-      </header>
-
-      <div class="gf-wissensbasis-route__source-index-list">
-        @for (quelle of quellenindex(); track quelle.id + quelle.laborwertKey) {
-          <article>
-            <span>{{ quelle.typ }}</span>
-            <strong>{{ quelle.titel }}</strong>
-            <p>{{ quelle.eintrag }} · {{ quelle.laborwertKey }} · {{ quelle.stand }}</p>
-            <small>{{ quelle.referenz || quelle.hinweis }}</small>
-          </article>
-        } @empty {
-          <p>Keine Quellen hinterlegt.</p>
-        }
+<section class="gf-wissensbasis-route__source-index" role="dialog" aria-modal="false"
+  aria-labelledby="source-index-title">
+  <div class="gf-wissensbasis-route__source-index-card">
+    <header>
+      <div>
+        <h2 id="source-index-title">Quellenindex</h2>
+        <p>Alle in der Wissensbasis hinterlegten Quellen und ihre Zuordnung.</p>
       </div>
+      <gf-icon-action icon="close" label="Quellenindex schließen" tone="danger"
+        (action)="quellenindexUmschalten()"></gf-icon-action>
+    </header>
+
+    <div class="gf-wissensbasis-route__source-index-list">
+      @for (quelle of quellenindex(); track quelle.id + quelle.laborwertKey) {
+      <article>
+        <span>{{ quelle.typ }}</span>
+        <strong>{{ quelle.titel }}</strong>
+        <p>{{ quelle.eintrag }} · {{ quelle.laborwertKey }} · {{ quelle.stand }}</p>
+        <small>{{ quelle.referenz || quelle.hinweis }}</small>
+      </article>
+      } @empty {
+      <p>Keine Quellen hinterlegt.</p>
+      }
     </div>
-  </section>
+  </div>
+</section>
 }
 
 @if (anlageModalOffen()) {
-  <section class="gf-wissensbasis-route__create-modal" role="dialog" aria-modal="true" aria-labelledby="create-wissen-title">
-    <div class="gf-wissensbasis-route__create-card">
-      <header>
-        <div>
-          <h2 id="create-wissen-title">Wissenseintrag anlegen</h2>
-          <p>Basisdaten erfassen, danach direkt im Editor die Texte und Quellen pflegen.</p>
-        </div>
-        <gf-icon-action icon="close" label="Anlage schließen" tone="danger" (action)="anlageModalSchliessen()"></gf-icon-action>
-      </header>
-
-      <div class="gf-wissensbasis-route__create-form">
-        <label>
-          <span>Laborwert-Key</span>
-          <input type="text" placeholder="z. B. ldl_cholesterin" [value]="neuerLaborwertKey()" (input)="anlageFeldSetzen('laborwertKey', $event)">
-        </label>
-        <label>
-          <span>Anzeigename</span>
-          <input type="text" placeholder="z. B. LDL-Cholesterin" [value]="neuerAnzeigename()" (input)="anlageFeldSetzen('anzeigename', $event)">
-        </label>
-        <label>
-          <span>Kategorie</span>
-          <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()" (input)="anlageFeldSetzen('kategorie', $event)">
-        </label>
+<section class="gf-wissensbasis-route__create-modal" role="dialog" aria-modal="true"
+  aria-labelledby="create-wissen-title">
+  <div class="gf-wissensbasis-route__create-card">
+    <header>
+      <div>
+        <h2 id="create-wissen-title">Wissenseintrag anlegen</h2>
+        <p>Basisdaten erfassen, danach direkt im Editor die Texte und Quellen pflegen.</p>
       </div>
+      <gf-icon-action icon="close" label="Anlage schließen" tone="danger"
+        (action)="anlageModalSchliessen()"></gf-icon-action>
+    </header>
 
-      <footer>
-        <button class="gf-button gf-button--secondary" type="button" (click)="anlageModalSchliessen()">Abbrechen</button>
-        <button class="gf-button gf-button--primary" type="button" (click)="eintragAnlegen()">Anlegen und bearbeiten</button>
-      </footer>
+    <div class="gf-wissensbasis-route__create-form">
+      <label>
+        <span>Laborwert-Key</span>
+        <input type="text" placeholder="z. B. ldl_cholesterin" [value]="neuerLaborwertKey()"
+          (input)="anlageFeldSetzen('laborwertKey', $event)">
+      </label>
+      <label>
+        <span>Anzeigename</span>
+        <input type="text" placeholder="z. B. LDL-Cholesterin" [value]="neuerAnzeigename()"
+          (input)="anlageFeldSetzen('anzeigename', $event)">
+      </label>
+      <label>
+        <span>Kategorie</span>
+        <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
+          (input)="anlageFeldSetzen('kategorie', $event)">
+      </label>
     </div>
-  </section>
+
+    <footer>
+      <button class="gf-button gf-button--secondary" type="button" (click)="anlageModalSchliessen()">Abbrechen</button>
+      <button class="gf-button gf-button--primary" type="button" (click)="eintragAnlegen()">Anlegen und
+        bearbeiten</button>
+    </footer>
+  </div>
+</section>
 }
 
 @if (loeschDialogEintrag(); as loeschEintrag) {
-  <section class="gf-wissensbasis-route__delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-wissen-title">
-    <div class="gf-wissensbasis-route__delete-card">
-      <header>
-        <div>
-          <h2 id="delete-wissen-title">Wissenskarte wirklich löschen?</h2>
-          <p>{{ loeschEintrag.anzeigename }} wird aus der lokalen Wissensbasis entfernt.</p>
-        </div>
-        <gf-icon-action icon="close" label="Löschdialog schließen" tone="danger" (action)="loeschDialogSchliessen()"></gf-icon-action>
-      </header>
+<section class="gf-wissensbasis-route__delete-modal" role="dialog" aria-modal="true"
+  aria-labelledby="delete-wissen-title">
+  <div class="gf-wissensbasis-route__delete-card">
+    <header>
+      <div>
+        <h2 id="delete-wissen-title">Wissenskarte wirklich löschen?</h2>
+        <p>{{ loeschEintrag.anzeigename }} wird aus der lokalen Wissensbasis entfernt.</p>
+      </div>
+      <gf-icon-action icon="close" label="Löschdialog schließen" tone="danger"
+        (action)="loeschDialogSchliessen()"></gf-icon-action>
+    </header>
 
-      <footer>
-        <button class="gf-button gf-button--secondary" type="button" (click)="loeschDialogSchliessen()">Abbrechen</button>
-        <button class="gf-button gf-button--danger" type="button" (click)="eintragWirklichLoeschen()">Wirklich löschen</button>
-      </footer>
-    </div>
-  </section>
+    <footer>
+      <button class="gf-button gf-button--secondary" type="button" (click)="loeschDialogSchliessen()">Abbrechen</button>
+      <button class="gf-button gf-button--danger" type="button" (click)="eintragWirklichLoeschen()">Wirklich
+        löschen</button>
+    </footer>
+  </div>
+</section>
 }

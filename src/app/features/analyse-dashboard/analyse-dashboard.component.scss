@@ -176,7 +176,7 @@
   min-width: 0;
 }
 
-.gf-analysis__bars article > div {
+.gf-analysis__bars article>div {
   display: flex;
   height: 190px;
   align-items: end;
@@ -186,7 +186,7 @@
   box-shadow: var(--gf-shadow-inset);
 }
 
-.gf-analysis__bars article > div span {
+.gf-analysis__bars article>div span {
   display: block;
   width: 100%;
   min-height: 18%;
@@ -325,6 +325,7 @@
    ========================================================================== */
 
 @media (max-width: 1180px) {
+
   .gf-analysis__focus,
   .gf-analysis__grid {
     grid-template-columns: 1fr;

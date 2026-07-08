@@ -1,14 +1,16 @@
 /* src/app/core/services/globi-flow-api.service.ts */
 
 /**
- * @file Kapselt die Datenversorgung und bleibt für die spätere REST-API vorbereitet.
+ * @file Kapselt die REST-API-Kommunikation mit Globi-Flow-BE.
  * @module GlobiFlowApiService
  */
 
-import { Injectable } from '@angular/core';
-import { delay, Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
 import { API_ENDPUNKTE } from '../api/api-endpoints';
 import { AuswertungViewModel } from '../models/auswertung.model';
+import { BerichtViewModel } from '../models/bericht.model';
 import { DashboardViewModel } from '../models/dashboard-view.model';
 import { Importjob } from '../models/importjob.model';
 import { Laborwert } from '../models/laborwert.model';
@@ -18,67 +20,87 @@ import { ReviewEintrag } from '../models/review-eintrag.model';
 import { ReviewViewModel } from '../models/review.model';
 import { UebersichtViewModel } from '../models/uebersicht.model';
 import { Wissenseintrag } from '../models/wissenseintrag.model';
-import { MOCK_AUSWERTUNG } from '../mocks/auswertung.mock';
-import { MOCK_DASHBOARD_VIEW } from '../mocks/dashboard-view.mock';
-import { MOCK_IMPORTJOBS } from '../mocks/importjobs.mock';
-import { MOCK_PATIENTEN } from '../mocks/patienten.mock';
-import { MOCK_REVIEW } from '../mocks/review.mock';
-import { MOCK_UEBERSICHT } from '../mocks/uebersicht.mock';
 
-/** API-bereiter Datenservice ohne lokale Persistenz. */
+/** API-Service für die lokale Globi-Flow-Django-API. */
 @Injectable({ providedIn: 'root' })
 export class GlobiFlowApiService {
-  /** Zentrale API-Routen für die spätere Backend-Anbindung. */
+  /** Angular-HTTP-Client für REST-Aufrufe. */
+  private readonly http = inject(HttpClient);
+
+  /** Zentrale API-Routen. */
   private readonly apiEndpunkte = API_ENDPUNKTE;
 
-  /** Liefert die komplette Datenansicht aktuell aus Mockdaten. */
+  /** Liefert die komplette Datenansicht. */
   public ladeStartansicht(): Observable<DashboardViewModel> {
-    return of(MOCK_DASHBOARD_VIEW).pipe(delay(120));
+    return this.http.get<DashboardViewModel>(this.apiEndpunkte.dashboard);
   }
 
-  /** Liefert zentrale Testpersonen aus Mockdaten. */
+  /** Liefert zentrale Testpersonen. */
   public ladePatienten(): Observable<Patient[]> {
-    return of(MOCK_PATIENTEN).pipe(delay(90));
+    return this.http.get<Patient[]>(this.apiEndpunkte.patienten);
   }
 
-  /** Liefert die fachliche Auswertungsansicht aus Mockdaten. */
+  /** Liefert die fachliche Auswertungsansicht. */
   public ladeAuswertung(): Observable<AuswertungViewModel> {
-    return of(MOCK_AUSWERTUNG).pipe(delay(90));
+    return this.http.get<AuswertungViewModel>(this.apiEndpunkte.auswertung);
   }
 
-  /** Liefert die vollständige ärztliche Reviewansicht aus Mockdaten. */
+  /** Liefert die vollständige ärztliche Reviewansicht. */
   public ladeReview(): Observable<ReviewViewModel> {
-    return of(MOCK_REVIEW).pipe(delay(90));
+    return this.http.get<ReviewViewModel>(this.apiEndpunkte.review);
   }
 
-  /** Liefert die aggregierte Übersichtsansicht aus Mockdaten. */
+  /** Liefert die aggregierte Übersichtsansicht. */
   public ladeUebersicht(): Observable<UebersichtViewModel> {
-    return of(MOCK_UEBERSICHT).pipe(delay(100));
+    return this.http.get<UebersichtViewModel>(this.apiEndpunkte.uebersicht);
   }
 
-  /** Liefert Importjobs aus Mockdaten und später aus `apiEndpunkte.importjobs`. */
+  /** Liefert Importjobs. */
   public ladeImportjobs(): Observable<Importjob[]> {
-    return of(MOCK_IMPORTJOBS).pipe(delay(80));
+    return this.http.get<Importjob[]>(this.apiEndpunkte.importjobs);
   }
 
-  /** Liefert Laborwerte aus Mockdaten und später aus `apiEndpunkte.dashboard`. */
+  /** Liefert Laborwerte aus der Startansicht. */
   public ladeLaborwerte(): Observable<Laborwert[]> {
-    return of(MOCK_DASHBOARD_VIEW.laborwerte).pipe(delay(80));
+    return this.http.get<DashboardViewModel>(this.apiEndpunkte.dashboard).pipe(map((daten: DashboardViewModel) => daten.laborwerte));
   }
 
-  /** Liefert Review-Einträge aus Mockdaten und später aus `apiEndpunkte.review`. */
+  /** Liefert kompakte Review-Einträge aus der Startansicht. */
   public ladeReviewEintraege(): Observable<ReviewEintrag[]> {
-    return of(MOCK_DASHBOARD_VIEW.reviewEintraege).pipe(delay(80));
+    return this.http.get<DashboardViewModel>(this.apiEndpunkte.dashboard).pipe(map((daten: DashboardViewModel) => daten.reviewEintraege));
   }
 
-  /** Liefert Wissenseinträge aus Mockdaten und später aus `apiEndpunkte.wissensdatenbank`. */
+  /** Liefert Wissenseinträge. */
   public ladeWissenseintraege(): Observable<Wissenseintrag[]> {
-    return of(MOCK_DASHBOARD_VIEW.wissenseintraege).pipe(delay(80));
+    return this.http.get<Wissenseintrag[]>(this.apiEndpunkte.wissensdatenbank);
   }
 
-  /** Liefert Berichtsvorschau aus Mockdaten und später aus `apiEndpunkte.patientenbericht`. */
+  /** Liefert die kompakte Patientenbericht-Vorschau. */
   public ladePatientenbericht(): Observable<Patientenbericht> {
-    return of(MOCK_DASHBOARD_VIEW.patientenbericht).pipe(delay(80));
+    return this.http.get<Patientenbericht>(this.apiEndpunkte.patientenbericht);
+  }
+
+  /** Liefert die druckfertige Berichtsvorschau. */
+  public ladeBericht(): Observable<BerichtViewModel> {
+    return this.http.get<BerichtViewModel>(this.apiEndpunkte.bericht);
+  }
+
+
+  /** Lädt eine lokal geprüfte PDF-Datei zur Analyse hoch. */
+  public laborbefundHochladen(datei: File, patientId?: string): Observable<Importjob> {
+    const formData = new FormData();
+    formData.append('file', datei);
+
+    if (patientId) {
+      formData.append('patientId', patientId);
+    }
+
+    return this.http.post<Importjob>(this.apiEndpunkte.upload, formData);
+  }
+
+  /** Startet die Demo-Analyse im Backend. */
+  public demoAnalyseStarten(): Observable<Importjob> {
+    return this.http.post<Importjob>(this.apiEndpunkte.demoAnalyse, {});
   }
 
   /** Gibt die aktuell vorgesehenen API-Endpunkte für Debug- und Dev-Anzeigen zurück. */

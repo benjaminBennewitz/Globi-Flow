@@ -19,151 +19,169 @@
     <div>
       <small>Aktiver Arbeitskontext</small>
       <strong>{{ patientContext.aktiverPatient().name }}</strong>
-      <p>{{ patientContext.aktiverPatient().nummer }} · {{ patientContext.aktiverPatient().befunde }} Befunde · {{ patientContext.aktiverPatient().offeneReviews }} offene Reviews</p>
-      <p>{{ patientContext.aktiverPatient().geburtsdatum }} · {{ patientContext.aktiverPatient().groesseCm }} cm · {{ patientContext.aktiverPatient().gewichtKg }} kg</p>
+      <p>{{ patientContext.aktiverPatient().nummer }} · {{ patientContext.aktiverPatient().befunde }} Befunde · {{
+        patientContext.aktiverPatient().offeneReviews }} offene Reviews</p>
+      <p>{{ patientContext.aktiverPatient().geburtsdatum }} · {{ patientContext.aktiverPatient().groesseCm }} cm · {{
+        patientContext.aktiverPatient().gewichtKg }} kg</p>
     </div>
 
     @if (patientContext.aktiverBefund(); as befund) {
-      <article>
-        <small>Aktiver Befund</small>
-        <strong>{{ befund.datum }}</strong>
-        <p>{{ befund.name }}</p>
-      </article>
+    <article>
+      <small>Aktiver Befund</small>
+      <strong>{{ befund.datum }}</strong>
+      <p>{{ befund.name }}</p>
+    </article>
     }
   </section>
 
   <section class="gf-patienten-route__toolbar gf-neu-card" aria-label="Patientenfilter">
-    <gf-secure-search label="Patienten durchsuchen" placeholder="Name, ID, Lebensstil oder Befundstatus suchen" [value]="patientContext.patientenSuche()" (valueChange)="sucheSetzen($event)"></gf-secure-search>
+    <gf-secure-search label="Patienten durchsuchen" placeholder="Name, ID, Lebensstil oder Befundstatus suchen"
+      [value]="patientContext.patientenSuche()" (valueChange)="sucheSetzen($event)"></gf-secure-search>
 
     <div class="gf-patienten-route__chips" aria-label="Filter">
       @for (filter of filterOptionen; track filter.key) {
-        <button type="button" [class.is-active]="patientContext.patientenFilter() === filter.key" (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
+      <button type="button" [class.is-active]="patientContext.patientenFilter() === filter.key"
+        (click)="filterSetzen(filter.key)">{{ filter.label }}</button>
       }
     </div>
 
     <div class="gf-patienten-route__sort" aria-label="Sortierung">
       @for (option of sortierOptionen; track option.key) {
-        <button type="button" [class.is-active]="sortierung() === option.key" (click)="sortierungSetzen(option.key)">{{ option.label }}</button>
+      <button type="button" [class.is-active]="sortierung() === option.key" (click)="sortierungSetzen(option.key)">{{
+        option.label }}</button>
       }
     </div>
   </section>
 
   <section class="gf-patienten-route__grid" aria-label="Patientenliste">
     @for (patient of sichtbarePatienten(); track patient.id) {
-      <article class="gf-patienten-route__card gf-neu-card" [class.is-selected]="patient.id === patientContext.aktiverPatient().id">
-        <header>
-          <span class="gf-chip {{ statusKlasse(patient.status) }}">{{ statusLabel(patient.status) }}</span>
-          <strong>{{ patient.name }}</strong>
-          <small>{{ patient.nummer }} · {{ patient.kontext }}</small>
-        </header>
+    <article class="gf-patienten-route__card gf-neu-card"
+      [class.is-selected]="patient.id === patientContext.aktiverPatient().id">
+      <header>
+        <span class="gf-chip {{ statusKlasse(patient.status) }}">{{ statusLabel(patient.status) }}</span>
+        <strong>{{ patient.name }}</strong>
+        <small>{{ patient.nummer }} · {{ patient.kontext }}</small>
+      </header>
 
-        <dl>
-          <div>
-            <dt>Geburtsdatum</dt>
-            <dd>{{ patient.geburtsdatum }}</dd>
-          </div>
-          <div>
-            <dt>Körperdaten</dt>
-            <dd>{{ patient.groesseCm }} cm · {{ patient.gewichtKg }} kg</dd>
-          </div>
-          <div>
-            <dt>Review</dt>
-            <dd>{{ patient.offeneReviews }}</dd>
-          </div>
-        </dl>
+      <dl>
+        <div>
+          <dt>Geburtsdatum</dt>
+          <dd>{{ patient.geburtsdatum }}</dd>
+        </div>
+        <div>
+          <dt>Körperdaten</dt>
+          <dd>{{ patient.groesseCm }} cm · {{ patient.gewichtKg }} kg</dd>
+        </div>
+        <div>
+          <dt>Review</dt>
+          <dd>{{ patient.offeneReviews }}</dd>
+        </div>
+      </dl>
 
-        <p class="gf-patienten-route__lifestyle">{{ patient.lebensstil }}</p>
+      <p class="gf-patienten-route__lifestyle">{{ patient.lebensstil }}</p>
 
-        <section class="gf-patienten-route__reports" aria-label="Hinterlegte Befunde">
-          @for (befund of patient.befundListe; track befund.id) {
-            <button type="button" [class.is-active]="befund.id === patientContext.aktiverBefund()?.id" (click)="patientAuswaehlen(patient); patientContext.befundSetzen(befund)">
-              <span>{{ befund.datum }}</span>
-              <strong>{{ befund.name }}</strong>
-              <small>{{ befund.werte }} Werte · {{ befund.offeneReviews }} Review</small>
-            </button>
-          } @empty {
-            <p>Noch keine Befunde hinterlegt.</p>
-          }
-        </section>
+      <section class="gf-patienten-route__reports" aria-label="Hinterlegte Befunde">
+        @for (befund of patient.befundListe; track befund.id) {
+        <button type="button" [class.is-active]="befund.id === patientContext.aktiverBefund()?.id"
+          (click)="patientAuswaehlen(patient); patientContext.befundSetzen(befund)">
+          <span>{{ befund.datum }}</span>
+          <strong>{{ befund.name }}</strong>
+          <small>{{ befund.werte }} Werte · {{ befund.offeneReviews }} Review</small>
+        </button>
+        } @empty {
+        <p>Noch keine Befunde hinterlegt.</p>
+        }
+      </section>
 
-        <footer>
-          <button class="gf-button gf-button--secondary" type="button" (click)="patientAuswaehlen(patient)">Auswählen</button>
-          <a class="gf-button gf-button--secondary" routerLink="/review" (click)="patientAuswaehlen(patient)">Review</a>
-          <a class="gf-button gf-button--primary" routerLink="/auswertung" (click)="patientAuswaehlen(patient)">Auswertung</a>
-        </footer>
-      </article>
+      <footer>
+        <button class="gf-button gf-button--secondary" type="button"
+          (click)="patientAuswaehlen(patient)">Auswählen</button>
+        <a class="gf-button gf-button--secondary" routerLink="/review" (click)="patientAuswaehlen(patient)">Review</a>
+        <a class="gf-button gf-button--primary" routerLink="/auswertung"
+          (click)="patientAuswaehlen(patient)">Auswertung</a>
+      </footer>
+    </article>
     }
   </section>
 </section>
 
 @if (modalOffen()) {
-  <section class="gf-patienten-route__modal" role="dialog" aria-modal="true" aria-labelledby="patient-modal-title">
-    <div class="gf-patienten-route__modal-card">
-      <header>
-        <div>
-          <h2 id="patient-modal-title">Testperson anlegen</h2>
-          <p>Neue lokale Testperson für Import, Review und Auswertung vorbereiten.</p>
-        </div>
-        <gf-icon-action icon="close" label="Modal schließen" tone="danger" (action)="modalSchliessen()"></gf-icon-action>
-      </header>
+<section class="gf-patienten-route__modal" role="dialog" aria-modal="true" aria-labelledby="patient-modal-title">
+  <div class="gf-patienten-route__modal-card">
+    <header>
+      <div>
+        <h2 id="patient-modal-title">Testperson anlegen</h2>
+        <p>Neue lokale Testperson für Import, Review und Auswertung vorbereiten.</p>
+      </div>
+      <gf-icon-action icon="close" label="Modal schließen" tone="danger" (action)="modalSchliessen()"></gf-icon-action>
+    </header>
 
-      <div class="gf-patienten-route__form">
-        <label>
-          <span>Anzeigename</span>
-          <input type="text" placeholder="z. B. Mara" [value]="neuerVorname()" (input)="vornameAendern($event)">
-        </label>
-        <label>
-          <span>Nachname</span>
-          <input type="text" placeholder="z. B. Hoffmann" [value]="neuerNachname()" (input)="nachnameAendern($event)">
-        </label>
-        <label>
-          <span>Testpersonen-ID</span>
-          <input type="text" placeholder="wird sonst automatisch vergeben" [value]="neueNummer()" (input)="nummerAendern($event)">
-        </label>
-        <label>
-          <span>Geburtsdatum</span>
-          <input type="text" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()" (input)="geburtsdatumAendern($event)">
-        </label>
-        <div class="gf-patienten-route__field gf-patienten-route__select-field">
-          <span>Geschlecht</span>
-          <button class="gf-patienten-route__select-trigger" type="button" aria-haspopup="listbox" [attr.aria-expanded]="geschlechtAuswahlOffen()" (click)="geschlechtAuswahlUmschalten()">
-            <strong>{{ geschlechtLabel(neuesGeschlecht()) }}</strong>
-            <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
+    <div class="gf-patienten-route__form">
+      <label>
+        <span>Anzeigename</span>
+        <input type="text" placeholder="z. B. Mara" [value]="neuerVorname()" (input)="vornameAendern($event)">
+      </label>
+      <label>
+        <span>Nachname</span>
+        <input type="text" placeholder="z. B. Hoffmann" [value]="neuerNachname()" (input)="nachnameAendern($event)">
+      </label>
+      <label>
+        <span>Testpersonen-ID</span>
+        <input type="text" placeholder="wird sonst automatisch vergeben" [value]="neueNummer()"
+          (input)="nummerAendern($event)">
+      </label>
+      <label>
+        <span>Geburtsdatum</span>
+        <input type="text" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()"
+          (input)="geburtsdatumAendern($event)">
+      </label>
+      <div class="gf-patienten-route__field gf-patienten-route__select-field">
+        <span>Geschlecht</span>
+        <button class="gf-patienten-route__select-trigger" type="button" aria-haspopup="listbox"
+          [attr.aria-expanded]="geschlechtAuswahlOffen()" (click)="geschlechtAuswahlUmschalten()">
+          <strong>{{ geschlechtLabel(neuesGeschlecht()) }}</strong>
+          <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
+        </button>
+
+        @if (geschlechtAuswahlOffen()) {
+        <div class="gf-patienten-route__select-menu" role="listbox" aria-label="Geschlecht auswählen">
+          @for (option of geschlechtOptionen; track option.key) {
+          <button type="button" role="option" [attr.aria-selected]="neuesGeschlecht() === option.key"
+            [class.is-active]="neuesGeschlecht() === option.key" (click)="geschlechtSetzen(option.key)">
+            {{ option.label }}
           </button>
-
-          @if (geschlechtAuswahlOffen()) {
-            <div class="gf-patienten-route__select-menu" role="listbox" aria-label="Geschlecht auswählen">
-              @for (option of geschlechtOptionen; track option.key) {
-                <button type="button" role="option" [attr.aria-selected]="neuesGeschlecht() === option.key" [class.is-active]="neuesGeschlecht() === option.key" (click)="geschlechtSetzen(option.key)">
-                  {{ option.label }}
-                </button>
-              }
-            </div>
           }
         </div>
-        <label>
-          <span>Gewicht kg</span>
-          <input type="text" inputmode="decimal" placeholder="72" [value]="neuesGewicht()" (input)="gewichtAendern($event)">
-        </label>
-        <label>
-          <span>Größe cm</span>
-          <input type="text" inputmode="numeric" placeholder="168" [value]="neueGroesse()" (input)="groesseAendern($event)">
-        </label>
-        <label class="is-wide">
-          <span>Lebensstil</span>
-          <textarea rows="2" placeholder="z. B. Büroarbeit, moderat aktiv, vegetarische Ernährung" [value]="neuerLebensstil()" (input)="lebensstilAendern($event)"></textarea>
-        </label>
-        <label class="is-wide">
-          <span>Notiz</span>
-          <textarea rows="3" placeholder="Interne Notiz zu Testdaten" [value]="neueNotiz()" (input)="notizAendern($event)"></textarea>
-        </label>
+        }
       </div>
-
-      <footer>
-        <button class="gf-button gf-button--secondary" type="button" (click)="modalSchliessen()">Abbrechen</button>
-        <button class="gf-button gf-button--secondary" type="button" (click)="patientAnlegen(false)">Speichern</button>
-        <button class="gf-button gf-button--primary" type="button" (click)="patientAnlegen(true)">Speichern und auswählen</button>
-      </footer>
+      <label>
+        <span>Gewicht kg</span>
+        <input type="text" inputmode="decimal" placeholder="72" [value]="neuesGewicht()"
+          (input)="gewichtAendern($event)">
+      </label>
+      <label>
+        <span>Größe cm</span>
+        <input type="text" inputmode="numeric" placeholder="168" [value]="neueGroesse()"
+          (input)="groesseAendern($event)">
+      </label>
+      <label class="is-wide">
+        <span>Lebensstil</span>
+        <textarea rows="2" placeholder="z. B. Büroarbeit, moderat aktiv, vegetarische Ernährung"
+          [value]="neuerLebensstil()" (input)="lebensstilAendern($event)"></textarea>
+      </label>
+      <label class="is-wide">
+        <span>Notiz</span>
+        <textarea rows="3" placeholder="Interne Notiz zu Testdaten" [value]="neueNotiz()"
+          (input)="notizAendern($event)"></textarea>
+      </label>
     </div>
-  </section>
+
+    <footer>
+      <button class="gf-button gf-button--secondary" type="button" (click)="modalSchliessen()">Abbrechen</button>
+      <button class="gf-button gf-button--secondary" type="button" (click)="patientAnlegen(false)">Speichern</button>
+      <button class="gf-button gf-button--primary" type="button" (click)="patientAnlegen(true)">Speichern und
+        auswählen</button>
+    </footer>
+  </div>
+</section>
 }

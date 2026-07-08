@@ -1,26 +1,52 @@
 /* src/app/core/services/patient-context.service.ts */
 
 /**
- * @file Verwaltet den globalen Patientenkontext für alle Routen.
+ * @file Verwaltet den globalen Patientenkontext über die Backend-API.
  * @module PatientContextService
  */
 
-import { Injectable, Signal, WritableSignal, computed, signal } from '@angular/core';
-import { MOCK_PATIENTEN } from '../mocks/patienten.mock';
+import { Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
 import { NeuerPatientInput, Patient, PatientBefund, PatientQuelle } from '../models/patient.model';
 import { normalisiereSichereSuche } from '../security/sichere-suche.util';
+import { GlobiFlowApiService } from './globi-flow-api.service';
+
+/** Fallback, bis die API-Daten geladen sind. */
+const LEERER_PATIENT: Patient = {
+  id: '',
+  nummer: '–',
+  name: 'Daten werden geladen',
+  vorname: '',
+  nachname: '',
+  geburtsdatum: '',
+  geschlecht: 'unbekannt',
+  gewichtKg: null,
+  groesseCm: null,
+  lebensstil: 'nicht angegeben',
+  kontext: 'API wird geladen',
+  quelle: 'demo',
+  status: 'leer',
+  befunde: 0,
+  offeneReviews: 0,
+  letzterBefund: 'kein Befund',
+  berichtStatus: 'keine Daten',
+  notiz: '',
+  befundListe: []
+};
 
 /** Zentraler Arbeitskontext für aktive Testperson und aktiven Befund. */
 @Injectable({ providedIn: 'root' })
 export class PatientContextService {
+  /** API-Service für Patientendaten. */
+  private readonly globiFlowApi = inject(GlobiFlowApiService);
+
   /** Alle verfügbaren Testpersonen. */
-  public readonly patienten: WritableSignal<Patient[]> = signal(MOCK_PATIENTEN);
+  public readonly patienten: WritableSignal<Patient[]> = signal([LEERER_PATIENT]);
 
   /** Aktive Testpersonen-ID. */
-  public readonly aktiverPatientId: WritableSignal<string> = signal(MOCK_PATIENTEN[0].id);
+  public readonly aktiverPatientId: WritableSignal<string> = signal('');
 
   /** Aktive Befund-ID. */
-  public readonly aktiverBefundId: WritableSignal<string> = signal(MOCK_PATIENTEN[0].befundListe[0].id);
+  public readonly aktiverBefundId: WritableSignal<string> = signal('');
 
   /** Suchbegriff der globalen Patientenauswahl. */
   public readonly patientenSuche: WritableSignal<string> = signal('');
@@ -29,7 +55,7 @@ export class PatientContextService {
   public readonly patientenFilter: WritableSignal<PatientQuelle | 'alle' | 'review'> = signal('alle');
 
   /** Aktive Testperson. */
-  public readonly aktiverPatient: Signal<Patient> = computed(() => this.patienten().find((patient: Patient) => patient.id === this.aktiverPatientId()) ?? this.patienten()[0]);
+  public readonly aktiverPatient: Signal<Patient> = computed(() => this.patienten().find((patient: Patient) => patient.id === this.aktiverPatientId()) ?? this.patienten()[0] ?? LEERER_PATIENT);
 
   /** Aktiver Befund der aktiven Testperson. */
   public readonly aktiverBefund: Signal<PatientBefund | null> = computed(() => {
@@ -42,6 +68,11 @@ export class PatientContextService {
     const suche = this.patientenSuche().trim().toLowerCase();
     return this.patienten().filter((patient: Patient) => this.patientPasst(patient, suche));
   });
+
+  /** Lädt initial die Testpersonen aus der API. */
+  public constructor() {
+    this.patientenAusApiLaden();
+  }
 
   /** Setzt die aktive Testperson und wählt den ersten Befund. */
   public patientSetzen(patient: Patient): void {
@@ -94,8 +125,20 @@ export class PatientContextService {
       befundListe: []
     };
 
-    this.patienten.update((patienten: Patient[]) => [patient, ...patienten]);
+    this.patienten.update((patienten: Patient[]) => [patient, ...patienten.filter((eintrag: Patient) => eintrag.id)]);
     return patient;
+  }
+
+  /** Lädt Patientendaten aus der Backend-API. */
+  private patientenAusApiLaden(): void {
+    this.globiFlowApi.ladePatienten().subscribe({
+      next: (patienten: Patient[]) => {
+        const daten = patienten.length ? patienten : [LEERER_PATIENT];
+        this.patienten.set(daten);
+        this.aktiverPatientId.set(daten[0].id);
+        this.aktiverBefundId.set(daten[0].befundListe[0]?.id ?? '');
+      }
+    });
   }
 
   /** Prüft Such- und Quellenfilter. */
@@ -113,4 +156,3 @@ export class PatientContextService {
     return `TP-2026-${nummer.toString().padStart(3, '0')}`;
   }
 }
-

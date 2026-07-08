@@ -6,10 +6,10 @@
  */
 
 import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } from '@angular/core';
-import { MOCK_REVIEW } from '../../core/mocks/review.mock';
 import { ReviewCheckStatus, ReviewKandidat, ReviewKennzahl, ReviewStatus, ReviewViewModel } from '../../core/models/review.model';
 import { PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
+import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { ToastService } from '../../shared/services/toast.service';
 
 /** Filter der Review-Warteschlange. */
@@ -36,11 +36,14 @@ export class ReviewPageComponent {
   /** Toast-Service für Review-Aktionen. */
   private readonly toastService = inject(ToastService);
 
-  /** Lokaler Reviewzustand bis zur späteren Review-API. */
-  public readonly review: WritableSignal<ReviewViewModel> = signal(this.reviewKlonen(MOCK_REVIEW));
+  /** API-Service für Reviewdaten. */
+  private readonly globiFlowApi = inject(GlobiFlowApiService);
+
+  /** Reviewzustand aus der API. */
+  public readonly review: WritableSignal<ReviewViewModel> = signal({ kandidaten: [] });
 
   /** Aktiver Reviewkandidat. */
-  public readonly aktiverKandidatId: WritableSignal<string> = signal('review-ldl');
+  public readonly aktiverKandidatId: WritableSignal<string> = signal('');
 
   /** Aktiver Statusfilter. */
   public readonly aktiverFilter: WritableSignal<ReviewFilter> = signal('alle');
@@ -56,6 +59,14 @@ export class ReviewPageComponent {
     { key: 'bestaetigt', label: 'Bestätigt' },
     { key: 'blockiert', label: 'Blockiert' }
   ];
+
+  /** Lädt Reviewdaten aus der API. */
+  public constructor() {
+    this.globiFlowApi.ladeReview().subscribe((review: ReviewViewModel) => {
+      this.review.set(this.reviewKlonen(review));
+      this.aktiverKandidatId.set(review.kandidaten[0]?.id ?? '');
+    });
+  }
 
   /** Liefert Reviewkennzahlen. */
   public kennzahlen(ansicht: ReviewViewModel): ReviewKennzahl[] {

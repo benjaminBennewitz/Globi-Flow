@@ -7,9 +7,9 @@
 
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { MOCK_IMPORTJOBS } from '../../core/mocks/importjobs.mock';
 import { Importjob, ImportjobAnalyseArt, ImportjobDataset, ImportjobOcrStatus, ImportjobSchrittStatus, ImportjobStatus } from '../../core/models/importjob.model';
 import { pruefeSicherePdfDatei, SICHERE_DATEI_MAX_LABEL } from '../../core/security/sichere-datei.util';
+import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { ToastService } from '../../shared/services/toast.service';
 
 /** Importlistenfilter für Statusgruppen. */
@@ -48,20 +48,26 @@ export class ImportePageComponent {
   /** Toast-Service für UI-Rückmeldungen. */
   private readonly toastService = inject(ToastService);
 
+  /** API-Service für Importdaten. */
+  private readonly globiFlowApi = inject(GlobiFlowApiService);
+
   /** Uploadbereich für automatisches Scrollen. */
   private uploadBereich?: ElementRef<HTMLElement>;
 
   /** Verhindert mehrfaches Scrollen innerhalb eines Fokuszyklus. */
   private uploadScrollAusgeführt = false;
 
-  /** Importjobs aus lokalen Mockdaten bis zur späteren API-Anbindung. */
-  public readonly importjobs: WritableSignal<Importjob[]> = signal([...MOCK_IMPORTJOBS]);
+  /** Lokal geprüfte PDF-Datei für den API-Upload. */
+  private ausgewaehlteDatei: File | null = null;
+
+  /** Importjobs aus der Backend-API. */
+  public readonly importjobs: WritableSignal<Importjob[]> = signal([]);
 
   /** Aktiver Importfilter. */
   public readonly aktiverFilter: WritableSignal<ImportFilter> = signal('alle');
 
   /** Aktuell ausgewählter Importjob. */
-  public readonly ausgewaehlterJobId: WritableSignal<string> = signal('import-demo-001');
+  public readonly ausgewaehlterJobId: WritableSignal<string> = signal('');
 
   /** Gibt an, ob alle Dataset-Karten geöffnet sind. */
   public readonly datasetsOffen: WritableSignal<boolean> = signal(false);
@@ -114,10 +120,20 @@ export class ImportePageComponent {
 
   /** Initialisiert optionale Upload-Fokusparameter. */
   public constructor() {
+    this.importjobsLaden();
+
     this.route.queryParamMap.subscribe((parameter) => {
       this.uploadScrollAusgeführt = false;
       this.uploadHinweisAktiv.set(parameter.get('fokus') === 'upload');
       this.uploadBereichInViewSetzen();
+    });
+  }
+
+  /** Lädt Importjobs aus der API. */
+  private importjobsLaden(): void {
+    this.globiFlowApi.ladeImportjobs().subscribe((jobs: Importjob[]) => {
+      this.importjobs.set(jobs);
+      this.ausgewaehlterJobId.set(jobs[0]?.id ?? '');
     });
   }
 
@@ -240,27 +256,35 @@ export class ImportePageComponent {
     this.toastService.zeige('Testdaten-PDF vorbereitet', 'Die lokale Demo-PDF wurde zum Download geöffnet.', 'success');
   }
 
-  /** Startet eine vollständige Demo-Analyse als lokalen Mockjob. */
+  /** Startet eine vollständige Demo-Analyse im Backend. */
   public demoAnalyseStarten(): void {
-    const job = this.simuliertenJobErstellen('testdaten-laborbefund-demo.pdf', 'Demo Testperson', 'demo', 'review', 100, 92);
-    this.importjobs.update((jobs: Importjob[]) => [job, ...jobs]);
-    this.ausgewaehlterJobId.set(job.id);
-    this.aktiverFilter.set('alle');
-    this.toastService.zeige('Demo-Analyse gestartet', 'Ein vollständiger Importjob wurde lokal simuliert.', 'success');
+    this.globiFlowApi.demoAnalyseStarten().subscribe((job: Importjob) => {
+      this.importjobs.update((jobs: Importjob[]) => [job, ...jobs.filter((eintrag: Importjob) => eintrag.id !== job.id)]);
+      this.ausgewaehlterJobId.set(job.id);
+      this.aktiverFilter.set('alle');
+      this.toastService.zeige('Demo-Analyse gestartet', 'Der Importjob wurde aus der Backend-API geladen.', 'success');
+    });
   }
 
-  /** Startet einen lokalen Mockimport mit der ausgewählten Datei. */
+  /** Startet den API-Upload mit der ausgewählten Datei. */
   public importStarten(): void {
-    if (!this.dateiName()) {
+    if (!this.ausgewaehlteDatei || !this.dateiName()) {
       this.dateiBlockieren('Bitte zuerst eine gültige Testdaten-PDF auswählen.');
       return;
     }
 
-    const job = this.simuliertenJobErstellen(this.dateiName(), 'Aktive Testperson', 'textschicht', 'analysiert', 68, 84);
-    this.importjobs.update((jobs: Importjob[]) => [job, ...jobs]);
-    this.ausgewaehlterJobId.set(job.id);
-    this.dateiEntfernen();
-    this.toastService.zeige('Importjob angelegt', 'Der lokale Mockjob zeigt Pipeline, Confidence und Reviewbedarf.', 'success');
+    this.globiFlowApi.laborbefundHochladen(this.ausgewaehlteDatei).subscribe({
+      next: (job: Importjob) => {
+        this.importjobs.update((jobs: Importjob[]) => [job, ...jobs.filter((eintrag: Importjob) => eintrag.id !== job.id)]);
+        this.ausgewaehlterJobId.set(job.id);
+        this.aktiverFilter.set('alle');
+        this.dateiEntfernen();
+        this.toastService.zeige('Importjob angelegt', 'Die PDF wurde lokal an die Backend-API übergeben.', 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Upload fehlgeschlagen', 'Die API konnte die PDF nicht annehmen oder analysieren.', 'danger');
+      }
+    });
   }
 
   /** Öffnet die manuelle Fallback-Eingabe. */
@@ -294,7 +318,7 @@ export class ImportePageComponent {
   /** Legt einen manuellen Importjob als Fallback an. */
   public manuelleEingabeAnlegen(): void {
     const name = this.manuellAnzeigename().trim() || 'Manueller Laborwert';
-    const job = this.simuliertenJobErstellen('manuelle-erfassung-demo.pdf', 'Manuelle Testperson', 'textschicht', 'review', 100, 76);
+    const job = this.fallbackJobErstellen('manuelle-erfassung-demo.pdf', 'Manuelle Testperson', 'textschicht', 'review', 100, 76);
     const angereicherterJob: Importjob = {
       ...job,
       dateiname: 'manuelle-erfassung-demo.pdf',
@@ -363,6 +387,7 @@ export class ImportePageComponent {
 
   /** Entfernt die aktuell ausgewählte Datei. */
   public dateiEntfernen(): void {
+    this.ausgewaehlteDatei = null;
     this.dateiName.set('');
     this.dateiGroesse.set('');
     this.uploadFehler.set('');
@@ -400,14 +425,16 @@ export class ImportePageComponent {
       return;
     }
 
+    this.ausgewaehlteDatei = datei ?? null;
     this.dateiName.set(ergebnis.dateiname);
     this.dateiGroesse.set(ergebnis.groesse);
     this.uploadFehler.set('');
-    this.toastService.zeige('PDF geprüft', 'Die Datei ist bereit für den lokalen Mockimport.', 'success');
+    this.toastService.zeige('PDF geprüft', 'Die Datei ist bereit für den lokalen API-Import.', 'success');
   }
 
   /** Entfernt die aktive Datei und zeigt einen Uploadfehler. */
   private dateiBlockieren(meldung: string): void {
+    this.ausgewaehlteDatei = null;
     this.dateiName.set('');
     this.dateiGroesse.set('');
     this.dateiPruefungAktiv.set(false);
@@ -415,11 +442,11 @@ export class ImportePageComponent {
     this.toastService.zeige('Upload blockiert', meldung, 'danger');
   }
 
-  /** Erstellt einen wiederverwendbaren lokalen Importjob. */
-  private simuliertenJobErstellen(dateiname: string, testperson: string, analyseArt: ImportjobAnalyseArt, status: ImportjobStatus, fortschritt: number, confidence: number): Importjob {
+  /** Erstellt einen lokalen Importjob für die manuelle Fallback-Eingabe. */
+  private fallbackJobErstellen(dateiname: string, testperson: string, analyseArt: ImportjobAnalyseArt, status: ImportjobStatus, fortschritt: number, confidence: number): Importjob {
     const zeit = this.zeitLabel();
     return {
-      id: `import-local-${Date.now()}`,
+      id: `import-fallback-${Date.now()}`,
       dateiname,
       testperson,
       analyseArt,
@@ -446,8 +473,8 @@ export class ImportePageComponent {
         { id: `dataset-local-zucker-${Date.now()}`, name: 'Zuckerstoffwechsel', werte: 6, review: 0, confidence: 95, status: 'normal' }
       ],
       logEintraege: [
-        { id: `log-local-${Date.now()}-1`, zeitpunkt: zeit, titel: 'Mockjob angelegt', beschreibung: 'Der Import wurde lokal als Frontend-Simulation angelegt.', status: 'info' },
-        { id: `log-local-${Date.now()}-2`, zeitpunkt: zeit, titel: 'Reviewbedarf markiert', beschreibung: 'Unsichere Werte werden an die Review-Route übergeben.', status: 'review' }
+        { id: `log-local-${Date.now()}-1`, zeitpunkt: zeit, titel: 'Fallback angelegt', beschreibung: 'Die manuelle Eingabe wurde lokal für den Review vorbereitet.', status: 'info' },
+        { id: `log-local-${Date.now()}-2`, zeitpunkt: zeit, titel: 'Reviewbedarf markiert', beschreibung: 'Die Eingabe wird an die Review-Route übergeben.', status: 'review' }
       ]
     };
   }

@@ -2,19 +2,20 @@
 
 <section class="gf-toast-container" aria-live="polite" aria-label="Systemmeldungen">
   @for (toast of toastService.nachrichten(); track toast.id) {
-    <article class="gf-toast is-{{ toast.typ }}">
-      <span class="material-symbols-outlined" aria-hidden="true">
-        {{ toast.typ === 'success' ? 'check_circle' : toast.typ === 'warning' ? 'warning' : toast.typ === 'danger' ? 'error' : 'info' }}
-      </span>
-      <div>
-        <strong>{{ toast.titel }}</strong>
-        @if (toast.text) {
-          <p>{{ toast.text }}</p>
-        }
-      </div>
-      <button type="button" aria-label="Meldung schließen" (click)="toastService.entfernen(toast.id)">
-        <span class="material-symbols-outlined" aria-hidden="true">close</span>
-      </button>
-    </article>
+  <article class="gf-toast is-{{ toast.typ }}">
+    <span class="material-symbols-outlined" aria-hidden="true">
+      {{ toast.typ === 'success' ? 'check_circle' : toast.typ === 'warning' ? 'warning' : toast.typ === 'danger' ?
+      'error' : 'info' }}
+    </span>
+    <div>
+      <strong>{{ toast.titel }}</strong>
+      @if (toast.text) {
+      <p>{{ toast.text }}</p>
+      }
+    </div>
+    <button type="button" aria-label="Meldung schließen" (click)="toastService.entfernen(toast.id)">
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+  </article>
   }
 </section>

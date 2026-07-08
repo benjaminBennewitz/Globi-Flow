@@ -4,7 +4,8 @@
   <header class="gf-section-heading">
     <span class="gf-eyebrow">Import Pipeline</span>
     <h2 id="import-title">PDF lokal analysieren und API-ready vorbereiten.</h2>
-    <p>Aktuell arbeitet die Oberfläche mit zentralen Mockdaten. Später kommen Upload, Status und Review direkt aus Django REST.</p>
+    <p>Aktuell arbeitet die Oberfläche mit zentralen Mockdaten. Später kommen Upload, Status und Review direkt aus
+      Django REST.</p>
   </header>
 
   <div class="gf-import__upload gf-neu-inset">
@@ -18,46 +19,46 @@
 
   <div class="gf-import__jobs">
     @for (job of importjobs; track job.id) {
-      <article class="gf-import__job gf-dataset" tabindex="0">
-        <header>
-          <div>
-            <span class="gf-chip {{ statusKlasse(job.status) }}">{{ job.status }}</span>
-            <h3>{{ job.dateiname }}</h3>
-          </div>
-          <strong>{{ job.confidence }}%</strong>
-        </header>
-
-        <div class="gf-import__progress" aria-label="Importfortschritt">
-          <span [style.width.%]="job.fortschritt"></span>
+    <article class="gf-import__job gf-dataset" tabindex="0">
+      <header>
+        <div>
+          <span class="gf-chip {{ statusKlasse(job.status) }}">{{ job.status }}</span>
+          <h3>{{ job.dateiname }}</h3>
         </div>
+        <strong>{{ job.confidence }}%</strong>
+      </header>
 
-        <dl class="gf-import__meta">
-          <div>
-            <dt>Analyse</dt>
-            <dd>{{ job.analyseArt }}</dd>
-          </div>
-          <div>
-            <dt>Werte</dt>
-            <dd>{{ job.erkannteWerte }}</dd>
-          </div>
-          <div>
-            <dt>Review</dt>
-            <dd>{{ job.unsichereWerte }}</dd>
-          </div>
-        </dl>
+      <div class="gf-import__progress" aria-label="Importfortschritt">
+        <span [style.width.%]="job.fortschritt"></span>
+      </div>
 
-        <ol class="gf-import__steps">
-          @for (schritt of job.schritte; track schritt.key) {
-            <li [class.is-done]="schritt.abgeschlossen">
-              <span></span>
-              <div>
-                <strong>{{ schritt.name }}</strong>
-                <p>{{ schritt.beschreibung }}</p>
-              </div>
-            </li>
-          }
-        </ol>
-      </article>
+      <dl class="gf-import__meta">
+        <div>
+          <dt>Analyse</dt>
+          <dd>{{ job.analyseArt }}</dd>
+        </div>
+        <div>
+          <dt>Werte</dt>
+          <dd>{{ job.erkannteWerte }}</dd>
+        </div>
+        <div>
+          <dt>Review</dt>
+          <dd>{{ job.unsichereWerte }}</dd>
+        </div>
+      </dl>
+
+      <ol class="gf-import__steps">
+        @for (schritt of job.schritte; track schritt.key) {
+        <li [class.is-done]="schritt.abgeschlossen">
+          <span></span>
+          <div>
+            <strong>{{ schritt.name }}</strong>
+            <p>{{ schritt.beschreibung }}</p>
+          </div>
+        </li>
+        }
+      </ol>
+    </article>
     }
   </div>
 </section>

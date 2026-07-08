@@ -9,37 +9,37 @@
 
   <div class="gf-review__list">
     @for (eintrag of reviewEintraege; track eintrag.id) {
-      <article class="gf-review__item gf-neu-card">
-        <header>
-          <div>
-            <span class="gf-chip gf-chip--warning">{{ eintrag.feld }}</span>
-            <h3>{{ eintrag.laborwertName }}</h3>
-          </div>
-          <strong>{{ eintrag.confidence }}%</strong>
-        </header>
-
-        <div class="gf-review__compare">
-          <section>
-            <span>Originalausschnitt</span>
-            <p>{{ eintrag.originalText }}</p>
-          </section>
-          <section>
-            <span>Erkannt</span>
-            <p>{{ eintrag.erkannterWert }}</p>
-          </section>
-          <section>
-            <span>Vorschlag</span>
-            <p>{{ eintrag.vorschlag }}</p>
-          </section>
+    <article class="gf-review__item gf-neu-card">
+      <header>
+        <div>
+          <span class="gf-chip gf-chip--warning">{{ eintrag.feld }}</span>
+          <h3>{{ eintrag.laborwertName }}</h3>
         </div>
+        <strong>{{ eintrag.confidence }}%</strong>
+      </header>
 
-        <p class="gf-review__reason">{{ eintrag.grund }}</p>
+      <div class="gf-review__compare">
+        <section>
+          <span>Originalausschnitt</span>
+          <p>{{ eintrag.originalText }}</p>
+        </section>
+        <section>
+          <span>Erkannt</span>
+          <p>{{ eintrag.erkannterWert }}</p>
+        </section>
+        <section>
+          <span>Vorschlag</span>
+          <p>{{ eintrag.vorschlag }}</p>
+        </section>
+      </div>
 
-        <footer>
-          <button class="gf-button gf-button--secondary" type="button">Korrigieren</button>
-          <button class="gf-button gf-button--primary" type="button">Als geprüft markieren</button>
-        </footer>
-      </article>
+      <p class="gf-review__reason">{{ eintrag.grund }}</p>
+
+      <footer>
+        <button class="gf-button gf-button--secondary" type="button">Korrigieren</button>
+        <button class="gf-button gf-button--primary" type="button">Als geprüft markieren</button>
+      </footer>
+    </article>
     }
   </div>
 </section>

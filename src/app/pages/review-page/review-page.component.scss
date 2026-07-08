@@ -92,10 +92,10 @@
   position: relative;
 }
 
-.gf-review-route__patient > span,
-.gf-review-route__patient-locked > span,
-.gf-review-route__befund > span,
-.gf-review-route__progress > span {
+.gf-review-route__patient>span,
+.gf-review-route__patient-locked>span,
+.gf-review-route__befund>span,
+.gf-review-route__progress>span {
   display: block;
   margin-bottom: var(--gf-space-2);
   color: var(--gf-color-text-soft);
@@ -147,7 +147,7 @@
   text-align: left;
 }
 
-.gf-review-route__patient-trigger > span {
+.gf-review-route__patient-trigger>span {
   grid-row: span 2;
   color: var(--gf-color-primary);
 }
@@ -544,7 +544,7 @@
   transform-origin: top left;
 }
 
-.gf-review-route__paper > div,
+.gf-review-route__paper>div,
 .gf-review-route__paper p {
   display: grid;
   grid-template-columns: 1fr 0.7fr 0.7fr;
@@ -555,7 +555,7 @@
   transform-origin: top left;
 }
 
-.gf-review-route__paper > div {
+.gf-review-route__paper>div {
   color: var(--gf-color-text-soft);
   font-size: 0.74rem;
   font-weight: 850;
@@ -596,7 +596,7 @@
    08   Formular
    ========================================================================== */
 
-.gf-review-route__form header > strong {
+.gf-review-route__form header>strong {
   color: var(--gf-color-primary);
   font-size: 2rem;
   font-weight: 900;
@@ -661,7 +661,7 @@
   box-shadow: var(--gf-shadow-soft);
 }
 
-.gf-review-route__checks article > span {
+.gf-review-route__checks article>span {
   width: 10px;
   height: 10px;
   margin-top: 0.35rem;
@@ -669,16 +669,16 @@
   background: var(--gf-color-text-soft);
 }
 
-.gf-review-route__checks article.is-ok > span {
+.gf-review-route__checks article.is-ok>span {
   background: var(--gf-color-success);
 }
 
-.gf-review-route__checks article.is-pruefen > span,
-.gf-review-route__checks article.is-fehlt > span {
+.gf-review-route__checks article.is-pruefen>span,
+.gf-review-route__checks article.is-fehlt>span {
   background: var(--gf-color-warning);
 }
 
-.gf-review-route__checks article.is-konflikt > span {
+.gf-review-route__checks article.is-konflikt>span {
   background: var(--gf-color-danger);
 }
 
@@ -772,6 +772,7 @@
 }
 
 @media (max-width: 1080px) {
+
   .gf-review-route__headline,
   .gf-review-route__context,
   .gf-review-route__workspace {
@@ -809,14 +810,14 @@
 }
 
 @media (max-width: 680px) {
+
   .gf-review-route__kpis,
   .gf-review-route__form-grid {
     grid-template-columns: 1fr;
   }
 
-  .gf-review-route__paper > div,
+  .gf-review-route__paper>div,
   .gf-review-route__paper p {
     min-width: 440px;
   }
 }
-

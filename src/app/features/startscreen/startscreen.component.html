@@ -4,7 +4,8 @@
   <header class="gf-start__headline">
     <div>
       <h1 id="start-title">Arzt-Dashboard – Datenauswertung</h1>
-      <p>Patient: Erik Mustermann (LM-99281) <span>•</span> Bericht vom 24. Mai 2024 <span>•</span> Labor: Zentral-Labor München</p>
+      <p>Patient: Erik Mustermann (LM-99281) <span>•</span> Bericht vom 24. Mai 2024 <span>•</span> Labor: Zentral-Labor
+        München</p>
     </div>
 
     <div class="gf-start__actions">
@@ -55,37 +56,37 @@
   <nav class="gf-start__filters" aria-label="Wertgruppen">
     <a class="is-active" href="#dashboard">Alle Gruppen <span>{{ kennzahlen.laborwerte }}</span></a>
     @for (gruppe of gruppen; track gruppe.key) {
-      <a href="#dashboard">{{ gruppe.name }} <span>{{ gruppe.normal + gruppe.auffaellig + gruppe.review }}</span></a>
+    <a href="#dashboard">{{ gruppe.name }} <span>{{ gruppe.normal + gruppe.auffaellig + gruppe.review }}</span></a>
     }
   </nav>
 
   <div class="gf-start__dashboard">
     @if (fokuswert; as wert) {
-      <article class="gf-start__chart gf-neu-card">
-        <header>
-          <div>
-            <h2>Trend – {{ wert.name }}</h2>
-            <span>{{ wert.einheit }}</span>
-          </div>
-          <button class="gf-button gf-button--ghost" type="button">Letzte 12 Messungen</button>
-        </header>
-
-        <div class="gf-start__chart-body">
-          <svg viewBox="0 0 528 210" role="img" aria-label="Verlaufsgrafik">
-            <path class="gf-start__chart-grid" d="M18 178 H510 M18 118 H510 M18 60 H510" />
-            <rect x="18" y="60" width="492" height="88" rx="10" />
-            <polyline class="gf-start__chart-line is-muted" points="18,158 141,130 264,150 387,120 510,112" />
-            <polyline class="gf-start__chart-line" [attr.points]="punkteFuerTrend(wert.trend)" />
-            <circle cx="510" cy="112" r="8" />
-          </svg>
-
-          <aside>
-            <strong class="gf-data-text">{{ wert.wert }}</strong>
-            <span>{{ wert.einheit }}</span>
-            <small>Referenzbereich:<br>{{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
-          </aside>
+    <article class="gf-start__chart gf-neu-card">
+      <header>
+        <div>
+          <h2>Trend – {{ wert.name }}</h2>
+          <span>{{ wert.einheit }}</span>
         </div>
-      </article>
+        <button class="gf-button gf-button--ghost" type="button">Letzte 12 Messungen</button>
+      </header>
+
+      <div class="gf-start__chart-body">
+        <svg viewBox="0 0 528 210" role="img" aria-label="Verlaufsgrafik">
+          <path class="gf-start__chart-grid" d="M18 178 H510 M18 118 H510 M18 60 H510" />
+          <rect x="18" y="60" width="492" height="88" rx="10" />
+          <polyline class="gf-start__chart-line is-muted" points="18,158 141,130 264,150 387,120 510,112" />
+          <polyline class="gf-start__chart-line" [attr.points]="punkteFuerTrend(wert.trend)" />
+          <circle cx="510" cy="112" r="8" />
+        </svg>
+
+        <aside>
+          <strong class="gf-data-text">{{ wert.wert }}</strong>
+          <span>{{ wert.einheit }}</span>
+          <small>Referenzbereich:<br>{{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
+        </aside>
+      </div>
+    </article>
     }
 
     <article class="gf-start__distribution gf-neu-card">
@@ -115,14 +116,14 @@
     <aside class="gf-start__insights gf-neu-card">
       <h2>Kurz-Insights</h2>
       @for (wert of auffaelligeWerte.slice(0, 3); track wert.id) {
-        <article>
-          <span class="gf-start__dot {{ statusKlasse(wert.status) }}"></span>
-          <div>
-            <strong>{{ wert.name }} {{ wert.status === 'hoch' ? 'erhöht' : 'erniedrigt' }}.</strong>
-            <p>{{ wert.hinweis }}</p>
-            <button type="button">Details anzeigen</button>
-          </div>
-        </article>
+      <article>
+        <span class="gf-start__dot {{ statusKlasse(wert.status) }}"></span>
+        <div>
+          <strong>{{ wert.name }} {{ wert.status === 'hoch' ? 'erhöht' : 'erniedrigt' }}.</strong>
+          <p>{{ wert.hinweis }}</p>
+          <button type="button">Details anzeigen</button>
+        </div>
+      </article>
       }
     </aside>
 
@@ -146,19 +147,19 @@
           </thead>
           <tbody>
             @for (wert of auffaelligeWerte; track wert.id) {
-              <tr>
-                <td>
-                  <strong>{{ wert.name }}</strong>
-                  <span>{{ wert.gruppe }}</span>
-                </td>
-                <td class="gf-data-text">{{ wert.wert }}</td>
-                <td>{{ wert.einheit }}</td>
-                <td>{{ wert.referenzMin }} – {{ wert.referenzMax }}</td>
-                <td>
-                  <span class="material-symbols-outlined" aria-hidden="true">{{ trendRichtung(wert) }}</span>
-                </td>
-                <td><span class="gf-chip {{ statusKlasse(wert.status) }}">{{ wert.status }}</span></td>
-              </tr>
+            <tr>
+              <td>
+                <strong>{{ wert.name }}</strong>
+                <span>{{ wert.gruppe }}</span>
+              </td>
+              <td class="gf-data-text">{{ wert.wert }}</td>
+              <td>{{ wert.einheit }}</td>
+              <td>{{ wert.referenzMin }} – {{ wert.referenzMax }}</td>
+              <td>
+                <span class="material-symbols-outlined" aria-hidden="true">{{ trendRichtung(wert) }}</span>
+              </td>
+              <td><span class="gf-chip {{ statusKlasse(wert.status) }}">{{ wert.status }}</span></td>
+            </tr>
             }
           </tbody>
         </table>

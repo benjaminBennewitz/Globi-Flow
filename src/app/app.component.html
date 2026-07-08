@@ -1,34 +1,37 @@
 <!-- src/app/app.component.html -->
 
 @if (startanimationSichtbar()) {
-  <section class="gf-startup" [class.is-leaving]="startanimationSchliesst()" aria-label="Globi Flow wird geladen" aria-live="polite">
-    <div class="gf-startup__content">
-      <div class="gf-startup__logo-wrap" aria-hidden="true">
-        <span class="gf-startup__spin"></span>
-        <span class="gf-startup__glow"></span>
-        <img class="gf-startup__logo" src="assets/img/globiflow-logo.webp" width="132" height="132" alt="" decoding="async">
-      </div>
-
-      <p class="gf-startup__eyebrow">Lokale Laboranalyse</p>
-      <h1>Globi Flow</h1>
-      <p class="gf-startup__text">Laborwerte werden vorbereitet. Verläufe, Review und Bericht laden.</p>
-
-      <div class="gf-startup__progress-meta">
-        <span>Systemstart</span>
-        <strong class="gf-data-text">{{ startFortschritt() }}%</strong>
-      </div>
-
-      <div class="gf-startup__progress" role="progressbar" aria-label="Startfortschritt" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="startFortschritt()">
-        <span [style.width.%]="startFortschritt()"></span>
-      </div>
-
-      <div class="gf-startup__steps" aria-hidden="true">
-        <span>Import</span>
-        <span>Analyse</span>
-        <span>Bericht</span>
-      </div>
+<section class="gf-startup" [class.is-leaving]="startanimationSchliesst()" aria-label="Globi Flow wird geladen"
+  aria-live="polite">
+  <div class="gf-startup__content">
+    <div class="gf-startup__logo-wrap" aria-hidden="true">
+      <span class="gf-startup__spin"></span>
+      <span class="gf-startup__glow"></span>
+      <img class="gf-startup__logo" src="assets/img/globiflow-logo.webp" width="132" height="132" alt=""
+        decoding="async">
     </div>
-  </section>
+
+    <p class="gf-startup__eyebrow">Lokale Laboranalyse</p>
+    <h1>Globi Flow</h1>
+    <p class="gf-startup__text">Laborwerte werden vorbereitet. Verläufe, Review und Bericht laden.</p>
+
+    <div class="gf-startup__progress-meta">
+      <span>Systemstart</span>
+      <strong class="gf-data-text">{{ startFortschritt() }}%</strong>
+    </div>
+
+    <div class="gf-startup__progress" role="progressbar" aria-label="Startfortschritt" aria-valuemin="0"
+      aria-valuemax="100" [attr.aria-valuenow]="startFortschritt()">
+      <span [style.width.%]="startFortschritt()"></span>
+    </div>
+
+    <div class="gf-startup__steps" aria-hidden="true">
+      <span>Import</span>
+      <span>Analyse</span>
+      <span>Bericht</span>
+    </div>
+  </div>
+</section>
 }
 
 <gf-app-navigation />

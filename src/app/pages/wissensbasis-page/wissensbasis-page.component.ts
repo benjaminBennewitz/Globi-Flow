@@ -6,11 +6,11 @@
  */
 
 import { ChangeDetectionStrategy, Component, WritableSignal, computed, inject, signal } from '@angular/core';
-import { MOCK_WISSENSEINTRAEGE } from '../../core/mocks/wissenseintraege.mock';
 import { Wissenseintrag, WissenseintragStatus, Wissensquelle, WissensquelleTyp } from '../../core/models/wissenseintrag.model';
 import { IconActionComponent } from '../../shared/components/icon-action/icon-action.component';
 import { SecureSearchComponent } from '../../shared/components/secure-search/secure-search.component';
 import { ToastService } from '../../shared/services/toast.service';
+import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 
 /** Filteroption für Wissenseinträge. */
 type WissensStatusFilter = WissenseintragStatus | 'alle';
@@ -66,6 +66,29 @@ interface Wissensformular {
   aenderungsnotiz: string;
 }
 
+
+/** Fallback-Eintrag, bis die Wissensbasis aus der API geladen wurde. */
+const LEERER_WISSENSEINTRAG: Wissenseintrag = {
+  id: '',
+  laborwertKey: '',
+  anzeigename: 'Daten werden geladen',
+  kategorie: 'Wissensbasis',
+  patientKurztext: '',
+  patientLangtext: '',
+  arztinformation: '',
+  ursachenNiedrig: '',
+  ursachenHoch: '',
+  einflussfaktoren: '',
+  hinweise: '',
+  disclaimer: 'Diese Erklärung ersetzt keine ärztliche Diagnose oder Behandlung.',
+  quellen: [],
+  version: 1,
+  status: 'entwurf',
+  geaendertAm: '',
+  geaendertVon: 'System',
+  versionen: []
+};
+
 /** Route `/wissensbasis` für kontrollierte Erklärungstexte. */
 @Component({
   selector: 'gf-wissensbasis-page',
@@ -78,11 +101,14 @@ export class WissensbasisPageComponent {
   /** Toast-Service für Statusrückmeldungen. */
   private readonly toastService = inject(ToastService);
 
-  /** Lokale Wissenseinträge bis zur späteren API-Anbindung. */
-  public readonly wissenseintraege: WritableSignal<Wissenseintrag[]> = signal([...MOCK_WISSENSEINTRAEGE]);
+  /** API-Service für Wissenseinträge. */
+  private readonly globiFlowApi = inject(GlobiFlowApiService);
+
+  /** Wissenseinträge aus der Backend-API. */
+  public readonly wissenseintraege: WritableSignal<Wissenseintrag[]> = signal([LEERER_WISSENSEINTRAG]);
 
   /** Aktive Wissens-ID. */
-  public readonly aktiverEintragId: WritableSignal<string> = signal(MOCK_WISSENSEINTRAEGE[0].id);
+  public readonly aktiverEintragId: WritableSignal<string> = signal('');
 
   /** Suchbegriff. */
   public readonly suche: WritableSignal<string> = signal('');
@@ -112,7 +138,7 @@ export class WissensbasisPageComponent {
   public readonly neueKategorie: WritableSignal<string> = signal('');
 
   /** Editorformular. */
-  public readonly formular: WritableSignal<Wissensformular> = signal(this.formularAusEintrag(MOCK_WISSENSEINTRAEGE[0]));
+  public readonly formular: WritableSignal<Wissensformular> = signal(this.formularAusEintrag(LEERER_WISSENSEINTRAG));
 
   /** Eingabe Quellentitel. */
   public readonly quellenTitel: WritableSignal<string> = signal('');
@@ -146,6 +172,15 @@ export class WissensbasisPageComponent {
     { key: 'fachliteratur', label: 'Fachliteratur' }
   ];
 
+  /** Lädt die Wissensbasis aus der API. */
+  public constructor() {
+    this.globiFlowApi.ladeWissenseintraege().subscribe((eintraege: Wissenseintrag[]) => {
+      const daten = eintraege.length ? eintraege : [LEERER_WISSENSEINTRAG];
+      this.wissenseintraege.set(daten);
+      this.eintragAuswaehlen(daten[0]);
+    });
+  }
+
   /** Kategorien der vorhandenen Einträge. */
   public readonly kategorien = computed(() => ['alle', ...Array.from(new Set(this.wissenseintraege().map((eintrag: Wissenseintrag) => eintrag.kategorie)))]);
 
@@ -160,7 +195,7 @@ export class WissensbasisPageComponent {
 
   /** Aktiver Wissenseintrag. */
   public aktiverEintrag(): Wissenseintrag {
-    return this.wissenseintraege().find((eintrag: Wissenseintrag) => eintrag.id === this.aktiverEintragId()) ?? this.wissenseintraege()[0] ?? MOCK_WISSENSEINTRAEGE[0];
+    return this.wissenseintraege().find((eintrag: Wissenseintrag) => eintrag.id === this.aktiverEintragId()) ?? this.wissenseintraege()[0] ?? LEERER_WISSENSEINTRAG;
   }
 
   /** Eintrag im Löschdialog. */

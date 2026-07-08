@@ -9,20 +9,20 @@
 
   <div class="gf-knowledge__grid">
     @for (eintrag of wissenseintraege; track eintrag.id) {
-      <article class="gf-knowledge__card gf-neu-card">
-        <header>
-          <div>
-            <span class="gf-chip gf-chip--success">v{{ eintrag.version }} · {{ eintrag.status }}</span>
-            <h3>{{ eintrag.anzeigename }}</h3>
-          </div>
-          <span>{{ eintrag.kategorie }}</span>
-        </header>
-        <p>{{ eintrag.patientKurztext }}</p>
-        <div class="gf-knowledge__preview gf-neu-inset">
-          <strong>Patientenvorschau</strong>
-          <p>{{ eintrag.patientLangtext }}</p>
+    <article class="gf-knowledge__card gf-neu-card">
+      <header>
+        <div>
+          <span class="gf-chip gf-chip--success">v{{ eintrag.version }} · {{ eintrag.status }}</span>
+          <h3>{{ eintrag.anzeigename }}</h3>
         </div>
-      </article>
+        <span>{{ eintrag.kategorie }}</span>
+      </header>
+      <p>{{ eintrag.patientKurztext }}</p>
+      <div class="gf-knowledge__preview gf-neu-inset">
+        <strong>Patientenvorschau</strong>
+        <p>{{ eintrag.patientLangtext }}</p>
+      </div>
+    </article>
     }
   </div>
 </section>

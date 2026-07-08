@@ -62,7 +62,7 @@
   padding: var(--gf-space-4);
 }
 
-.gf-patienten-route__active > .material-symbols-outlined {
+.gf-patienten-route__active>.material-symbols-outlined {
   display: grid;
   width: 56px;
   height: 56px;
@@ -337,7 +337,7 @@ gf-secure-search {
 }
 
 .gf-patienten-route__form label span,
-.gf-patienten-route__field > span {
+.gf-patienten-route__field>span {
   color: var(--gf-color-text-soft);
   font-size: 0.74rem;
   font-weight: 850;
@@ -456,6 +456,7 @@ gf-secure-search {
 }
 
 @media (max-width: 820px) {
+
   .gf-patienten-route__headline,
   .gf-patienten-route__active {
     grid-template-columns: 1fr;

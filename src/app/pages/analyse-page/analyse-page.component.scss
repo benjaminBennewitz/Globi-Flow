@@ -76,7 +76,7 @@
 }
 
 .gf-auswertung-route__context span,
-.gf-auswertung-route__filters > div > span {
+.gf-auswertung-route__filters>div>span {
   color: var(--gf-color-text-soft);
   font-size: 0.74rem;
   font-weight: 850;
@@ -165,7 +165,7 @@
   text-align: left;
 }
 
-.gf-auswertung-route__patient-trigger > span {
+.gf-auswertung-route__patient-trigger>span {
   grid-row: span 2;
   color: var(--gf-color-primary);
 }
@@ -464,12 +464,12 @@
   box-shadow: var(--gf-shadow-soft);
 }
 
-.gf-auswertung-route__score > span,
-.gf-auswertung-route__distribution > span,
+.gf-auswertung-route__score>span,
+.gf-auswertung-route__distribution>span,
 .gf-auswertung-route__overlay header span,
 .gf-auswertung-route__trend-panel header span,
 .gf-auswertung-route__range-panel header span,
-.gf-auswertung-route__next > span {
+.gf-auswertung-route__next>span {
   color: var(--gf-color-text-soft);
   font-size: 0.74rem;
   font-weight: 850;
@@ -679,7 +679,7 @@
   gap: 0.52rem;
 }
 
-.gf-auswertung-route__overlay-current > span {
+.gf-auswertung-route__overlay-current>span {
   color: var(--gf-color-text-soft);
   font-size: 0.72rem;
   font-weight: 850;
@@ -752,8 +752,8 @@
   font-weight: 850;
 }
 
-.gf-auswertung-route__trend-panel > div,
-.gf-auswertung-route__range-panel > div {
+.gf-auswertung-route__trend-panel>div,
+.gf-auswertung-route__range-panel>div {
   display: grid;
   gap: var(--gf-space-2);
 }
@@ -916,7 +916,7 @@
 }
 
 .gf-auswertung-route__value-row strong,
-.gf-auswertung-route__value-row > span:not(.gf-chip) {
+.gf-auswertung-route__value-row>span:not(.gf-chip) {
   overflow: hidden;
   color: var(--gf-color-text);
   font-size: 0.92rem;
@@ -953,7 +953,7 @@
    07   Detailbereich
    ========================================================================== */
 
-.gf-auswertung-route__detail header > strong {
+.gf-auswertung-route__detail header>strong {
   color: var(--gf-color-primary);
   font-size: clamp(1.8rem, 3.6vw, 3.1rem);
   font-weight: 900;
@@ -1219,6 +1219,7 @@
    ========================================================================== */
 
 @media (max-width: 1320px) {
+
   .gf-auswertung-route__kpis,
   .gf-auswertung-route__group-grid,
   .gf-auswertung-route__prep-grid,
@@ -1276,6 +1277,7 @@
 }
 
 @media (max-width: 1080px) {
+
   .gf-auswertung-route__headline,
   .gf-auswertung-route__main,
   .gf-auswertung-route__filters,
@@ -1302,6 +1304,7 @@
 }
 
 @media (max-width: 680px) {
+
   .gf-auswertung-route__context,
   .gf-auswertung-route__kpis,
   .gf-auswertung-route__meta,
@@ -1314,7 +1317,7 @@
     grid-template-columns: 1fr;
   }
 
-  .gf-auswertung-route__detail header > strong {
+  .gf-auswertung-route__detail header>strong {
     white-space: normal;
   }
 
@@ -1327,7 +1330,7 @@
     min-width: 0;
   }
 
-  .gf-auswertung-route__overlay-current > span {
+  .gf-auswertung-route__overlay-current>span {
     grid-column: 1 / -1;
     text-align: left;
   }
@@ -1336,6 +1339,3 @@
     justify-items: center;
   }
 }
-
-
-
