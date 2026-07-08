@@ -217,12 +217,29 @@
   line-height: 1.05;
 }
 
-.dd-berichte-route__report-header strong {
+.dd-berichte-route__report-brand {
+  display: inline-grid;
+  grid-template-columns: 11mm auto;
+  gap: 2.4mm;
+  align-items: center;
+  margin: 0;
   border-radius: 999px;
-  padding: 2.4mm 4mm;
+  padding: 1.8mm 3.2mm 1.8mm 2mm;
   background: #d6e3ff;
   color: #00478d;
   font-size: 9pt;
+  font-weight: 900;
+}
+
+.dd-berichte-route__report-brand img {
+  display: block;
+  width: 11mm;
+  height: 11mm;
+  object-fit: contain;
+}
+
+.dd-berichte-route__report-brand figcaption {
+  white-space: nowrap;
 }
 
 .dd-berichte-route__patient-grid {

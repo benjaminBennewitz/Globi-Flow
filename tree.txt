@@ -4,13 +4,6 @@ Data-Dashboard/
 ├── assets/
 │   ├── readme-header.svg
 │   └── workflow.svg
-├── Entwurf/
-│   ├── ChatGPT Image 12. Juni 2026, 09_08_44.png
-│   ├── ChatGPT Image 12. Juni 2026, 09_08_48.png
-│   ├── ChatGPT Image 12. Juni 2026, 09_08_51.png
-│   ├── ChatGPT Image 12. Juni 2026, 09_08_54.png
-│   ├── DESIGN.md
-│   └── desktop.ini
 ├── node_modules/
 │   └── ...
 ├── src/
@@ -134,6 +127,9 @@ Data-Dashboard/
 │   │   │   ├── inter-variable.ttf
 │   │   │   ├── material-symbols-outlined-latin-fill-normal.woff2
 │   │   │   └── README.md
+│   │   ├── img/
+│   │   │   ├── favicon.ico
+│   │   │   └── globiflow-logo.webp
 │   │   └── testdaten/
 │   │       └── testdaten-laborbefund-demo.pdf
 │   ├── styles/
@@ -150,6 +146,7 @@ Data-Dashboard/
 ├── .editorconfig
 ├── .gitignore
 ├── angular.json
+├── DESIGNSYSTEM.md
 ├── Featureliste_Daten_Dashboards.docx
 ├── make-tree.ps1
 ├── package.json

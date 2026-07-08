@@ -66,33 +66,19 @@
 
 .dd-sidebar__brand {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  gap: 0.68rem;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 0.62rem;
   min-height: 62px;
   align-items: center;
   color: var(--dd-color-primary);
 }
 
-.dd-sidebar__brand-drop {
-  position: relative;
+.dd-sidebar__brand-logo {
   display: block;
-  width: 32px;
-  height: 32px;
-  border-radius: 68% 32% 68% 32% / 72% 36% 64% 28%;
-  background: linear-gradient(135deg, #d71920 0%, #0d5a86 78%);
-  box-shadow: 8px 8px 18px rgba(164, 173, 191, 0.42), -8px -8px 18px rgba(255, 255, 255, 0.9);
-  transform: rotate(45deg);
-}
-
-.dd-sidebar__brand-drop::after {
-  position: absolute;
-  top: 7px;
-  left: 8px;
-  width: 8px;
-  height: 8px;
-  border-radius: var(--dd-radius-pill);
-  background: rgba(255, 255, 255, 0.74);
-  content: '';
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(8px 8px 14px rgba(164, 173, 191, 0.42)) drop-shadow(-7px -7px 12px rgba(255, 255, 255, 0.9));
 }
 
 .dd-sidebar__brand-copy {
