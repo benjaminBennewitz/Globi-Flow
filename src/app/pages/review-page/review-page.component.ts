@@ -189,17 +189,18 @@ export class ReviewPageComponent {
     this.kandidatInApiSpeichern({ ...kandidat, status: 'korrigiert' }, 'Korrektur gespeichert', `${kandidat.anzeigename} wurde in der Datenbank aktualisiert.`, 'success');
   }
 
-  /** Speichert und springt zum nächsten offenen Kandidaten. */
+  /** Speichert und springt erst nach erfolgreicher API-Antwort zum nächsten offenen Kandidaten. */
   public speichernUndWeiter(kandidat: ReviewKandidat): void {
-    this.korrekturSpeichern(kandidat);
-    const naechster = this.naechsterOffenerKandidat(kandidat.id);
+    this.kandidatInApiSpeichern({ ...kandidat, status: 'korrigiert' }, 'Korrektur gespeichert', `${kandidat.anzeigename} wurde in der Datenbank aktualisiert.`, 'success', () => {
+      const naechster = this.naechsterOffenerKandidat(kandidat.id);
 
-    if (naechster) {
-      this.aktiverKandidatId.set(naechster.id);
-      return;
-    }
+      if (naechster) {
+        this.aktiverKandidatId.set(naechster.id);
+        return;
+      }
 
-    this.toastService.zeige('Review-Kontext abgeschlossen', 'Es gibt keinen weiteren offenen Wert in diesem Befund.', 'success');
+      this.toastService.zeige('Review-Kontext abgeschlossen', 'Es gibt keinen weiteren offenen Wert in diesem Befund.', 'success');
+    });
   }
 
   /** Bestätigt alle sicheren Werte im aktiven Kontext. */
@@ -254,14 +255,20 @@ export class ReviewPageComponent {
   }
 
   /** Speichert einen Kandidaten optimistisch über die API. */
-  private kandidatInApiSpeichern(kandidat: ReviewKandidat, titel: string, beschreibung: string, status: 'success' | 'warning'): void {
+  private kandidatInApiSpeichern(kandidat: ReviewKandidat, titel: string, beschreibung: string, status: 'success' | 'warning', nachErfolg?: () => void): void {
+    const vorherigerStand = this.review().kandidaten.find((eintrag: ReviewKandidat) => eintrag.id === kandidat.id);
     this.statusSetzen(kandidat.id, kandidat.status);
     this.globiFlowApi.reviewKandidatSpeichern(kandidat).subscribe({
       next: (antwort: ReviewKandidat) => {
         this.kandidatAktualisieren(antwort.id, antwort);
         this.toastService.zeige(titel, beschreibung, status);
+        nachErfolg?.();
       },
       error: () => {
+        if (vorherigerStand) {
+          this.kandidatAktualisieren(vorherigerStand.id, vorherigerStand);
+        }
+
         this.toastService.zeige('Speichern fehlgeschlagen', `${kandidat.anzeigename} konnte nicht in der Datenbank aktualisiert werden.`, 'danger');
       }
     });

@@ -5,7 +5,7 @@
  * @module BerichtePageComponent
  */
 
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, effect, inject, signal } from '@angular/core';
 import { BerichtLaborwert, BerichtViewModel, BerichtWertStatus } from '../../core/models/bericht.model';
 import { Patient, PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
@@ -42,7 +42,16 @@ export class BerichtePageComponent {
 
   /** Lädt die Berichtsdaten aus der API. */
   public constructor() {
-    this.globiFlowApi.ladeBericht().subscribe((bericht: BerichtViewModel) => this.bericht.set(bericht));
+    effect(() => {
+      const patientId = this.patient().id;
+      const befundId = this.befund()?.id;
+      this.berichtLaden(befundId, patientId);
+    });
+  }
+
+  /** Lädt die Berichtsvorschau für den aktiven Patientenkontext neu. */
+  public vorschauAktualisieren(): void {
+    this.berichtLaden(this.befund()?.id, this.patient().id);
   }
 
   /** Auffällige oder prüfpflichtige Werte für die interne Kurzsicht. */
@@ -168,6 +177,15 @@ export class BerichtePageComponent {
   /** Liefert einen fallback-sicheren Befundnamen. */
   public befundName(befund: PatientBefund | null): string {
     return befund?.name ?? 'kein Befund gewählt';
+  }
+
+  /** Lädt den Bericht passend zum aktiven Kontext. */
+  private berichtLaden(befundId?: string, patientId?: string): void {
+    if (!befundId && !patientId) {
+      return;
+    }
+
+    this.globiFlowApi.ladeBericht(befundId, patientId).subscribe((bericht: BerichtViewModel) => this.bericht.set(bericht));
   }
 
   /** Begrenzt eine Zahl auf ein Minimum und Maximum. */

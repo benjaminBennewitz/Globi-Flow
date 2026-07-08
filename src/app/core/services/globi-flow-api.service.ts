@@ -165,8 +165,18 @@ export class GlobiFlowApiService {
   }
 
   /** Liefert die druckfertige Berichtsvorschau. */
-  public ladeBericht(): Observable<BerichtViewModel> {
-    return this.http.get<BerichtViewModel>(this.apiEndpunkte.bericht);
+  public ladeBericht(befundId?: string, patientId?: string): Observable<BerichtViewModel> {
+    let params = new HttpParams();
+
+    if (befundId) {
+      params = params.set('reportId', befundId);
+    }
+
+    if (patientId) {
+      params = params.set('patientId', patientId);
+    }
+
+    return this.http.get<BerichtViewModel>(this.apiEndpunkte.bericht, { params });
   }
 
   /** Gibt einen Befund für Bericht und Verlauf frei. */
