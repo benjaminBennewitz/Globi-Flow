@@ -221,21 +221,51 @@
           </div>
 
           <div class="gf-wissensbasis-route__source-form">
-            <input type="text" placeholder="Quellentitel" [value]="quellenTitel()"
-              (input)="quellenFeldSetzen('titel', $event)">
-            <select [value]="quellenTyp()" (change)="quellenTypSetzen($event)">
-              @for (typ of quellenTypen; track typ.key) {
-              <option [value]="typ.key">{{ typ.label }}</option>
+            <div class="gf-wissensbasis-route__source-title-field">
+              <input type="text" placeholder="Quellentitel" [value]="quellenTitel()"
+                (focus)="quellenVorschlaegeOeffnen()" (input)="quellenFeldSetzen('titel', $event); quellenVorschlaegeOeffnen()">
+
+              @if (quellenVorschlaegeOffen() && quellenVorschlaege().length) {
+              <div class="gf-wissensbasis-route__source-suggestions" role="listbox" aria-label="Vorhandene Quellen">
+                @for (quelle of quellenVorschlaege(); track quellenTrackKey(quelle)) {
+                <button type="button" role="option" [class.is-assigned]="quelleIstBereitsZugeordnet(quelle)"
+                  (mousedown)="quelleAuswaehlen(quelle, $event)">
+                  <strong>{{ quelle.titel }}</strong>
+                  <span>{{ quellenVorschlagMeta(quelle) }}</span>
+                </button>
+                }
+              </div>
               }
-            </select>
+            </div>
+
+            <div class="gf-wissensbasis-route__source-type" [class.is-open]="quellenTypDropdownOffen()">
+              <button type="button" class="gf-wissensbasis-route__source-type-button"
+                (click)="quellenTypDropdownUmschalten()" aria-haspopup="listbox"
+                [attr.aria-expanded]="quellenTypDropdownOffen()">
+                <span>{{ quellenTypLabel() }}</span>
+                <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
+              </button>
+
+              @if (quellenTypDropdownOffen()) {
+              <div class="gf-wissensbasis-route__source-type-list" role="listbox" aria-label="Quellenkategorie wählen">
+                @for (typ of quellenTypen; track typ.key) {
+                <button type="button" role="option" [class.is-active]="quellenTyp() === typ.key"
+                  (click)="quellenTypAuswaehlen(typ.key)">{{ typ.label }}</button>
+                }
+              </div>
+              }
+            </div>
+
             <input type="text" placeholder="Stand" [value]="quellenStand()"
               (input)="quellenFeldSetzen('stand', $event)">
             <input type="text" placeholder="Referenz oder URL" [value]="quellenReferenz()"
               (input)="quellenFeldSetzen('referenz', $event)">
             <input type="text" placeholder="Interner Hinweis" [value]="quellenHinweis()"
               (input)="quellenFeldSetzen('hinweis', $event)">
-            <button class="gf-button gf-button--secondary" type="button" (click)="quelleHinzufuegen()">Quelle
-              hinzufügen</button>
+            <button class="gf-button gf-button--source-add" type="button" (click)="quelleHinzufuegen()">
+              <span class="material-symbols-outlined" aria-hidden="true">add_link</span>
+              Quelle hinzufügen
+            </button>
           </div>
         </section>
       </div>

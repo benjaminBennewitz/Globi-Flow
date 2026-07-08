@@ -155,6 +155,12 @@ export class WissensbasisPageComponent {
   /** Eingabe Quellenhinweis. */
   public readonly quellenHinweis: WritableSignal<string> = signal('');
 
+  /** Sichtbarkeit der vorhandenen Quellenvorschläge. */
+  public readonly quellenVorschlaegeOffen: WritableSignal<boolean> = signal(false);
+
+  /** Sichtbarkeit der Quellenart-Auswahl. */
+  public readonly quellenTypDropdownOffen: WritableSignal<boolean> = signal(false);
+
   /** Statusfilteroptionen. */
   public readonly statusOptionen: { key: WissensStatusFilter; label: string }[] = [
     { key: 'alle', label: 'Alle' },
@@ -191,6 +197,33 @@ export class WissensbasisPageComponent {
   public readonly quellenindex = computed(() => {
     const quellen = this.wissenseintraege().flatMap((eintrag: Wissenseintrag) => eintrag.quellen.map((quelle: Wissensquelle) => ({ ...quelle, eintrag: eintrag.anzeigename, laborwertKey: eintrag.laborwertKey })));
     return quellen.sort((a, b) => a.titel.localeCompare(b.titel));
+  });
+
+  /** Eindeutige Quellen aus allen Wissenskarten für die Schnellauswahl. */
+  public readonly verfuegbareQuellen = computed(() => {
+    const quellenMap = new Map<string, Wissensquelle>();
+
+    for (const eintrag of this.wissenseintraege()) {
+      for (const quelle of eintrag.quellen) {
+        const schluessel = this.quellenIdentitaetsSchluessel(quelle);
+
+        if (schluessel && !quellenMap.has(schluessel)) {
+          quellenMap.set(schluessel, quelle);
+        }
+      }
+    }
+
+    return Array.from(quellenMap.values()).sort((a, b) => a.titel.localeCompare(b.titel));
+  });
+
+  /** Gefilterte Quellenvorschläge für die aktuelle Eingabe. */
+  public readonly quellenVorschlaege = computed(() => {
+    const suche = this.quellenTitel().trim().toLowerCase();
+
+    return this.verfuegbareQuellen()
+      .filter((quelle: Wissensquelle) => !suche || this.quellenSuchtext(quelle).includes(suche))
+      .sort((a: Wissensquelle, b: Wissensquelle) => this.quellenVorschlagSortierung(a, b, suche))
+      .slice(0, 18);
   });
 
   /** Aktiver Wissenseintrag. */
@@ -388,7 +421,7 @@ export class WissensbasisPageComponent {
       return;
     }
 
-    const quelle: Wissensquelle = {
+    const quellenEntwurf: Wissensquelle = {
       id: `quelle-local-${Date.now()}`,
       titel,
       typ: this.quellenTyp(),
@@ -396,19 +429,99 @@ export class WissensbasisPageComponent {
       referenz: this.quellenReferenz().trim(),
       hinweis: this.quellenHinweis().trim()
     };
+    const vorhandeneQuelle = this.passendeVorhandeneQuelleFinden(quellenEntwurf);
+    const quelle: Wissensquelle = {
+      id: vorhandeneQuelle?.id ?? quellenEntwurf.id,
+      titel: vorhandeneQuelle?.titel ?? quellenEntwurf.titel,
+      typ: vorhandeneQuelle?.typ ?? quellenEntwurf.typ,
+      stand: quellenEntwurf.stand !== 'ohne Stand' ? quellenEntwurf.stand : vorhandeneQuelle?.stand ?? quellenEntwurf.stand,
+      referenz: quellenEntwurf.referenz || vorhandeneQuelle?.referenz || '',
+      hinweis: quellenEntwurf.hinweis || vorhandeneQuelle?.hinweis || ''
+    };
+    const aktuelleQuellen = this.formular().quellen;
 
-    this.formular.update((formular: Wissensformular) => ({ ...formular, quellen: [...formular.quellen, quelle] }));
+    if (aktuelleQuellen.some((formularQuelle: Wissensquelle) => this.quellenIdentitaetsSchluessel(formularQuelle) === this.quellenIdentitaetsSchluessel(quelle))) {
+      this.toastService.zeige('Quelle bereits zugeordnet', quelle.titel, 'warning');
+      return;
+    }
+
+    const quellen = [...aktuelleQuellen, quelle];
+
+    this.formular.update((formular: Wissensformular) => ({ ...formular, quellen }));
+    this.formularQuellenInAktivemEintragSpiegeln(quellen);
     this.quellenTitel.set('');
     this.quellenStand.set('');
     this.quellenReferenz.set('');
     this.quellenHinweis.set('');
-    this.toastService.zeige('Quelle hinzugefügt', titel, 'success');
+    this.quellenVorschlaegeOffen.set(false);
+    this.toastService.zeige('Quelle hinzugefügt', quelle.titel, 'success');
   }
 
   /** Entfernt eine Quelle aus dem Formular. */
   public quelleEntfernen(id: string): void {
-    this.formular.update((formular: Wissensformular) => ({ ...formular, quellen: formular.quellen.filter((quelle: Wissensquelle) => quelle.id !== id) }));
+    const quellen = this.formular().quellen.filter((quelle: Wissensquelle) => quelle.id !== id);
+
+    this.formular.update((formular: Wissensformular) => ({ ...formular, quellen }));
+    this.formularQuellenInAktivemEintragSpiegeln(quellen);
     this.toastService.zeige('Quelle entfernt', 'Die Quelle wurde aus dem Formular entfernt.', 'warning');
+  }
+
+  /** Öffnet die Quellenvorschläge. */
+  public quellenVorschlaegeOeffnen(): void {
+    this.quellenVorschlaegeOffen.set(true);
+  }
+
+  /** Wählt eine vorhandene Quelle für das Quellenformular aus. */
+  public quelleAuswaehlen(quelle: Wissensquelle, event?: Event): void {
+    event?.preventDefault();
+    this.quellenTitel.set(quelle.titel);
+    this.quellenTyp.set(quelle.typ);
+    this.quellenStand.set(quelle.stand);
+    this.quellenReferenz.set(quelle.referenz);
+    this.quellenHinweis.set(quelle.hinweis);
+    this.quellenVorschlaegeOffen.set(false);
+  }
+
+  /** Prüft, ob eine Quelle dem aktuellen Formular bereits zugeordnet ist. */
+  public quelleIstBereitsZugeordnet(quelle: Wissensquelle): boolean {
+    return this.formular().quellen.some((formularQuelle: Wissensquelle) => this.quellenIdentitaetsSchluessel(formularQuelle) === this.quellenIdentitaetsSchluessel(quelle));
+  }
+
+  /** Liefert einen stabilen Track-Key für Quellenvorschläge. */
+  public quellenTrackKey(quelle: Wissensquelle): string {
+    return this.quellenIdentitaetsSchluessel(quelle);
+  }
+
+  /** Gibt das Label einer Quellenart zurück. */
+  public quellenTypAnzeigename(typ: WissensquelleTyp): string {
+    return this.quellenTypen.find((option) => option.key === typ)?.label ?? 'Demo';
+  }
+
+  /** Liefert die Metazeile eines Quellenvorschlags. */
+  public quellenVorschlagMeta(quelle: Wissensquelle): string {
+    const meta = [this.quellenTypAnzeigename(quelle.typ), quelle.stand, quelle.referenz].filter((wert: string) => !!wert.trim());
+
+    if (this.quelleIstBereitsZugeordnet(quelle)) {
+      meta.push('Bereits zugeordnet');
+    }
+
+    return meta.join(' · ');
+  }
+
+  /** Öffnet oder schließt die Quellenart-Auswahl. */
+  public quellenTypDropdownUmschalten(): void {
+    this.quellenTypDropdownOffen.update((offen: boolean) => !offen);
+  }
+
+  /** Setzt die Quellenart über die eigene Auswahl. */
+  public quellenTypAuswaehlen(typ: WissensquelleTyp): void {
+    this.quellenTyp.set(typ);
+    this.quellenTypDropdownOffen.set(false);
+  }
+
+  /** Gibt das Label der aktuellen Quellenart zurück. */
+  public quellenTypLabel(): string {
+    return this.quellenTypen.find((typ) => typ.key === this.quellenTyp())?.label ?? 'Demo';
   }
 
   /** Aktualisiert die Suche über die zentrale Suchkomponente. */
@@ -564,6 +677,53 @@ export class WissensbasisPageComponent {
   /** Liefert ein deutsches Datumslabel für Änderungsvermerke. */
   private heutigesDatumLabel(): string {
     return new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  /** Spiegelt Formularquellen in die aktive Wissenskarte für Live-Zähler und Quellenindex. */
+  private formularQuellenInAktivemEintragSpiegeln(quellen: Wissensquelle[]): void {
+    const formularId = this.formular().id;
+
+    this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((eintrag: Wissenseintrag) => eintrag.id === formularId ? { ...eintrag, quellen: [...quellen] } : eintrag));
+  }
+
+  /** Findet eine vorhandene Quelle anhand vollständiger Identität oder Titel. */
+  private passendeVorhandeneQuelleFinden(quelle: Wissensquelle): Wissensquelle | undefined {
+    const identitaet = this.quellenIdentitaetsSchluessel(quelle);
+    const titel = this.quellenTitelSchluessel(quelle.titel);
+
+    return this.verfuegbareQuellen().find((vorhandeneQuelle: Wissensquelle) => this.quellenIdentitaetsSchluessel(vorhandeneQuelle) === identitaet)
+      ?? this.verfuegbareQuellen().find((vorhandeneQuelle: Wissensquelle) => this.quellenTitelSchluessel(vorhandeneQuelle.titel) === titel);
+  }
+
+  /** Sortiert Quellenvorschläge nach Relevanz und Titel. */
+  private quellenVorschlagSortierung(a: Wissensquelle, b: Wissensquelle, suche: string): number {
+    if (!suche) {
+      return a.titel.localeCompare(b.titel);
+    }
+
+    const aTitel = this.quellenTitelSchluessel(a.titel);
+    const bTitel = this.quellenTitelSchluessel(b.titel);
+    const aExakt = aTitel === suche ? 0 : 1;
+    const bExakt = bTitel === suche ? 0 : 1;
+    const aBeginn = aTitel.startsWith(suche) ? 0 : 1;
+    const bBeginn = bTitel.startsWith(suche) ? 0 : 1;
+
+    return aExakt - bExakt || aBeginn - bBeginn || a.titel.localeCompare(b.titel);
+  }
+
+  /** Liefert den Suchtext einer Quelle. */
+  private quellenSuchtext(quelle: Wissensquelle): string {
+    return `${quelle.titel} ${quelle.typ} ${quelle.stand} ${quelle.referenz} ${quelle.hinweis}`.toLowerCase();
+  }
+
+  /** Normalisiert Quellentitel für Vergleiche. */
+  private quellenTitelSchluessel(titel: string): string {
+    return titel.trim().toLowerCase();
+  }
+
+  /** Bildet eine stabile Quellenidentität ohne technische ID. */
+  private quellenIdentitaetsSchluessel(quelle: Pick<Wissensquelle, 'titel' | 'typ' | 'referenz'>): string {
+    return `${this.quellenTitelSchluessel(quelle.titel)}|${quelle.typ}|${quelle.referenz.trim().toLowerCase()}`;
   }
 
   /** Zeigt passende Toasts für Statusaktionen. */
