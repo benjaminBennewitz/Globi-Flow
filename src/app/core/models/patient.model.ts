@@ -70,6 +70,15 @@ export interface Patient {
   /** Kurzer Lebensstil-Hinweis für Anamnese-Kontext. */
   lebensstil: string;
 
+  /** Gibt an, ob die Testperson nicht raucht. */
+  nichtrauchen: boolean;
+
+  /** Gibt an, ob Alkoholkonsum dokumentiert ist. */
+  alkohol: boolean;
+
+  /** Gibt an, ob Drogenkonsum dokumentiert ist. */
+  drogen: boolean;
+
   /** Kurzer Kontext zur Datenquelle. */
   kontext: string;
 
@@ -123,6 +132,15 @@ export interface NeuerPatientInput {
 
   /** Lebensstil-Hinweis. */
   lebensstil: string;
+
+  /** Gibt an, ob die Testperson nicht raucht. */
+  nichtrauchen: boolean;
+
+  /** Gibt an, ob Alkoholkonsum dokumentiert ist. */
+  alkohol: boolean;
+
+  /** Gibt an, ob Drogenkonsum dokumentiert ist. */
+  drogen: boolean;
 
   /** Interne Notiz. */
   notiz: string;

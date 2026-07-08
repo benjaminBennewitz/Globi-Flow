@@ -23,6 +23,9 @@ const LEERER_PATIENT: Patient = {
   gewichtKg: null,
   groesseCm: null,
   lebensstil: 'nicht angegeben',
+  nichtrauchen: false,
+  alkohol: false,
+  drogen: false,
   kontext: 'API wird geladen',
   quelle: 'demo',
   status: 'leer',
@@ -131,7 +134,8 @@ export class PatientContextService {
 
   /** Prüft Such- und Quellenfilter. */
   private patientPasst(patient: Patient, suche: string): boolean {
-    const suchtext = `${patient.name} ${patient.vorname} ${patient.nachname} ${patient.nummer} ${patient.kontext} ${patient.berichtStatus} ${patient.lebensstil}`.toLowerCase();
+    const lifestyleStatus = `${patient.nichtrauchen ? 'nichtraucher nicht rauchen' : 'rauchen unklar'} ${patient.alkohol ? 'alkohol' : 'kein alkohol'} ${patient.drogen ? 'drogen' : 'keine drogen'}`;
+    const suchtext = `${patient.name} ${patient.vorname} ${patient.nachname} ${patient.nummer} ${patient.kontext} ${patient.berichtStatus} ${patient.lebensstil} ${lifestyleStatus}`.toLowerCase();
     const suchePasst = !suche || suchtext.includes(suche);
     const filter = this.patientenFilter();
     const filterPasst = filter === 'alle' || patient.quelle === filter || (filter === 'review' && patient.offeneReviews > 0);

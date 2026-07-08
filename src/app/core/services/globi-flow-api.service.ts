@@ -55,6 +55,28 @@ export interface BefundFreigabeAntwort {
   releasedAt: string;
 }
 
+
+/** Antwort nach dem Zurücksetzen der klinischen Demo-Daten. */
+export interface DemoDatenResetAntwort {
+  /** API-Status. */
+  status: string;
+
+  /** Sichtbare Rückmeldung. */
+  message: string;
+
+  /** Anzahl der Testpersonen nach dem Reset. */
+  patients: number;
+
+  /** Anzahl der Befunde nach dem Reset. */
+  reports: number;
+
+  /** Anzahl der Laborwerte nach dem Reset. */
+  values: number;
+
+  /** Anzahl offener Review-Kandidaten nach dem Reset. */
+  reviews: number;
+}
+
 /** API-Service für die lokale Globi-Flow-Django-API. */
 @Injectable({ providedIn: 'root' })
 export class GlobiFlowApiService {
@@ -221,6 +243,12 @@ export class GlobiFlowApiService {
   public globaleSuche(query: string): Observable<GlobaleSucheAntwort> {
     const params = new HttpParams().set('q', query);
     return this.http.get<GlobaleSucheAntwort>(this.apiEndpunkte.globaleSuche, { params });
+  }
+
+
+  /** Setzt die klinischen Demo-Daten über die Backend-API zurück. */
+  public demoDatenZuruecksetzen(): Observable<DemoDatenResetAntwort> {
+    return this.http.post<DemoDatenResetAntwort>(this.apiEndpunkte.demoDatenReset, {});
   }
 
   /** Gibt die aktuell vorgesehenen API-Endpunkte für Debug- und Dev-Anzeigen zurück. */

@@ -18,6 +18,8 @@
    ========================================================================== */
 
 .gf-auswertung-route {
+  --gf-analyse-panel-max-height: clamp(620px, 76vh, 900px);
+
   display: grid;
   gap: var(--gf-space-4);
   width: min(100%, var(--gf-max-width));
@@ -858,6 +860,11 @@
   display: grid;
   grid-template-columns: minmax(360px, 0.86fr) minmax(0, 1.14fr);
   gap: var(--gf-space-4);
+  align-items: start;
+}
+
+.gf-auswertung-route__main > * {
+  min-width: 0;
 }
 
 .gf-auswertung-route__priority,
@@ -892,7 +899,50 @@
 
 .gf-auswertung-route__value-list {
   display: grid;
+  min-height: 0;
   gap: var(--gf-space-3);
+  overflow-y: auto;
+  padding-right: 0.35rem;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.gf-auswertung-route__priority,
+.gf-auswertung-route__detail {
+  height: var(--gf-analyse-panel-max-height);
+  max-height: var(--gf-analyse-panel-max-height);
+  min-height: min(620px, var(--gf-analyse-panel-max-height));
+  overflow: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.gf-auswertung-route__priority {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.gf-auswertung-route__detail {
+  align-content: start;
+  overflow-y: auto;
+}
+
+.gf-auswertung-route__priority::-webkit-scrollbar,
+.gf-auswertung-route__detail::-webkit-scrollbar,
+.gf-auswertung-route__value-list::-webkit-scrollbar {
+  width: 0.42rem;
+}
+
+.gf-auswertung-route__priority::-webkit-scrollbar-thumb,
+.gf-auswertung-route__detail::-webkit-scrollbar-thumb,
+.gf-auswertung-route__value-list::-webkit-scrollbar-thumb {
+  border-radius: var(--gf-radius-pill);
+  background: rgba(15, 82, 151, 0.22);
+}
+
+.gf-auswertung-route__priority::-webkit-scrollbar-track,
+.gf-auswertung-route__detail::-webkit-scrollbar-track,
+.gf-auswertung-route__value-list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .gf-auswertung-route__value-row {
@@ -1278,12 +1328,26 @@
 
 @media (max-width: 1080px) {
 
+  .gf-auswertung-route {
+    --gf-analyse-panel-max-height: none;
+  }
+
   .gf-auswertung-route__headline,
   .gf-auswertung-route__main,
   .gf-auswertung-route__filters,
   .gf-auswertung-route__prep-grid,
   .gf-auswertung-route__prep-lists {
     grid-template-columns: 1fr;
+  }
+
+  .gf-auswertung-route__priority,
+  .gf-auswertung-route__detail,
+  .gf-auswertung-route__value-list {
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    padding-right: 0;
   }
 
   .gf-auswertung-route__context,

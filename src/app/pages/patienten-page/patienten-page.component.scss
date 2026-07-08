@@ -196,6 +196,43 @@ gf-secure-search {
   font-weight: 900;
 }
 
+.gf-patienten-route__state-pills {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gf-space-2);
+}
+
+.gf-patienten-route__state-pills span {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gf-radius-pill);
+  padding: 0.38rem 0.52rem;
+  background: var(--gf-color-bg);
+  color: var(--gf-color-text-soft);
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  box-shadow: var(--gf-shadow-inset);
+}
+
+.gf-patienten-route__state-pills span.is-positive {
+  background: var(--gf-color-success-soft);
+  color: var(--gf-color-success);
+}
+
+.gf-patienten-route__state-pills span.is-warning {
+  background: var(--gf-color-warning-soft);
+  color: var(--gf-color-warning);
+}
+
+.gf-patienten-route__state-pills span.is-danger {
+  background: var(--gf-color-danger-soft);
+  color: var(--gf-color-danger);
+}
+
 .gf-patienten-route__lifestyle {
   min-height: 44px;
   margin: 0;
@@ -424,6 +461,39 @@ gf-secure-search {
   grid-column: 1 / -1;
 }
 
+.gf-patienten-route__form-states {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gf-space-2);
+}
+
+.gf-patienten-route__form-states button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  border-radius: var(--gf-radius-pill);
+  padding: 0.58rem 0.74rem;
+  cursor: pointer;
+  background: var(--gf-color-bg);
+  color: var(--gf-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 880;
+  box-shadow: var(--gf-shadow-inset);
+}
+
+.gf-patienten-route__form-states button:hover,
+.gf-patienten-route__form-states button.is-active {
+  background: var(--gf-color-primary);
+  color: #ffffff;
+  box-shadow: var(--gf-shadow-soft);
+}
+
+.gf-patienten-route__form-states .material-symbols-outlined {
+  font-size: 1.08rem;
+}
+
 .gf-patienten-route__modal-card footer {
   display: flex;
   flex-wrap: wrap;
@@ -452,6 +522,13 @@ gf-secure-search {
 
   .gf-patienten-route__reports small {
     text-align: left;
+  }
+}
+
+@media (max-width: 1080px) {
+  .gf-patienten-route__state-pills,
+  .gf-patienten-route__form-states {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

@@ -118,12 +118,43 @@
     <button class="gf-topbar__icon" type="button" aria-label="Einstellungen öffnen" (click)="modalOeffnen('settings')">
       <span class="material-symbols-outlined" aria-hidden="true">settings</span>
     </button>
+    <button class="gf-topbar__icon gf-topbar__reset" type="button" aria-label="Demo-Daten zurücksetzen" title="Demo-Daten zurücksetzen" (click)="demoResetDialogOeffnen()">
+      <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+    </button>
     <a class="gf-button gf-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
       <span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>
       Neuer Import
     </a>
   </div>
 </header>
+
+@if (demoResetBestaetigungSichtbar()) {
+<section class="gf-demo-reset" role="dialog" aria-modal="true" aria-labelledby="demo-reset-title">
+  <div class="gf-demo-reset__card">
+    <header>
+      <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+      <div>
+        <h2 id="demo-reset-title">Demo-Daten zurücksetzen?</h2>
+        <p>Die sechs fiktiven Testpersonen werden neu aufgebaut. Patientendaten, Befunde, Laborwerte, Reviews, Importe und Patientenberichte werden ersetzt. Die Wissensbasis bleibt erhalten.</p>
+      </div>
+    </header>
+    <article>
+      <strong>Neuer Demo-Stand</strong>
+      <small>Emil gesund, Jonas Sportprofil, Lea verbessert, Mara schwankend auffällig, Melanie und Nora leer.</small>
+    </article>
+    @if (demoResetFehler()) {
+    <p class="gf-demo-reset__error">{{ demoResetFehler() }}</p>
+    }
+    <footer>
+      <button class="gf-button gf-button--secondary" type="button" [disabled]="demoResetLaedt()" (click)="demoResetAbbrechen()">Abbrechen</button>
+      <button class="gf-button gf-button--primary" type="button" [disabled]="demoResetLaedt()" (click)="demoDatenZuruecksetzen()">
+        <span class="material-symbols-outlined" aria-hidden="true">{{ demoResetLaedt() ? 'hourglass_top' : 'restart_alt' }}</span>
+        {{ demoResetLaedt() ? 'Wird zurückgesetzt ...' : 'Demo-Daten zurücksetzen' }}
+      </button>
+    </footer>
+  </div>
+</section>
+}
 
 @if (patientenwechselTreffer(); as wechselTreffer) {
 <section class="gf-search-switch" role="dialog" aria-modal="true" aria-labelledby="search-switch-title">
@@ -183,9 +214,16 @@
     @for (patient of patientContext.gefiltertePatienten(); track patient.id) {
     <button type="button" [class.is-active]="patient.id === patientContext.aktiverPatient().id"
       (click)="patientContext.patientSetzen(patient); modalSchliessen()">
-      <strong>{{ patient.name }}</strong>
-      <span>{{ patient.nummer }} · {{ patient.kontext }}</span>
-      <small>{{ patient.offeneReviews }} Review</small>
+      <span class="gf-header-modal__patient-copy">
+        <strong>{{ patient.name }}</strong>
+        <em>{{ patient.nummer }} · {{ patient.kontext }}</em>
+      </span>
+      <span class="gf-header-modal__patient-states" aria-label="Patientenstatus">
+        <i [class.is-positive]="patient.nichtrauchen">{{ patient.nichtrauchen ? 'Nichtraucher' : 'Rauchen offen' }}</i>
+        <i [class.is-warning]="patient.alkohol">{{ patient.alkohol ? 'Alkohol' : 'kein Alkohol' }}</i>
+        <i [class.is-danger]="patient.drogen">{{ patient.drogen ? 'Drogen' : 'keine Drogen' }}</i>
+        <small>{{ patient.offeneReviews }} Review</small>
+      </span>
     </button>
     }
   </div>

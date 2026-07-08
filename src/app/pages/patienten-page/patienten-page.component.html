@@ -78,6 +78,12 @@
         </div>
       </dl>
 
+      <section class="gf-patienten-route__state-pills" aria-label="Lebensstil-Status">
+        <span [class.is-positive]="patient.nichtrauchen">{{ patient.nichtrauchen ? 'Nichtraucher' : 'Rauchen unklar' }}</span>
+        <span [class.is-warning]="patient.alkohol">{{ patient.alkohol ? 'Alkohol dokumentiert' : 'kein Alkohol' }}</span>
+        <span [class.is-danger]="patient.drogen">{{ patient.drogen ? 'Drogen dokumentiert' : 'keine Drogen' }}</span>
+      </section>
+
       <p class="gf-patienten-route__lifestyle">{{ patient.lebensstil }}</p>
 
       <section class="gf-patienten-route__reports" aria-label="Hinterlegte Befunde">
@@ -169,6 +175,20 @@
         <textarea rows="2" placeholder="z. B. Büroarbeit, moderat aktiv, vegetarische Ernährung"
           [value]="neuerLebensstil()" (input)="lebensstilAendern($event)"></textarea>
       </label>
+      <section class="gf-patienten-route__form-states is-wide" aria-label="Anamnese-Status">
+        <button type="button" [class.is-active]="neuesNichtrauchen()" (click)="nichtrauchenUmschalten()">
+          <span class="material-symbols-outlined" aria-hidden="true">smoke_free</span>
+          Nichtraucher
+        </button>
+        <button type="button" [class.is-active]="neuerAlkohol()" (click)="alkoholUmschalten()">
+          <span class="material-symbols-outlined" aria-hidden="true">local_bar</span>
+          Alkohol
+        </button>
+        <button type="button" [class.is-active]="neueDrogen()" (click)="drogenUmschalten()">
+          <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+          Drogen
+        </button>
+      </section>
       <label class="is-wide">
         <span>Notiz</span>
         <textarea rows="3" placeholder="Interne Notiz zu Testdaten" [value]="neueNotiz()"

@@ -58,6 +58,15 @@ export class PatientenPageComponent {
   /** Eingabe Lebensstil. */
   public readonly neuerLebensstil: WritableSignal<string> = signal('');
 
+  /** Gibt an, ob die neue Testperson nicht raucht. */
+  public readonly neuesNichtrauchen: WritableSignal<boolean> = signal(false);
+
+  /** Gibt an, ob Alkoholkonsum dokumentiert ist. */
+  public readonly neuerAlkohol: WritableSignal<boolean> = signal(false);
+
+  /** Gibt an, ob Drogenkonsum dokumentiert ist. */
+  public readonly neueDrogen: WritableSignal<boolean> = signal(false);
+
   /** Eingabe Geschlecht. */
   public readonly neuesGeschlecht: WritableSignal<PatientGeschlecht> = signal('unbekannt');
 
@@ -172,6 +181,21 @@ export class PatientenPageComponent {
     this.neuerLebensstil.set(this.eingabewert(event).slice(0, 140));
   }
 
+  /** Schaltet Nichtraucherstatus für das Formular. */
+  public nichtrauchenUmschalten(): void {
+    this.neuesNichtrauchen.update((wert: boolean) => !wert);
+  }
+
+  /** Schaltet Alkoholstatus für das Formular. */
+  public alkoholUmschalten(): void {
+    this.neuerAlkohol.update((wert: boolean) => !wert);
+  }
+
+  /** Schaltet Drogenstatus für das Formular. */
+  public drogenUmschalten(): void {
+    this.neueDrogen.update((wert: boolean) => !wert);
+  }
+
   /** Öffnet oder schließt die custom Geschlechtsauswahl. */
   public geschlechtAuswahlUmschalten(): void {
     this.geschlechtAuswahlOffen.update((wert: boolean) => !wert);
@@ -240,6 +264,9 @@ export class PatientenPageComponent {
       gewichtKg: this.zahlOderNull(this.neuesGewicht()),
       groesseCm: this.zahlOderNull(this.neueGroesse()),
       lebensstil: this.neuerLebensstil(),
+      nichtrauchen: this.neuesNichtrauchen(),
+      alkohol: this.neuerAlkohol(),
+      drogen: this.neueDrogen(),
       notiz: this.neueNotiz()
     };
   }
@@ -253,6 +280,9 @@ export class PatientenPageComponent {
     this.neuesGewicht.set('');
     this.neueGroesse.set('');
     this.neuerLebensstil.set('');
+    this.neuesNichtrauchen.set(false);
+    this.neuerAlkohol.set(false);
+    this.neueDrogen.set(false);
     this.neuesGeschlecht.set('unbekannt');
     this.geschlechtAuswahlOffen.set(false);
     this.neueNotiz.set('');

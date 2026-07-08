@@ -501,6 +501,96 @@
 }
 
 
+
+.gf-demo-reset {
+  position: fixed;
+  z-index: 165;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--gf-space-4);
+  background: rgba(25, 28, 33, 0.24);
+}
+
+.gf-demo-reset__card {
+  display: grid;
+  width: min(620px, 100%);
+  gap: var(--gf-space-4);
+  border: 1px solid rgba(194, 198, 212, 0.72);
+  border-radius: var(--gf-radius-xl);
+  padding: var(--gf-space-4);
+  background: var(--gf-color-surface-high);
+  box-shadow: 0 28px 72px rgba(25, 28, 33, 0.3);
+}
+
+.gf-demo-reset__card header {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: var(--gf-space-3);
+  align-items: start;
+}
+
+.gf-demo-reset__card header>.material-symbols-outlined {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: var(--gf-radius-lg);
+  background: var(--gf-color-warning-soft);
+  color: var(--gf-color-warning);
+}
+
+.gf-demo-reset__card h2,
+.gf-demo-reset__card p {
+  margin: 0;
+}
+
+.gf-demo-reset__card p {
+  margin-top: 0.25rem;
+  color: var(--gf-color-text-muted);
+  line-height: 1.5;
+}
+
+.gf-demo-reset__card article {
+  display: grid;
+  gap: 0.2rem;
+  border-radius: var(--gf-radius-lg);
+  padding: var(--gf-space-3);
+  background: var(--gf-color-bg);
+  box-shadow: var(--gf-shadow-inset);
+}
+
+.gf-demo-reset__card article strong {
+  color: var(--gf-color-text);
+}
+
+.gf-demo-reset__card article small {
+  color: var(--gf-color-text-muted);
+  line-height: 1.45;
+}
+
+.gf-demo-reset__error {
+  border-radius: var(--gf-radius-lg);
+  padding: var(--gf-space-3);
+  background: var(--gf-color-danger-soft);
+  color: var(--gf-color-danger);
+  font-size: 0.82rem;
+  font-weight: 840;
+}
+
+.gf-demo-reset__card footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--gf-space-2);
+}
+
+.gf-demo-reset__card button[disabled] {
+  cursor: wait;
+  opacity: 0.64;
+}
+
+
 .gf-search-switch {
   position: fixed;
   z-index: 160;
@@ -801,8 +891,8 @@ gf-secure-search {
 
 .gf-header-modal__patient-list button {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.1rem var(--gf-space-3);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gf-space-2);
   border-radius: var(--gf-radius-lg);
   padding: var(--gf-space-3);
   cursor: pointer;
@@ -817,20 +907,73 @@ gf-secure-search {
   transform: translateY(-1px);
 }
 
-.gf-header-modal__patient-list strong {
+.gf-header-modal__patient-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.14rem;
+}
+
+.gf-header-modal__patient-copy strong,
+.gf-header-modal__patient-copy em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gf-header-modal__patient-copy strong {
   color: var(--gf-color-text);
+  font-size: 0.9rem;
 }
 
-.gf-header-modal__patient-list span {
+.gf-header-modal__patient-copy em {
   color: var(--gf-color-text-muted);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 760;
 }
 
-.gf-header-modal__patient-list small {
-  grid-row: span 2;
+.gf-header-modal__patient-states {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.38rem;
+}
+
+.gf-header-modal__patient-states i,
+.gf-header-modal__patient-states small {
+  display: inline-flex;
+  min-height: 25px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gf-radius-pill);
+  padding: 0.3rem 0.46rem;
+  background: var(--gf-color-bg);
+  color: var(--gf-color-text-soft);
+  font-size: 0.64rem;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1.08;
+  text-align: center;
+  box-shadow: var(--gf-shadow-inset);
+}
+
+.gf-header-modal__patient-states i.is-positive {
+  background: var(--gf-color-success-soft);
+  color: var(--gf-color-success);
+}
+
+.gf-header-modal__patient-states i.is-warning {
+  background: var(--gf-color-warning-soft);
+  color: var(--gf-color-warning);
+}
+
+.gf-header-modal__patient-states i.is-danger {
+  background: var(--gf-color-danger-soft);
+  color: var(--gf-color-danger);
+}
+
+.gf-header-modal__patient-states small {
+  background: var(--gf-color-primary-soft);
   color: var(--gf-color-primary);
-  font-size: 0.78rem;
-  font-weight: 850;
 }
 
 /* ==========================================================================
@@ -865,6 +1008,13 @@ gf-secure-search {
 
 .gf-topbar__actions button:hover,
 .gf-topbar__actions button:focus-visible,
+.gf-topbar__reset:hover,
+.gf-topbar__reset:focus-visible {
+  background: var(--gf-color-warning-soft);
+  color: var(--gf-color-warning);
+}
+
+
 .gf-topbar__actions button.is-active {
   background: var(--gf-color-surface);
   color: var(--gf-color-primary);
@@ -876,6 +1026,13 @@ gf-secure-search {
   outline: 3px solid rgba(0, 94, 184, 0.16);
   outline-offset: 3px;
 }
+
+.gf-topbar__reset:hover,
+.gf-topbar__reset:focus-visible {
+  background: var(--gf-color-warning-soft);
+  color: var(--gf-color-warning);
+}
+
 
 .gf-topbar__actions button.is-active {
   background: var(--gf-color-primary);

@@ -65,6 +65,15 @@ export class AppNavigationComponent implements OnDestroy {
   /** Aktueller visueller Suchfokus. */
   public readonly suchFokusLabel: WritableSignal<string> = signal('');
 
+  /** Sichtbarkeit der Bestätigung für den Demo-Reset. */
+  public readonly demoResetBestaetigungSichtbar: WritableSignal<boolean> = signal(false);
+
+  /** Gibt an, ob der Demo-Reset gerade läuft. */
+  public readonly demoResetLaedt: WritableSignal<boolean> = signal(false);
+
+  /** Fehlermeldung des Demo-Resets. */
+  public readonly demoResetFehler: WritableSignal<string> = signal('');
+
   /** Sichtbarkeit der globalen Trefferbox. */
   public readonly suchergebnisseSichtbar = computed(() => this.suchbegriff().trim().length >= 2 && (this.sucheLaedt() || !!this.suchmeldung() || this.suchgruppen().length > 0));
 
@@ -127,6 +136,48 @@ export class AppNavigationComponent implements OnDestroy {
   /** Verhindert den Formularreload und hält die Suchbox sichtbar. */
   public sucheAbsenden(event: Event): void {
     event.preventDefault();
+  }
+
+
+  /** Öffnet die Bestätigung zum Zurücksetzen der Demo-Daten. */
+  public demoResetDialogOeffnen(): void {
+    this.demoResetFehler.set('');
+    this.demoResetBestaetigungSichtbar.set(true);
+  }
+
+  /** Bricht den Demo-Reset ab. */
+  public demoResetAbbrechen(): void {
+    if (this.demoResetLaedt()) {
+      return;
+    }
+
+    this.demoResetBestaetigungSichtbar.set(false);
+    this.demoResetFehler.set('');
+  }
+
+  /** Setzt die Demo-Daten im Backend zurück und lädt den Patientenkontext neu. */
+  public demoDatenZuruecksetzen(): void {
+    if (this.demoResetLaedt()) {
+      return;
+    }
+
+    this.demoResetLaedt.set(true);
+    this.demoResetFehler.set('');
+    this.globiFlowApi.demoDatenZuruecksetzen().subscribe({
+      next: (antwort) => {
+        this.demoResetLaedt.set(false);
+        this.demoResetBestaetigungSichtbar.set(false);
+        this.patientContext.patientenNeuLaden();
+        this.suchbegriff.set('');
+        this.suchergebnisAuswaehlen();
+        this.toastService.zeige('Demo-Daten zurückgesetzt', `${antwort.patients} Testpersonen, ${antwort.reports} Befunde und ${antwort.values} Werte wurden neu angelegt.`, 'success');
+        this.router.navigate(['/uebersicht']);
+      },
+      error: () => {
+        this.demoResetLaedt.set(false);
+        this.demoResetFehler.set('Die Demo-Daten konnten nicht zurückgesetzt werden. Bitte Backend-Konsole prüfen.');
+      }
+    });
   }
 
   /** Schließt die Suchergebnisse nach einer Auswahl. */
