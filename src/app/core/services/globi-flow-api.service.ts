@@ -90,8 +90,18 @@ export class GlobiFlowApiService {
   }
 
   /** Liefert die fachliche Auswertungsansicht. */
-  public ladeAuswertung(): Observable<AuswertungViewModel> {
-    return this.http.get<AuswertungViewModel>(this.apiEndpunkte.auswertung);
+  public ladeAuswertung(befundId?: string, patientId?: string): Observable<AuswertungViewModel> {
+    let params = new HttpParams();
+
+    if (befundId) {
+      params = params.set('reportId', befundId);
+    }
+
+    if (patientId) {
+      params = params.set('patientId', patientId);
+    }
+
+    return this.http.get<AuswertungViewModel>(this.apiEndpunkte.auswertung, { params });
   }
 
   /** Liefert die vollständige ärztliche Reviewansicht. */

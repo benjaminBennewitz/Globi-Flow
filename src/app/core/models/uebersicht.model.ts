@@ -11,6 +11,36 @@ export type UebersichtAktionStatus = 'kritisch' | 'warnung' | 'info' | 'erledigt
 /** Filter für das Aktivitätsprotokoll. */
 export type AktivitaetsFilter = 'heute' | 'gestern' | 'drei_tage' | 'sieben_tage';
 
+/** Detailzeile für KPI-Overlays. */
+export interface UebersichtDetailEintrag {
+  /** Eindeutige Backend-ID. */
+  id: string;
+
+  /** Sichtbarer Titel. */
+  titel: string;
+
+  /** Kurzbeschreibung mit Patient, Befund oder Status. */
+  beschreibung: string;
+
+  /** Optionaler Patientenkontext. */
+  patientId?: string;
+
+  /** Sichtbarer Patientenname. */
+  patientName?: string;
+
+  /** Optionaler Befundkontext. */
+  befundId?: string;
+
+  /** Zielroute für Detailansicht. */
+  route?: string;
+
+  /** Anzeigepriorität. */
+  status: UebersichtAktionStatus;
+
+  /** ISO-Datum oder leerer Wert. */
+  datum?: string;
+}
+
 /** Aggregierte Kennzahlen für die Praxisübersicht. */
 export interface UebersichtKennzahlen {
   /** Anzahl aller Testpatienten. */
@@ -66,6 +96,21 @@ export interface DringenderHinweis {
 
   /** Priorität für die Anzeige. */
   status: UebersichtAktionStatus;
+
+  /** Zielroute für den Hinweis. */
+  route?: string;
+
+  /** Patientenkontext des Hinweises. */
+  patientId?: string;
+
+  /** Sichtbarer Patientenname. */
+  patientName?: string;
+
+  /** Befundkontext des Hinweises. */
+  befundId?: string;
+
+  /** Konkretes Zielelement. */
+  targetId?: string;
 }
 
 /** Eintrag im Aktivitätsprotokoll. */
@@ -76,7 +121,7 @@ export interface AktivitaetsEintrag {
   /** Zeitpunkt der Aktivität. */
   zeitpunkt: string;
 
-  /** Abstand in Tagen für lokale Mockfilter. */
+  /** Abstand in Tagen für lokale Filter. */
   tagOffset: number;
 
   /** Titel der Aktivität. */
@@ -102,4 +147,10 @@ export interface UebersichtViewModel {
 
   /** Letzte Aktivitäten und Importereignisse. */
   aktivitaeten: AktivitaetsEintrag[];
+
+  /** Liste ungeprüfter oder fehlerhafter Importe. */
+  ungepruefteImporte?: UebersichtDetailEintrag[];
+
+  /** Liste offener oder blockierender Reviewwerte. */
+  reviewOffenListe?: UebersichtDetailEintrag[];
 }

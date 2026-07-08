@@ -7,9 +7,11 @@
 
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal, WritableSignal, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AktivitaetsEintrag, AktivitaetsFilter, DringenderHinweis, GesundheitsverlaufPunkt, UebersichtAktionStatus } from '../../core/models/uebersicht.model';
+import { Router, RouterLink } from '@angular/router';
+import { AktivitaetsEintrag, AktivitaetsFilter, DringenderHinweis, GesundheitsverlaufPunkt, UebersichtAktionStatus, UebersichtDetailEintrag, UebersichtViewModel } from '../../core/models/uebersicht.model';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
+import { Patient, PatientBefund } from '../../core/models/patient.model';
+import { PatientContextService } from '../../core/services/patient-context.service';
 
 /** Übersichtsroute mit allgemeinen Praxis-, Import- und Review-Kennzahlen. */
 @Component({
@@ -22,6 +24,12 @@ import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service'
 export class UebersichtPageComponent {
   /** API-bereiter Datenservice. */
   private readonly globiFlowApi = inject(GlobiFlowApiService);
+
+  /** Router für kontextbewusste Hinweisnavigation. */
+  private readonly router = inject(Router);
+
+  /** Zentraler Patientenkontext für Hinweis- und KPI-Navigation. */
+  protected readonly patientContext = inject(PatientContextService);
 
   /** Drag-Zustand für die horizontale Chart-Navigation. */
   private dragAktiv = false;
@@ -115,7 +123,7 @@ export class UebersichtPageComponent {
   ];
 
   /** Aktuell geöffnetes Cursor-Overlay. */
-  public overlayTyp: 'hinweise' | 'aktivitaeten' | null = null;
+  public overlayTyp: 'hinweise' | 'aktivitaeten' | 'importe' | 'review' | null = null;
 
   /** X-Position des Cursor-Overlays. */
   public overlayX = 0;
@@ -128,6 +136,9 @@ export class UebersichtPageComponent {
 
   /** Aktiver Filter des Aktivitäts-Overlays. */
   public aktivitaetsFilter: AktivitaetsFilter = 'heute';
+
+  /** Ziel, das vor Navigation einen Patientenkontextwechsel benötigt. */
+  public readonly patientenwechselZiel: WritableSignal<DringenderHinweis | UebersichtDetailEintrag | null> = signal(null);
 
   /** Startet den temporären Aktualisierungs-Overlay. */
   public datenAktualisieren(): void {
@@ -223,22 +234,72 @@ export class UebersichtPageComponent {
 
   /** Öffnet das Hinweis-Overlay an der Cursorposition. */
   public hinweisOverlayOeffnen(event: MouseEvent, hinweisId: string): void {
-    this.overlayPositionSetzen(event);
+    this.overlayPositionSetzen(event, false);
     this.aktiverHinweisId = hinweisId;
     this.overlayTyp = 'hinweise';
   }
 
   /** Öffnet das Aktivitäts-Overlay an der Cursorposition. */
   public aktivitaetenOverlayOeffnen(event: MouseEvent): void {
-    this.overlayPositionSetzen(event);
+    this.overlayPositionSetzen(event, true);
     this.aktiverHinweisId = null;
     this.overlayTyp = 'aktivitaeten';
+  }
+
+  /** Öffnet ein Kennzahlen-Overlay an der Cursorposition. */
+  public kpiOverlayOeffnen(event: MouseEvent, typ: 'importe' | 'review'): void {
+    event.stopPropagation();
+    this.overlayPositionSetzen(event, true);
+    this.aktiverHinweisId = null;
+    this.overlayTyp = typ;
+  }
+
+  /** Liefert die Detailzeilen für ein Kennzahlen-Overlay. */
+  public kpiDetails(uebersicht: UebersichtViewModel, typ: 'importe' | 'review'): UebersichtDetailEintrag[] {
+    return typ === 'importe' ? uebersicht.ungepruefteImporte ?? [] : uebersicht.reviewOffenListe ?? [];
   }
 
   /** Schließt das aktive Cursor-Overlay. */
   public overlaySchliessen(): void {
     this.overlayTyp = null;
     this.aktiverHinweisId = null;
+  }
+
+  /** Öffnet einen dringenden Hinweis mit Patientenkontextprüfung. */
+  public hinweisEintragOeffnen(hinweis: DringenderHinweis): void {
+    this.zielOeffnen(hinweis, hinweis.route || '/review');
+  }
+
+  /** Öffnet einen KPI-Detailtreffer mit Patientenkontextprüfung. */
+  public detailEintragOeffnen(eintrag: UebersichtDetailEintrag, fallbackRoute: string): void {
+    this.zielOeffnen(eintrag, eintrag.route || fallbackRoute);
+  }
+
+  /** Bestätigt den Patientenkontextwechsel für einen Hinweis oder KPI-Treffer. */
+  public patientenwechselBestaetigen(): void {
+    const ziel = this.patientenwechselZiel();
+
+    if (!ziel) {
+      return;
+    }
+
+    this.patientenwechselZiel.set(null);
+    this.zielNavigieren(ziel, ziel.route || '/review', true);
+  }
+
+  /** Bricht den Patientenkontextwechsel ab. */
+  public patientenwechselAbbrechen(): void {
+    this.patientenwechselZiel.set(null);
+  }
+
+  /** Liefert den Namen des aktuell aktiven Patienten. */
+  public aktuellerPatientName(): string {
+    return this.patientContext.aktiverPatient().name;
+  }
+
+  /** Liefert den Namen des Zielpatienten für den Wechselhinweis. */
+  public zielPatientName(ziel: DringenderHinweis | UebersichtDetailEintrag): string {
+    return ziel.patientName || this.patientContext.patienten().find((patient: Patient) => patient.id === ziel.patientId)?.name || 'Zielpatient';
   }
 
   /** Setzt den aktiven Aktivitätsfilter. */
@@ -281,11 +342,105 @@ export class UebersichtPageComponent {
     return 'info';
   }
 
+  /** Öffnet ein Ziel oder fordert vorher einen Patientenkontextwechsel an. */
+  private zielOeffnen(ziel: DringenderHinweis | UebersichtDetailEintrag, fallbackRoute: string): void {
+    if (this.zielBrauchtPatientenwechsel(ziel)) {
+      this.patientenwechselZiel.set({ ...ziel, route: ziel.route || fallbackRoute });
+      return;
+    }
+
+    this.zielNavigieren(ziel, fallbackRoute);
+  }
+
+  /** Prüft, ob der Zielpatient vom aktiven Patientenkontext abweicht. */
+  private zielBrauchtPatientenwechsel(ziel: DringenderHinweis | UebersichtDetailEintrag): boolean {
+    return !!ziel.patientId && !!this.patientContext.aktiverPatient().id && ziel.patientId !== this.patientContext.aktiverPatient().id;
+  }
+
+  /** Navigiert zu Hinweis- oder KPI-Ziel und setzt vorher den passenden Kontext. */
+  private zielNavigieren(ziel: DringenderHinweis | UebersichtDetailEintrag, fallbackRoute: string, patientWurdeGewechselt = false): void {
+    this.zielKontextSetzen(ziel);
+    this.overlaySchliessen();
+    const route = ziel.route || fallbackRoute;
+    const queryParams: Record<string, string> = {};
+
+    if (ziel.patientId) {
+      queryParams['patient'] = ziel.patientId;
+    }
+
+    if (ziel.befundId) {
+      queryParams['befund'] = ziel.befundId;
+      queryParams['reportId'] = ziel.befundId;
+    }
+
+    const suchFokus = 'targetId' in ziel && ziel.targetId ? ziel.targetId : ziel.id;
+
+    if (suchFokus) {
+      queryParams['suchFokus'] = suchFokus;
+      queryParams['suchLabel'] = ziel.titel;
+    }
+
+    this.router.navigate([route], { queryParams }).then(() => {
+      window.setTimeout(() => this.zielMarkieren(suchFokus), patientWurdeGewechselt ? 520 : 280);
+    });
+  }
+
+  /** Setzt Patient und Befund, sofern sie im geladenen Kontext vorhanden sind. */
+  private zielKontextSetzen(ziel: DringenderHinweis | UebersichtDetailEintrag): void {
+    if (!ziel.patientId) {
+      return;
+    }
+
+    const patient = this.patientContext.patienten().find((eintrag: Patient) => eintrag.id === ziel.patientId);
+
+    if (!patient) {
+      return;
+    }
+
+    this.patientContext.patientSetzen(patient);
+
+    if (!ziel.befundId) {
+      return;
+    }
+
+    const befund = patient.befundListe.find((eintrag: PatientBefund) => eintrag.id === ziel.befundId);
+
+    if (befund) {
+      this.patientContext.befundSetzen(befund);
+    }
+  }
+
+  /** Markiert ein Ziel innerhalb der Übersicht kurz sichtbar. */
+  private zielMarkieren(targetId: string): void {
+    const ziel = document.querySelector(`[data-gf-search-id="${this.cssWertEscapen(targetId)}"], [data-gf-search-target="${this.cssWertEscapen(targetId)}"]`);
+
+    if (!(ziel instanceof HTMLElement)) {
+      return;
+    }
+
+    ziel.classList.add('gf-overview__local-focus');
+    ziel.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+    window.setTimeout(() => ziel.classList.remove('gf-overview__local-focus'), 2400);
+  }
+
+  /** Escaped CSS-Selektorwerte für lokale Fokusziele. */
+  private cssWertEscapen(wert: string): string {
+    if ('CSS' in window && typeof window.CSS.escape === 'function') {
+      return window.CSS.escape(wert);
+    }
+
+    return wert.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
+  }
+
   /** Setzt die Overlay-Position begrenzt auf den sichtbaren Viewport. */
-  private overlayPositionSetzen(event: MouseEvent): void {
-    this.overlayX = Math.min(event.clientX + 16, window.innerWidth - 500);
-    this.overlayY = Math.min(event.clientY + 16, window.innerHeight - 520);
-    this.overlayX = Math.max(this.overlayX, 16);
-    this.overlayY = Math.max(this.overlayY, 16);
+  private overlayPositionSetzen(event: MouseEvent, istBreit: boolean): void {
+    const rand = 16;
+    const breite = Math.min(istBreit ? 560 : 470, window.innerWidth - rand * 2);
+    const hoehe = Math.min(520, window.innerHeight - rand * 2);
+    const zielX = event.clientX + 16;
+    const zielY = event.clientY + 16;
+    this.overlayX = Math.max(rand, Math.min(zielX, window.innerWidth - breite - rand));
+    this.overlayY = Math.max(rand, Math.min(zielY, window.innerHeight - hoehe - rand));
   }
 }
+

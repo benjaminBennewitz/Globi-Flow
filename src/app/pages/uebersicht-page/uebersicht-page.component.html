@@ -62,12 +62,18 @@
       <strong>{{ uebersicht.kennzahlen.importeUngeprueft }}</strong>
       <small>Warten auf Review</small>
       <i class="material-symbols-outlined" aria-hidden="true">pending_actions</i>
+      <button class="gf-overview__kpi-action" type="button" aria-label="Ungeprüfte Importe anzeigen" (click)="kpiOverlayOeffnen($event, 'importe')">
+        <span class="material-symbols-outlined" aria-hidden="true">list_alt</span>
+      </button>
     </article>
     <article class="gf-overview__kpi is-danger" tabindex="0">
       <span>Review offen</span>
       <strong>{{ uebersicht.kennzahlen.reviewOffen }}</strong>
       <small>Priorisierte Prüfungen</small>
       <i class="material-symbols-outlined" aria-hidden="true">emergency_home</i>
+      <button class="gf-overview__kpi-action" type="button" aria-label="Offene Reviewwerte anzeigen" (click)="kpiOverlayOeffnen($event, 'review')">
+        <span class="material-symbols-outlined" aria-hidden="true">rule</span>
+      </button>
     </article>
   </div>
 
@@ -163,6 +169,7 @@
 
       @for (hinweis of uebersicht.dringendeHinweise; track hinweis.id) {
       <button class="gf-overview__urgent-item {{ statusKlasse(hinweis.status) }}" type="button"
+        [attr.data-gf-search-id]="hinweis.id" [attr.data-gf-search-target]="hinweis.targetId || hinweis.id"
         (click)="hinweisOverlayOeffnen($event, hinweis.id)">
         <span class="material-symbols-outlined" aria-hidden="true">{{ hinweisIcon(hinweis) }}</span>
         <div>
@@ -236,12 +243,45 @@
 
     <div class="gf-cursor-overlay__list">
       @for (hinweis of uebersicht.dringendeHinweise; track hinweis.id) {
-      <a class="{{ statusKlasse(hinweis.status) }}" [class.is-selected]="aktiverHinweisId === hinweis.id"
-        routerLink="/review">
+      <button class="{{ statusKlasse(hinweis.status) }}" type="button" [class.is-selected]="aktiverHinweisId === hinweis.id"
+        [attr.data-gf-search-id]="hinweis.id" [attr.data-gf-search-target]="hinweis.targetId || hinweis.id"
+        (click)="hinweisEintragOeffnen(hinweis)">
         <strong>{{ hinweis.titel }}</strong>
         <p>{{ hinweis.beschreibung }}</p>
         <small>Offen seit: {{ hinweis.seit }}</small>
-      </a>
+      </button>
+      }
+    </div>
+  </section>
+  }
+
+  @if (overlayTyp === 'importe' || overlayTyp === 'review') {
+  <section class="gf-cursor-overlay is-wide" [style.left.px]="overlayX" [style.top.px]="overlayY" role="dialog"
+    aria-modal="false" aria-labelledby="kpi-overlay-title">
+    <button class="gf-cursor-overlay__close" type="button" aria-label="Overlay schließen" (click)="overlaySchliessen()">
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+
+    <header>
+      <h2 id="kpi-overlay-title">{{ overlayTyp === 'importe' ? 'Ungeprüfte Importe' : 'Offene Reviewwerte' }}</h2>
+    </header>
+
+    <div class="gf-cursor-overlay__list">
+      @for (eintrag of kpiDetails(uebersicht, overlayTyp === 'importe' ? 'importe' : 'review'); track eintrag.id) {
+      <button class="{{ statusKlasse(eintrag.status) }}" type="button"
+        [attr.data-gf-search-id]="eintrag.id" [attr.data-gf-search-target]="eintrag.id"
+        (click)="detailEintragOeffnen(eintrag, overlayTyp === 'importe' ? '/importe' : '/review')">
+        <strong>{{ eintrag.titel }}</strong>
+        <p>{{ eintrag.beschreibung }}</p>
+        @if (eintrag.patientName) {
+        <small>{{ eintrag.patientName }}</small>
+        }
+      </button>
+      } @empty {
+      <article class="is-erledigt">
+        <strong>Keine Einträge</strong>
+        <p>Die Datenbank enthält aktuell keine offenen Positionen für diese Kennzahl.</p>
+      </article>
       }
     </div>
   </section>
@@ -280,5 +320,22 @@
     </div>
   </section>
   }
+
+  @if (patientenwechselZiel(); as wechselZiel) {
+  <section class="gf-overview__context-dialog" role="dialog" aria-modal="true" aria-labelledby="overview-context-title">
+    <div class="gf-overview__context-card gf-neu-card">
+      <span class="material-symbols-outlined" aria-hidden="true">swap_horiz</span>
+      <div>
+        <h2 id="overview-context-title">Patient wechseln?</h2>
+        <p>Der ausgewählte Hinweis gehört zu <strong>{{ zielPatientName(wechselZiel) }}</strong>. Aktuell ist <strong>{{ aktuellerPatientName() }}</strong> geladen.</p>
+      </div>
+      <footer>
+        <button class="gf-button gf-button--secondary" type="button" (click)="patientenwechselAbbrechen()">Abbrechen</button>
+        <button class="gf-button gf-button--primary" type="button" (click)="patientenwechselBestaetigen()">Patient wechseln</button>
+      </footer>
+    </div>
+  </section>
+  }
+
 </section>
 }

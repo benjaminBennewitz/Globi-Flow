@@ -220,6 +220,7 @@ export class ReviewPageComponent {
           ...wert,
           kandidaten: wert.kandidaten.map((kandidat: ReviewKandidat) => antwort.kandidaten.find((eintrag: ReviewKandidat) => eintrag.id === kandidat.id) ?? kandidat)
         }));
+        this.patientContext.patientenNeuLaden();
         this.toastService.zeige('Sichere Werte bestätigt', `${kandidaten.length} Werte wurden in der Datenbank bestätigt.`, 'success');
       },
       error: () => {
@@ -261,6 +262,7 @@ export class ReviewPageComponent {
     this.globiFlowApi.reviewKandidatSpeichern(kandidat).subscribe({
       next: (antwort: ReviewKandidat) => {
         this.kandidatAktualisieren(antwort.id, antwort);
+        this.patientContext.patientenNeuLaden();
         this.toastService.zeige(titel, beschreibung, status);
         nachErfolg?.();
       },

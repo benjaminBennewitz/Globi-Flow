@@ -7,7 +7,9 @@
 
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { combineLatest, switchMap } from 'rxjs';
 import { AuswertungGruppe, AuswertungKennzahl, AuswertungLaborwert, AuswertungReviewStatus, AuswertungTrend, AuswertungViewModel } from '../../core/models/auswertung.model';
 import { LaborwertPrioritaet, LaborwertStatus } from '../../core/models/laborwert.model';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
@@ -32,8 +34,10 @@ export class AnalysePageComponent {
   /** Globaler Patientenkontext. */
   public readonly patientContext = inject(PatientContextService);
 
-  /** Fachliche Auswertungsansicht aus Mockdaten oder später API. */
-  protected readonly auswertung$ = this.globiFlowApi.ladeAuswertung();
+  /** Fachliche Auswertungsansicht zum aktiven Patient- und Befundkontext. */
+  protected readonly auswertung$ = combineLatest([toObservable(this.patientContext.aktiverBefundId), toObservable(this.patientContext.aktiverPatientId)]).pipe(
+    switchMap(([befundId, patientId]) => this.globiFlowApi.ladeAuswertung(befundId, patientId))
+  );
 
   /** Animations-Token für erneutes Zeichnen des Verlaufs. */
   public readonly diagrammAnimationsToken: WritableSignal<number> = signal(0);
