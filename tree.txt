@@ -9,10 +9,10 @@ Globi-Flow/
 │       ├── badge-angular.svg
 │       ├── badge-local.svg
 │       ├── badge-review.svg
-│       ├── globi-flow-overview.svg
+│       ├── globi-flow-overview.webp
 │       ├── globi-flow-palette.svg
-│       ├── globi-flow-report.svg
-│       └── globi-flow-review.svg
+│       ├── globi-flow-report.webp
+│       └── globi-flow-review.webp
 ├── node_modules/
 │   └── ...
 ├── src/
