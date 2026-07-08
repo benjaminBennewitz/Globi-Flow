@@ -38,7 +38,7 @@ Die Oberfläche nutzt ein helles, gebrochenes Soft-UI-System mit medizinischem B
 
 | Übersicht | Review | Patientenbericht |
 |---|---|---|
-| ![Globi Flow Übersicht](docs/readme/globi-flow-overview.svg) | ![Globi Flow Review](docs/readme/globi-flow-review.svg) | ![Globi Flow Patientenbericht](docs/readme/globi-flow-report.svg) |
+| ![Globi Flow Übersicht](docs/readme/globi-flow-overview.webp) | ![Globi Flow Review](docs/readme/globi-flow-review.webp) | ![Globi Flow Patientenbericht](docs/readme/globi-flow-report.webp) |
 
 ## Workflow
 
