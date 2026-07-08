@@ -1,7 +1,7 @@
 /*###############################
 ###
 ###     tokens.scss
-###     Daten Dashboards
+###     Globi Flow
 ###     BASED ON: Angular 21, SCSS
 ###     AUTHOR: Benjamin Bennewitz
 ###
@@ -95,7 +95,9 @@
 :root {
   --dd-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --dd-font-data: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --dd-sidebar-width: 292px;
+  --dd-sidebar-width: 220px;
+  --dd-sidebar-collapsed-width: 84px;
+  --dd-sidebar-current-width: var(--dd-sidebar-width);
   --dd-topbar-height: 78px;
   --dd-max-width: 1510px;
   --dd-radius-sm: 8px;

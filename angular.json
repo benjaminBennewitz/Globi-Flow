@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "daten-dashboards-frontend": {
+    "globi-flow-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/daten-dashboards-frontend",
+            "outputPath": "dist/globi-flow-frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
@@ -70,10 +70,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "daten-dashboards-frontend:build:production"
+              "buildTarget": "globi-flow-frontend:build:production"
             },
             "development": {
-              "buildTarget": "daten-dashboards-frontend:build:development"
+              "buildTarget": "globi-flow-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"

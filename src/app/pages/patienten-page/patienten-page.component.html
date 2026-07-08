@@ -124,15 +124,23 @@
           <span>Geburtsdatum</span>
           <input type="text" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()" (input)="geburtsdatumAendern($event)">
         </label>
-        <label>
+        <div class="dd-patienten-route__field dd-patienten-route__select-field">
           <span>Geschlecht</span>
-          <select [value]="neuesGeschlecht()" (change)="geschlechtAendern($event)">
-            <option value="unbekannt">Unbekannt</option>
-            <option value="weiblich">Weiblich</option>
-            <option value="maennlich">Männlich</option>
-            <option value="divers">Divers</option>
-          </select>
-        </label>
+          <button class="dd-patienten-route__select-trigger" type="button" aria-haspopup="listbox" [attr.aria-expanded]="geschlechtAuswahlOffen()" (click)="geschlechtAuswahlUmschalten()">
+            <strong>{{ geschlechtLabel(neuesGeschlecht()) }}</strong>
+            <i class="material-symbols-outlined" aria-hidden="true">expand_more</i>
+          </button>
+
+          @if (geschlechtAuswahlOffen()) {
+            <div class="dd-patienten-route__select-menu" role="listbox" aria-label="Geschlecht auswählen">
+              @for (option of geschlechtOptionen; track option.key) {
+                <button type="button" role="option" [attr.aria-selected]="neuesGeschlecht() === option.key" [class.is-active]="neuesGeschlecht() === option.key" (click)="geschlechtSetzen(option.key)">
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+          }
+        </div>
         <label>
           <span>Gewicht kg</span>
           <input type="text" inputmode="decimal" placeholder="72" [value]="neuesGewicht()" (input)="gewichtAendern($event)">

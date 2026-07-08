@@ -33,11 +33,11 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
       trend: 'steigend',
       hinweis: 'Oberhalb des Referenzbereichs und im Vergleich weiter ansteigend.',
       verlauf: [
-        { label: 'Jul', datum: '2025-07-18', wert: 128 },
-        { label: 'Sep', datum: '2025-09-21', wert: 136 },
-        { label: 'Nov', datum: '2025-11-12', wert: 141 },
-        { label: 'Mär', datum: '2026-03-14', wert: 150 },
-        { label: 'Jun', datum: '2026-06-12', wert: 168 }
+        { label: 'Jun 25', datum: '2025-06-12', wert: 128 },
+        { label: 'Sep 25', datum: '2025-09-12', wert: 136 },
+        { label: 'Dez 25', datum: '2025-12-12', wert: 141 },
+        { label: 'Mär 26', datum: '2026-03-14', wert: 150 },
+        { label: 'Jun 26', datum: '2026-06-12', wert: 168 }
       ]
     },
     {
@@ -60,11 +60,11 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
       trend: 'steigend',
       hinweis: 'Erhöht und im Verlauf deutlich steigend. Ärztliche Einordnung erforderlich.',
       verlauf: [
-        { label: 'Jul', datum: '2025-07-18', wert: 2.1 },
-        { label: 'Sep', datum: '2025-09-21', wert: 3.4 },
-        { label: 'Nov', datum: '2025-11-12', wert: 4.1 },
-        { label: 'Mär', datum: '2026-03-14', wert: 4.8 },
-        { label: 'Jun', datum: '2026-06-12', wert: 8.6 }
+        { label: 'Jun 25', datum: '2025-06-12', wert: 2.1 },
+        { label: 'Sep 25', datum: '2025-09-12', wert: 3.4 },
+        { label: 'Dez 25', datum: '2025-12-12', wert: 4.1 },
+        { label: 'Mär 26', datum: '2026-03-14', wert: 4.8 },
+        { label: 'Jun 26', datum: '2026-06-12', wert: 8.6 }
       ]
     },
     {
@@ -87,11 +87,11 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
       trend: 'fallend',
       hinweis: 'Leicht unterhalb des Referenzbereichs und im Verlauf fallend.',
       verlauf: [
-        { label: 'Jul', datum: '2025-07-18', wert: 52 },
-        { label: 'Sep', datum: '2025-09-21', wert: 44 },
-        { label: 'Nov', datum: '2025-11-12', wert: 39 },
-        { label: 'Mär', datum: '2026-03-14', wert: 35 },
-        { label: 'Jun', datum: '2026-06-12', wert: 28 }
+        { label: 'Jun 25', datum: '2025-06-12', wert: 52 },
+        { label: 'Sep 25', datum: '2025-09-12', wert: 44 },
+        { label: 'Dez 25', datum: '2025-12-12', wert: 39 },
+        { label: 'Mär 26', datum: '2026-03-14', wert: 35 },
+        { label: 'Jun 26', datum: '2026-06-12', wert: 28 }
       ]
     },
     {
@@ -114,11 +114,11 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
       trend: 'stabil',
       hinweis: 'Wert und Einheit müssen wegen niedriger Confidence im Review geprüft werden.',
       verlauf: [
-        { label: 'Jul', datum: '2025-07-18', wert: 18 },
-        { label: 'Sep', datum: '2025-09-21', wert: 21 },
-        { label: 'Nov', datum: '2025-11-12', wert: 19 },
-        { label: 'Mär', datum: '2026-03-14', wert: 23 },
-        { label: 'Jun', datum: '2026-06-12', wert: 22 }
+        { label: 'Jun 25', datum: '2025-06-12', wert: 18 },
+        { label: 'Sep 25', datum: '2025-09-12', wert: 21 },
+        { label: 'Dez 25', datum: '2025-12-12', wert: 19 },
+        { label: 'Mär 26', datum: '2026-03-14', wert: 23 },
+        { label: 'Jun 26', datum: '2026-06-12', wert: 22 }
       ]
     },
     {
@@ -141,11 +141,11 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
       trend: 'stabil',
       hinweis: 'Im Referenzbereich und ohne relevante Veränderung.',
       verlauf: [
-        { label: 'Jul', datum: '2025-07-18', wert: 13.9 },
-        { label: 'Sep', datum: '2025-09-21', wert: 14.0 },
-        { label: 'Nov', datum: '2025-11-12', wert: 14.4 },
-        { label: 'Mär', datum: '2026-03-14', wert: 14.4 },
-        { label: 'Jun', datum: '2026-06-12', wert: 14.2 }
+        { label: 'Jun 25', datum: '2025-06-12', wert: 13.9 },
+        { label: 'Sep 25', datum: '2025-09-12', wert: 14.0 },
+        { label: 'Dez 25', datum: '2025-12-12', wert: 14.4 },
+        { label: 'Mär 26', datum: '2026-03-14', wert: 14.4 },
+        { label: 'Jun 26', datum: '2026-06-12', wert: 14.2 }
       ]
     },
     {
@@ -168,11 +168,11 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
       trend: 'stabil',
       hinweis: 'Unauffällig im Referenzbereich.',
       verlauf: [
-        { label: 'Jul', datum: '2025-07-18', wert: 1.9 },
-        { label: 'Sep', datum: '2025-09-21', wert: 2.2 },
-        { label: 'Nov', datum: '2025-11-12', wert: 2.0 },
-        { label: 'Mär', datum: '2026-03-14', wert: 2.0 },
-        { label: 'Jun', datum: '2026-06-12', wert: 2.1 }
+        { label: 'Jun 25', datum: '2025-06-12', wert: 1.9 },
+        { label: 'Sep 25', datum: '2025-09-12', wert: 2.2 },
+        { label: 'Dez 25', datum: '2025-12-12', wert: 2.0 },
+        { label: 'Mär 26', datum: '2026-03-14', wert: 2.0 },
+        { label: 'Jun 26', datum: '2026-06-12', wert: 2.1 }
       ]
     }
   ],
@@ -184,4 +184,5 @@ export const MOCK_AUSWERTUNG: AuswertungViewModel = {
     { key: 'vitamine', name: 'Vitamine', normal: 2, niedrig: 0, hoch: 0, review: 2 },
     { key: 'schilddruese', name: 'Schilddrüse', normal: 4, niedrig: 0, hoch: 0, review: 0 }
   ]
-};
+};
+

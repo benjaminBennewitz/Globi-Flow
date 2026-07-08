@@ -57,6 +57,17 @@ export class PatientenPageComponent {
   /** Eingabe Geschlecht. */
   public readonly neuesGeschlecht: WritableSignal<PatientGeschlecht> = signal('unbekannt');
 
+  /** Gibt an, ob die custom Geschlechtsauswahl geöffnet ist. */
+  public readonly geschlechtAuswahlOffen: WritableSignal<boolean> = signal(false);
+
+  /** Auswahloptionen für das Geschlechtsfeld. */
+  public readonly geschlechtOptionen: { key: PatientGeschlecht; label: string }[] = [
+    { key: 'unbekannt', label: 'Unbekannt' },
+    { key: 'weiblich', label: 'Weiblich' },
+    { key: 'maennlich', label: 'Männlich' },
+    { key: 'divers', label: 'Divers' }
+  ];
+
   /** Eingabe Notiz. */
   public readonly neueNotiz: WritableSignal<string> = signal('');
 
@@ -157,10 +168,20 @@ export class PatientenPageComponent {
     this.neuerLebensstil.set(this.eingabewert(event).slice(0, 140));
   }
 
-  /** Aktualisiert das Geschlecht. */
-  public geschlechtAendern(event: Event): void {
-    const eingabe = event.target as HTMLSelectElement;
-    this.neuesGeschlecht.set(eingabe.value as PatientGeschlecht);
+  /** Öffnet oder schließt die custom Geschlechtsauswahl. */
+  public geschlechtAuswahlUmschalten(): void {
+    this.geschlechtAuswahlOffen.update((wert: boolean) => !wert);
+  }
+
+  /** Setzt das Geschlecht über die custom Auswahl. */
+  public geschlechtSetzen(geschlecht: PatientGeschlecht): void {
+    this.neuesGeschlecht.set(geschlecht);
+    this.geschlechtAuswahlOffen.set(false);
+  }
+
+  /** Gibt das sichtbare Label eines Geschlechtswerts zurück. */
+  public geschlechtLabel(geschlecht: PatientGeschlecht): string {
+    return this.geschlechtOptionen.find((option) => option.key === geschlecht)?.label ?? 'Unbekannt';
   }
 
   /** Aktualisiert die Notiz. */
@@ -223,6 +244,7 @@ export class PatientenPageComponent {
     this.neueGroesse.set('');
     this.neuerLebensstil.set('');
     this.neuesGeschlecht.set('unbekannt');
+    this.geschlechtAuswahlOffen.set(false);
     this.neueNotiz.set('');
   }
 

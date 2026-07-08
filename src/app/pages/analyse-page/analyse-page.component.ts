@@ -152,9 +152,9 @@ export class AnalysePageComponent {
     return `${this.prozent(wert.referenzMax, grenzen.min, grenzen.max) - this.prozent(wert.referenzMin, grenzen.min, grenzen.max)}%`;
   }
 
-  /** Wandelt Verlaufspunkte in SVG-Polyline-Punkte um. */
-  public verlaufPunkte(wert: AuswertungLaborwert): string {
-    return wert.verlauf.map((punkt, index) => `${this.punktX(wert, index)},${this.punktY(wert, punkt.wert)}`).join(' ');
+  /** Wandelt Verlaufspunkte in einen weich gezogenen SVG-Pfad um. */
+  public verlaufPfad(wert: AuswertungLaborwert): string {
+    return this.weicherSvgPfad(wert.verlauf.map((punkt, index) => ({ x: this.punktX(wert, index), y: this.punktY(wert, punkt.wert) })));
   }
 
   /** Berechnet X-Koordinate eines Verlaufspunkts. */
@@ -177,6 +177,166 @@ export class AnalysePageComponent {
   /** Berechnet Höhe des Referenzbands im Diagramm. */
   public referenzBandHoehe(wert: AuswertungLaborwert): number {
     return Math.max(6, this.punktY(wert, wert.referenzMin) - this.punktY(wert, wert.referenzMax));
+  }
+
+
+  /** Berechnet einen kompakten Qualitätswert für die Datenaufbereitung. */
+  public aufbereitungsScore(ansicht: AuswertungViewModel): number {
+    const confidenceSumme = ansicht.werte.reduce((summe: number, wert: AuswertungLaborwert) => summe + wert.confidence, 0);
+    const durchschnitt = confidenceSumme / Math.max(ansicht.werte.length, 1);
+    const reviewAbzug = this.reviewAnzahl(ansicht) * 4;
+    return Math.max(0, Math.min(100, Math.round(durchschnitt - reviewAbzug)));
+  }
+
+  /** Liefert den CSS-Gradienten für den Qualitätsring. */
+  public scoreGradient(ansicht: AuswertungViewModel): string {
+    const score = this.aufbereitungsScore(ansicht);
+    return `conic-gradient(var(--dd-color-primary) ${score * 3.6}deg, var(--dd-color-bg) 0deg)`;
+  }
+
+  /** Liefert den CSS-Gradienten für die Statusverteilung. */
+  public verteilungsGradient(ansicht: AuswertungViewModel): string {
+    const gesamt = Math.max(ansicht.werte.length, 1);
+    const normal = this.statusAnzahl(ansicht, 'normal') / gesamt * 100;
+    const auffaellig = (this.statusAnzahl(ansicht, 'hoch') + this.statusAnzahl(ansicht, 'niedrig')) / gesamt * 100;
+    const review = this.statusAnzahl(ansicht, 'review') / gesamt * 100;
+    const normalEnde = normal;
+    const auffaelligEnde = normal + auffaellig;
+    const reviewEnde = normal + auffaellig + review;
+    return `conic-gradient(var(--dd-color-success) 0 ${normalEnde}%, var(--dd-color-danger) ${normalEnde}% ${auffaelligEnde}%, var(--dd-color-warning) ${auffaelligEnde}% ${reviewEnde}%, var(--dd-color-outline) ${reviewEnde}% 100%)`;
+  }
+
+  /** Zählt Werte mit einem bestimmten Status. */
+  public statusAnzahl(ansicht: AuswertungViewModel, status: LaborwertStatus): number {
+    return ansicht.werte.filter((wert: AuswertungLaborwert) => wert.status === status).length;
+  }
+
+  /** Zählt Werte mit offenem Review. */
+  public reviewAnzahl(ansicht: AuswertungViewModel): number {
+    return ansicht.werte.filter((wert: AuswertungLaborwert) => wert.reviewStatus === 'review').length;
+  }
+
+  /** Zählt Werte mit deutlicher Verlaufstendenz. */
+  public trendAnzahl(ansicht: AuswertungViewModel): number {
+    return ansicht.werte.filter((wert: AuswertungLaborwert) => Math.abs(wert.veraenderungProzent) >= 10).length;
+  }
+
+  /** Berechnet die normalisierte Position eines Laborwerts im erweiterten Referenzfeld. */
+  public normalisiertePosition(wert: AuswertungLaborwert): string {
+    const grenzen = this.skalaGrenzen(wert);
+    return `${this.prozent(wert.wert, grenzen.min, grenzen.max)}%`;
+  }
+
+  /** Liefert ein Richtungssymbol für Trendkarten. */
+  public trendIcon(trend: AuswertungTrend): string {
+    if (trend === 'steigend') {
+      return 'arrow_upward';
+    }
+
+    if (trend === 'fallend') {
+      return 'arrow_downward';
+    }
+
+    return 'trending_flat';
+  }
+
+  /** Liefert einen weich gezogenen Verlaufspfad mit normalisierter Skala. */
+  public normalisierteVerlaufPfad(wert: AuswertungLaborwert): string {
+    return this.weicherSvgPfad(wert.verlauf.map((punkt, index: number) => ({ x: this.normalisierterPunktX(wert, index), y: this.normalisierterPunktY(wert, punkt.wert) })));
+  }
+
+  /** Berechnet X-Koordinaten für den normalisierten Overlay-Chart. */
+  public normalisierterPunktX(wert: AuswertungLaborwert, index: number): number {
+    const maxIndex = Math.max(wert.verlauf.length - 1, 1);
+    return this.runden(86 + (index / maxIndex) * 540);
+  }
+
+  /** Berechnet Y-Koordinaten für den normalisierten Overlay-Chart. */
+  public normalisierterPunktY(wert: AuswertungLaborwert, messwert: number): number {
+    const grenzen = this.skalaGrenzen(wert);
+    return this.runden(202 - this.prozent(messwert, grenzen.min, grenzen.max) * 1.64);
+  }
+
+  /** Berechnet die X-Koordinate des letzten Overlay-Punkts. */
+  public normalisierterLetzterPunktX(wert: AuswertungLaborwert): number {
+    return this.normalisierterPunktX(wert, Math.max(wert.verlauf.length - 1, 0));
+  }
+
+  /** Berechnet die Y-Koordinate des letzten Overlay-Punkts. */
+  public normalisierterLetzterPunktY(wert: AuswertungLaborwert): number {
+    const letzterPunkt = wert.verlauf[wert.verlauf.length - 1];
+    return this.normalisierterPunktY(wert, letzterPunkt?.wert ?? wert.wert);
+  }
+
+  /** Liefert eine stabile Farbreihe für überlagerte Werte. */
+  public overlayFarbKlasse(index: number): string {
+    return `is-serie-${index % 5}`;
+  }
+
+  /** Formatiert Werte für die kompakte Chart-Seitenleiste. */
+  public zahlKurz(wert: number): string {
+    return this.zahl(wert);
+  }
+
+  /** Liefert das nächste sinnvolle Ziel der geführten Auswertung. */
+  public analyseZielRoute(ansicht: AuswertungViewModel): string {
+    if (this.reviewAnzahl(ansicht) > 0) {
+      return '/review';
+    }
+
+    return '/berichte';
+  }
+
+  /** Liefert die Beschriftung für die nächste Aktion der Analyse. */
+  public naechsterAnalyseSchritt(ansicht: AuswertungViewModel): string {
+    if (this.reviewAnzahl(ansicht) > 0) {
+      return 'Review abschließen';
+    }
+
+    if (this.statusAnzahl(ansicht, 'hoch') + this.statusAnzahl(ansicht, 'niedrig') > 0) {
+      return 'Patientenbericht vorbereiten';
+    }
+
+    return 'Bericht freigeben';
+  }
+
+  /** Erklärt, warum die nächste Aktion sinnvoll ist. */
+  public analyseFokusText(ansicht: AuswertungViewModel): string {
+    const review = this.reviewAnzahl(ansicht);
+    const auffaellig = this.statusAnzahl(ansicht, 'hoch') + this.statusAnzahl(ansicht, 'niedrig');
+
+    if (review > 0) {
+      return `${review} Wert(e) sind noch nicht sicher genug für Bericht und Verlauf. Diese Werte bleiben sichtbar, sollten aber zuerst geprüft werden.`;
+    }
+
+    if (auffaellig > 0) {
+      return `${auffaellig} auffällige Wert(e) sind geprüft und können mit Verlauf, Referenzfeld und Patiententext in den Bericht übernommen werden.`;
+    }
+
+    return 'Alle sichtbaren Werte sind geprüft und unauffällig. Der Bericht kann als verständliche Zusammenfassung vorbereitet werden.';
+  }
+
+  /** Gibt ein lesbares Statuslabel zurück. */
+  public statusLabel(status: LaborwertStatus): string {
+    const labels: Record<LaborwertStatus, string> = {
+      normal: 'Normal',
+      hoch: 'Erhöht',
+      niedrig: 'Niedrig',
+      review: 'Review'
+    };
+
+    return labels[status];
+  }
+
+  /** Gibt ein lesbares Trendlabel zurück. */
+  public trendLabel(trend: AuswertungTrend): string {
+    const labels: Record<AuswertungTrend, string> = {
+      steigend: 'steigend',
+      fallend: 'fallend',
+      stabil: 'stabil'
+    };
+
+    return labels[trend];
   }
 
   /** Gibt Gesamtanzahl einer Gruppe zurück. */
@@ -207,6 +367,33 @@ export class AnalysePageComponent {
     return prioritaet === 'hoch' ? 200 : prioritaet === 'mittel' ? 100 : 0;
   }
 
+  /** Erzeugt aus Koordinaten einen ruhigen SVG-Pfad mit weichen Kurven. */
+  private weicherSvgPfad(punkte: { x: number; y: number }[]): string {
+    if (punkte.length === 0) {
+      return '';
+    }
+
+    if (punkte.length === 1) {
+      return `M ${punkte[0].x.toFixed(1)} ${punkte[0].y.toFixed(1)}`;
+    }
+
+    const segmente = [`M ${punkte[0].x.toFixed(1)} ${punkte[0].y.toFixed(1)}`];
+
+    for (let index = 1; index < punkte.length; index += 1) {
+      const vorherigerPunkt = punkte[index - 1];
+      const aktuellerPunkt = punkte[index];
+      const mittelX = this.runden((vorherigerPunkt.x + aktuellerPunkt.x) / 2);
+      segmente.push(`C ${mittelX.toFixed(1)} ${vorherigerPunkt.y.toFixed(1)}, ${mittelX.toFixed(1)} ${aktuellerPunkt.y.toFixed(1)}, ${aktuellerPunkt.x.toFixed(1)} ${aktuellerPunkt.y.toFixed(1)}`);
+    }
+
+    return segmente.join(' ');
+  }
+
+  /** Rundet SVG-Werte auf eine Nachkommastelle. */
+  private runden(wert: number): number {
+    return Math.round(wert * 10) / 10;
+  }
+
   /** Berechnet Prozentposition. */
   private prozent(wert: number, min: number, max: number): number {
     return Math.min(100, Math.max(0, ((wert - min) / Math.max(max - min, 1)) * 100));
@@ -233,4 +420,7 @@ export class AnalysePageComponent {
   private zahl(wert: number): string {
     return Number.isInteger(wert) ? `${wert}` : wert.toFixed(1).replace('.', ',');
   }
-}
+}
+
+
+

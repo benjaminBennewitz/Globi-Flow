@@ -10,11 +10,7 @@ Data-Dashboard/
 │   ├── ChatGPT Image 12. Juni 2026, 09_08_51.png
 │   ├── ChatGPT Image 12. Juni 2026, 09_08_54.png
 │   ├── DESIGN.md
-│   ├── desktop.ini
-│   ├── screen.png
-│   ├── screen_.png
-│   ├── screen__.png
-│   └── screen___.png
+│   └── desktop.ini
 ├── node_modules/
 │   └── ...
 ├── src/

@@ -8,11 +8,11 @@
 import { describe, expect, it } from 'vitest';
 
 /** Prüft, ob die Testumgebung grundsätzlich lauffähig ist. */
-describe('Daten Dashboards Smoke-Test', () => {
+describe('Globi Flow Smoke-Test', () => {
   /** Erwartet eine stabile Projektbezeichnung. */
   it('sollte den Projektnamen kennen', () => {
-    const projektname = 'Daten Dashboards';
+    const projektname = 'Globi Flow';
 
-    expect(projektname).toContain('Dashboards');
+    expect(projektname).toContain('Flow');
   });
 });

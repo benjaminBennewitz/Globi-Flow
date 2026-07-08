@@ -14,7 +14,7 @@
   display: grid;
   gap: var(--dd-space-5);
   min-height: 100svh;
-  margin-left: var(--dd-sidebar-width);
+  margin-left: var(--dd-sidebar-current-width);
   padding: calc(var(--dd-topbar-height) + var(--dd-space-5)) var(--dd-space-5) var(--dd-space-5);
 }
 

@@ -1,7 +1,7 @@
 /* src/main.ts */
 
 /**
- * @file Startet die Angular-App für Daten Dashboards.
+ * @file Startet die Angular-App für Globi Flow.
  * @module main
  */
 

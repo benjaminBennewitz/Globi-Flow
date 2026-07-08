@@ -5,7 +5,8 @@
  * @module AppNavigationComponent
  */
 
-import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, WritableSignal, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { PatientQuelle } from '../../../core/models/patient.model';
 import { PatientContextService } from '../../../core/services/patient-context.service';
@@ -21,6 +22,12 @@ import { SecureSearchComponent } from '../secure-search/secure-search.component'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppNavigationComponent {
+  /** Dokumentreferenz für globale Layout-Tokens. */
+  private readonly dokument = inject(DOCUMENT);
+
+  /** Gibt an, ob die Sidebar auf Icons reduziert ist. */
+  public readonly navigationEingeklappt: WritableSignal<boolean> = signal(false);
+
   /** Aktuell geöffnetes Header-Overlay. */
   public aktivesModal: 'alarm' | 'settings' | 'patient' | null = null;
 
@@ -29,6 +36,19 @@ export class AppNavigationComponent {
 
   /** Aktueller bereinigter Suchbegriff. */
   public readonly suchbegriff: WritableSignal<string> = signal('');
+
+  /** Synchronisiert die Breite der App-Shell mit dem Sidebarzustand. */
+  public constructor() {
+    effect(() => {
+      const breite = this.navigationEingeklappt() ? 'var(--dd-sidebar-collapsed-width)' : 'var(--dd-sidebar-width)';
+      this.dokument.documentElement.style.setProperty('--dd-sidebar-current-width', breite);
+    });
+  }
+
+  /** Schaltet die Sidebar zwischen Vollansicht und Iconansicht um. */
+  public navigationUmschalten(): void {
+    this.navigationEingeklappt.update((wert: boolean) => !wert);
+  }
 
   /** Öffnet ein Header-Overlay. */
   public modalOeffnen(modal: 'alarm' | 'settings' | 'patient'): void {

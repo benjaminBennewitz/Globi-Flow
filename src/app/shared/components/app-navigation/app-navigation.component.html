@@ -1,39 +1,46 @@
 <!-- src/app/shared/components/app-navigation/app-navigation.component.html -->
 
-<aside class="dd-sidebar" aria-label="Hauptnavigation">
-  <a class="dd-sidebar__brand" routerLink="/uebersicht" aria-label="Daten Dashboards Start">
-    <strong>Daten<br>Dashboards</strong>
-    <span>Clinical Lab Admin</span>
+<aside class="dd-sidebar" [class.is-collapsed]="navigationEingeklappt()" aria-label="Hauptnavigation">
+  <button class="dd-sidebar__toggle" type="button" [attr.aria-label]="navigationEingeklappt() ? 'Sidebar ausklappen' : 'Sidebar einklappen'" [attr.aria-expanded]="!navigationEingeklappt()" (click)="navigationUmschalten()">
+    <span class="material-symbols-outlined" aria-hidden="true">{{ navigationEingeklappt() ? 'menu_open' : 'left_panel_close' }}</span>
+  </button>
+
+  <a class="dd-sidebar__brand" routerLink="/uebersicht" aria-label="Globi Flow Start">
+    <span class="dd-sidebar__brand-drop" aria-hidden="true"></span>
+    <span class="dd-sidebar__brand-copy">
+      <strong>Globi<br>Flow</strong>
+      <span class="dd-sidebar__brand-subline">Laborwerte im Fluss</span>
+    </span>
   </a>
 
   <nav class="dd-sidebar__nav" aria-label="Projektbereiche">
-    <a routerLink="/uebersicht" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
+    <a routerLink="/uebersicht" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Übersicht">
       <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
-      Übersicht
+      <span class="dd-sidebar__nav-text">Übersicht</span>
     </a>
-    <a routerLink="/patienten" routerLinkActive="is-active">
+    <a routerLink="/patienten" routerLinkActive="is-active" aria-label="Patienten">
       <span class="material-symbols-outlined" aria-hidden="true">groups</span>
-      Patienten
+      <span class="dd-sidebar__nav-text">Patienten</span>
     </a>
-    <a routerLink="/importe" routerLinkActive="is-active">
+    <a routerLink="/importe" routerLinkActive="is-active" aria-label="Importe">
       <span class="material-symbols-outlined" aria-hidden="true">upload_file</span>
-      Importe
+      <span class="dd-sidebar__nav-text">Importe</span>
     </a>
-    <a routerLink="/auswertung" routerLinkActive="is-active">
-      <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
-      Auswertung
-    </a>
-    <a routerLink="/review" routerLinkActive="is-active">
+    <a routerLink="/review" routerLinkActive="is-active" aria-label="Prüfen">
       <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
-      Review
+      <span class="dd-sidebar__nav-text">Prüfen</span>
     </a>
-    <a routerLink="/wissensbasis" routerLinkActive="is-active">
-      <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
-      Wissensbasis
+    <a routerLink="/auswertung" routerLinkActive="is-active" aria-label="Analyse">
+      <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+      <span class="dd-sidebar__nav-text">Analyse</span>
     </a>
-    <a routerLink="/berichte" routerLinkActive="is-active">
+    <a routerLink="/berichte" routerLinkActive="is-active" aria-label="Patientenbericht">
       <span class="material-symbols-outlined" aria-hidden="true">article</span>
-      Berichte
+      <span class="dd-sidebar__nav-text">Patientenbericht</span>
+    </a>
+    <a routerLink="/wissensbasis" routerLinkActive="is-active" aria-label="Wissensbasis">
+      <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
+      <span class="dd-sidebar__nav-text">Wissensbasis</span>
     </a>
   </nav>
 
@@ -47,7 +54,8 @@
 
   <section class="dd-sidebar__status" aria-label="Systemstatus">
     <span></span>
-    Systemstatus: Online
+    <strong>Online</strong>
+    <em>Systemstatus: Online</em>
   </section>
 </aside>
 

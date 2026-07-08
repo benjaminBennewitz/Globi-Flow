@@ -320,6 +320,10 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
+.dd-berichte-route__recommendations h3 {
+  grid-column: 1 / -1;
+}
+
 .dd-berichte-route__recommendations article {
   display: grid;
   gap: 1.5mm;

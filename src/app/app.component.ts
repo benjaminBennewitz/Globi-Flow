@@ -1,7 +1,7 @@
 /* src/app/app.component.ts */
 
 /**
- * @file Root-Komponente für Daten Dashboards.
+ * @file Root-Komponente für Globi Flow.
  * @module AppComponent
  */
 

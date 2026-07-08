@@ -2,6 +2,8 @@
 
 @if (auswertung$ | async; as ansicht) {
   @let sichtbareWerte = gefilterteWerte(ansicht);
+  @let overlayWerte = sichtbareWerte.slice(0, 4);
+  @let referenzWerte = sichtbareWerte.slice(0, 3);
 
   <section class="dd-auswertung-route" aria-labelledby="auswertung-title">
     <header class="dd-auswertung-route__headline">
@@ -70,6 +72,143 @@
       }
     </div>
 
+    <section class="dd-auswertung-route__prep dd-neu-card" aria-labelledby="prep-title">
+      <header class="dd-auswertung-route__prep-head">
+        <div>
+          <span class="dd-eyebrow">Datenaufbereitung</span>
+          <h2 id="prep-title">Was ist aus dem Befund wirklich nutzbar?</h2>
+          <p>Diese Ebene zeigt vor der fachlichen Interpretation, wie belastbar, vergleichbar und berichtsfähig die erkannten Werte sind.</p>
+        </div>
+        <a class="dd-button dd-button--secondary" [routerLink]="analyseZielRoute(ansicht)">{{ naechsterAnalyseSchritt(ansicht) }}</a>
+      </header>
+
+      <div class="dd-auswertung-route__prep-grid">
+        <article class="dd-auswertung-route__score">
+          <span>Aufbereitungsscore</span>
+          <div class="dd-auswertung-route__score-ring" [style.background]="scoreGradient(ansicht)" aria-label="Aufbereitungsscore">
+            <span class="dd-auswertung-route__ring-content">
+              <strong>{{ aufbereitungsScore(ansicht) }}%</strong>
+              <small>bereinigt</small>
+            </span>
+          </div>
+          <p>Confidence minus Review-Risiko. Dieser Wert sagt nicht, ob jemand gesund ist, sondern ob die Daten sauber genug für Verlauf und Bericht sind.</p>
+        </article>
+
+        <article class="dd-auswertung-route__distribution">
+          <span>Statusverteilung</span>
+          <div class="dd-auswertung-route__distribution-donut" [style.background]="verteilungsGradient(ansicht)" aria-label="Statusverteilung">
+            <span class="dd-auswertung-route__ring-content">
+              <strong>{{ ansicht.werte.length }}</strong>
+              <small>Werte</small>
+            </span>
+          </div>
+          <dl>
+            <div><dt>Normal</dt><dd>{{ statusAnzahl(ansicht, 'normal') }}</dd></div>
+            <div><dt>Auffällig</dt><dd>{{ statusAnzahl(ansicht, 'hoch') + statusAnzahl(ansicht, 'niedrig') }}</dd></div>
+            <div><dt>Review</dt><dd>{{ reviewAnzahl(ansicht) }}</dd></div>
+          </dl>
+        </article>
+
+        <article class="dd-auswertung-route__overlay">
+          <header>
+            <div>
+              <span>Überlagerbarer Verlauf</span>
+              <strong>Top-Werte normalisiert</strong>
+            </div>
+            <small>{{ ansicht.zeitraum }}</small>
+          </header>
+
+          <div class="dd-auswertung-route__overlay-chart">
+            <svg viewBox="0 0 700 260" role="img" aria-label="Normalisierte Verlaufslinien der priorisierten Werte">
+              <rect class="dd-auswertung-route__overlay-frame" x="86" y="38" width="540" height="164" rx="18"></rect>
+              <rect class="dd-auswertung-route__overlay-band is-high" x="86" y="38" width="540" height="58" rx="18"></rect>
+              <rect class="dd-auswertung-route__overlay-band is-ok" x="86" y="96" width="540" height="62"></rect>
+              <rect class="dd-auswertung-route__overlay-band is-low" x="86" y="158" width="540" height="44" rx="18"></rect>
+              <path class="dd-auswertung-route__overlay-grid" d="M86 202 H626 M86 158 H626 M86 96 H626 M86 38 H626"></path>
+              <path class="dd-auswertung-route__overlay-reference" d="M86 96 H626 M86 158 H626"></path>
+              <text x="66" y="42">hoch</text>
+              <text x="66" y="131">ok</text>
+              <text x="66" y="204">niedrig</text>
+
+              @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
+                <path class="dd-auswertung-route__overlay-line {{ overlayFarbKlasse(index) }}" pathLength="100" [attr.d]="normalisierteVerlaufPfad(eintrag)"></path>
+                <circle class="dd-auswertung-route__overlay-point {{ overlayFarbKlasse(index) }}" [attr.cx]="normalisierterLetzterPunktX(eintrag)" [attr.cy]="normalisierterLetzterPunktY(eintrag)" r="4.6"></circle>
+              }
+
+              @if (overlayWerte[0]; as basisWert) {
+                @for (punkt of basisWert.verlauf; track punkt.datum; let index = $index) {
+                  <text class="dd-auswertung-route__overlay-label" [attr.x]="normalisierterPunktX(basisWert, index)" y="236">{{ punkt.label }}</text>
+                }
+              }
+            </svg>
+
+            <div class="dd-auswertung-route__overlay-current" aria-label="Aktuelle normalisierte Werte">
+              <span>Aktuell</span>
+              @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
+                <button class="{{ overlayFarbKlasse(index) }}" type="button" (click)="wertAuswaehlen(eintrag)">
+                  <strong>{{ zahlKurz(eintrag.wert) }}</strong>
+                  <small>{{ eintrag.einheit }}</small>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="dd-auswertung-route__overlay-legend">
+            @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
+              <button type="button" (click)="wertAuswaehlen(eintrag)">
+                <span class="{{ overlayFarbKlasse(index) }}"></span>
+                {{ eintrag.name }}
+              </button>
+            }
+          </div>
+        </article>
+      </div>
+
+      <div class="dd-auswertung-route__prep-lists">
+        <article class="dd-auswertung-route__trend-panel">
+          <header>
+            <h3>Tendenzen</h3>
+            <span>{{ trendAnzahl(ansicht) }} relevant</span>
+          </header>
+          <div>
+            @for (eintrag of overlayWerte; track eintrag.id) {
+              <button type="button" (click)="wertAuswaehlen(eintrag)">
+                <i class="material-symbols-outlined {{ trendKlasse(eintrag.trend) }}" aria-hidden="true">{{ trendIcon(eintrag.trend) }}</i>
+                <strong>{{ eintrag.name }}</strong>
+                <span>{{ delta(eintrag.veraenderungProzent) }}%</span>
+                <small>{{ trendLabel(eintrag.trend) }} · {{ statusLabel(eintrag.status) }}</small>
+              </button>
+            }
+          </div>
+        </article>
+
+        <article class="dd-auswertung-route__range-panel">
+          <header>
+            <h3>Referenzfelder</h3>
+            <span>aktuell gegen Normbereich</span>
+          </header>
+          <div>
+            @for (eintrag of referenzWerte; track eintrag.id) {
+              <button type="button" (click)="wertAuswaehlen(eintrag)">
+                <strong>{{ eintrag.name }}</strong>
+                <small>{{ messwert(eintrag.wert, eintrag.einheit) }}</small>
+                <span class="dd-auswertung-route__mini-range">
+                  <i></i>
+                  <b [style.left]="normalisiertePosition(eintrag)"></b>
+                </span>
+              </button>
+            }
+          </div>
+        </article>
+
+        <article class="dd-auswertung-route__next">
+          <span>Nächster sinnvoller Schritt</span>
+          <strong>{{ naechsterAnalyseSchritt(ansicht) }}</strong>
+          <p>{{ analyseFokusText(ansicht) }}</p>
+        </article>
+      </div>
+    </section>
+
     @if (aktiverWert(ansicht); as wert) {
       <div class="dd-auswertung-route__main">
         <section class="dd-auswertung-route__priority dd-neu-card" aria-labelledby="priority-title">
@@ -137,7 +276,7 @@
           <svg class="dd-auswertung-route__chart" [class.is-animation-a]="diagrammAnimationsToken() % 2 === 0" [class.is-animation-b]="diagrammAnimationsToken() % 2 === 1" viewBox="0 0 480 180" role="img" [attr.aria-label]="wert.name + ' Verlauf'">
             <line x1="46" y1="154" x2="438" y2="154"></line>
             <rect x="46" [attr.y]="referenzBandY(wert)" width="392" [attr.height]="referenzBandHoehe(wert)" rx="10"></rect>
-            <polyline class="dd-auswertung-route__chart-line" pathLength="100" [attr.points]="verlaufPunkte(wert)"></polyline>
+            <path class="dd-auswertung-route__chart-line" pathLength="100" [attr.d]="verlaufPfad(wert)"></path>
             @for (punkt of wert.verlauf; track punkt.datum; let index = $index) {
               <circle class="dd-auswertung-route__chart-point" [attr.cx]="punktX(wert, index)" [attr.cy]="punktY(wert, punkt.wert)" r="3.6" [style.animation-delay.ms]="240 + index * 90"></circle>
               <text [attr.x]="punktX(wert, index)" y="172">{{ punkt.label }}</text>
@@ -200,4 +339,7 @@
       </div>
     </section>
   </section>
-}
+}
+
+
+

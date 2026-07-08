@@ -12,6 +12,31 @@
       </button>
     </header>
 
+    <section class="dd-overview__workflow dd-neu-card" aria-labelledby="workflow-title">
+      <header>
+        <div>
+          <span class="dd-eyebrow">Geführter Kernworkflow</span>
+          <h2 id="workflow-title">Vom Laborbefund zur verständlichen Patientenansicht</h2>
+          <p>Die App hat zwei klare Aufgaben: Rohdaten zuverlässig aufbereiten und geprüfte Ergebnisse so erklären, dass Arzt und Patient denselben Stand sehen.</p>
+        </div>
+        <a class="dd-button dd-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
+          <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+          Workflow starten
+        </a>
+      </header>
+
+      <div class="dd-overview__workflow-track">
+        @for (schritt of workflowSchritte; track schritt.nummer) {
+          <a class="dd-overview__workflow-step is-{{ schritt.status }}" [routerLink]="schritt.route">
+            <span class="dd-overview__workflow-icon material-symbols-outlined" aria-hidden="true">{{ schritt.icon }}</span>
+            <small>{{ schritt.nummer }}</small>
+            <strong>{{ schritt.titel }}</strong>
+            <p>{{ schritt.text }}</p>
+          </a>
+        }
+      </div>
+    </section>
+
     <div class="dd-overview__kpis" aria-label="Allgemeine Kennzahlen">
       <article class="dd-overview__kpi" tabindex="0">
         <span>Patienten gesamt</span>
@@ -235,4 +260,5 @@
       </section>
     }
   </section>
-}
+}
+

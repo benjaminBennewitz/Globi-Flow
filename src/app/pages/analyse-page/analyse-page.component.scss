@@ -4,12 +4,13 @@
    01   Route
    02   Kopfbereich und Filter
    03   Kennzahlen
-   04   Hauptanalyse
-   05   Wertliste
-   06   Detailbereich
-   07   Vergleich
-   08   Gruppenmatrix
-   09   Responsive
+   04   Datenaufbereitung
+   05   Hauptanalyse
+   06   Wertliste
+   07   Detailbereich
+   08   Vergleich
+   09   Gruppenmatrix
+   10   Responsive
    ========================================================================== */
 
 /* ==========================================================================
@@ -46,6 +47,7 @@
 .dd-auswertung-route__headline p,
 .dd-auswertung-route__filters span,
 .dd-auswertung-route__priority p,
+.dd-auswertung-route__prep p,
 .dd-auswertung-route__detail p,
 .dd-auswertung-route__comparison p,
 .dd-auswertung-route__groups p {
@@ -423,7 +425,433 @@
 }
 
 /* ==========================================================================
-   04   Hauptanalyse
+   04   Datenaufbereitung
+   ========================================================================== */
+
+.dd-auswertung-route__prep {
+  display: grid;
+  gap: var(--dd-space-4);
+  padding: var(--dd-space-4);
+}
+
+.dd-auswertung-route__prep-head,
+.dd-auswertung-route__overlay header,
+.dd-auswertung-route__trend-panel header,
+.dd-auswertung-route__range-panel header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--dd-space-3);
+}
+
+.dd-auswertung-route__prep-grid {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.65fr) minmax(210px, 0.65fr) minmax(360px, 1.7fr);
+  gap: var(--dd-space-4);
+}
+
+.dd-auswertung-route__score,
+.dd-auswertung-route__distribution,
+.dd-auswertung-route__overlay,
+.dd-auswertung-route__trend-panel,
+.dd-auswertung-route__range-panel,
+.dd-auswertung-route__next {
+  display: grid;
+  gap: var(--dd-space-3);
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-4);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-auswertung-route__score > span,
+.dd-auswertung-route__distribution > span,
+.dd-auswertung-route__overlay header span,
+.dd-auswertung-route__trend-panel header span,
+.dd-auswertung-route__range-panel header span,
+.dd-auswertung-route__next > span {
+  color: var(--dd-color-text-soft);
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dd-auswertung-route__score-ring,
+.dd-auswertung-route__distribution-donut {
+  position: relative;
+  display: grid;
+  width: 142px;
+  height: 142px;
+  place-items: center;
+  justify-self: center;
+  border-radius: var(--dd-radius-pill);
+  box-shadow: var(--dd-shadow-raised);
+}
+
+.dd-auswertung-route__score-ring::after,
+.dd-auswertung-route__distribution-donut::after {
+  position: absolute;
+  inset: 15px;
+  border-radius: inherit;
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+  content: '';
+}
+
+.dd-auswertung-route__ring-content {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 84px;
+  height: 84px;
+  place-content: center;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.dd-auswertung-route__ring-content strong {
+  color: var(--dd-color-primary);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.dd-auswertung-route__ring-content small {
+  display: block;
+  margin-top: 0.22rem;
+  color: var(--dd-color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.dd-auswertung-route__distribution dl {
+  display: grid;
+  gap: var(--dd-space-2);
+  margin: 0;
+}
+
+.dd-auswertung-route__distribution dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--dd-radius-md);
+  padding: 0.55rem 0.7rem;
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-auswertung-route__distribution dt {
+  color: var(--dd-color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 820;
+}
+
+.dd-auswertung-route__distribution dd {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-weight: 900;
+}
+
+.dd-auswertung-route__overlay header div {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.dd-auswertung-route__overlay-chart {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--dd-space-3);
+  align-items: stretch;
+  border-radius: var(--dd-radius-xl);
+  padding: var(--dd-space-3);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(230, 235, 244, 0.5));
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-auswertung-route__overlay svg {
+  width: 100%;
+  min-height: 260px;
+}
+
+.dd-auswertung-route__overlay-frame {
+  fill: rgba(245, 247, 251, 0.94);
+  stroke: rgba(114, 119, 131, 0.16);
+  stroke-width: 1;
+}
+
+.dd-auswertung-route__overlay-band.is-high {
+  fill: rgba(197, 24, 24, 0.055);
+}
+
+.dd-auswertung-route__overlay-band.is-ok {
+  fill: rgba(22, 131, 74, 0.08);
+}
+
+.dd-auswertung-route__overlay-band.is-low {
+  fill: rgba(176, 105, 4, 0.06);
+}
+
+.dd-auswertung-route__overlay-grid {
+  fill: none;
+  stroke: rgba(114, 119, 131, 0.26);
+  stroke-width: 1;
+}
+
+.dd-auswertung-route__overlay-reference {
+  fill: none;
+  stroke: rgba(114, 119, 131, 0.38);
+  stroke-dasharray: 6 7;
+  stroke-linecap: round;
+  stroke-width: 1;
+}
+
+.dd-auswertung-route__overlay-line {
+  fill: none;
+  filter: drop-shadow(0 7px 9px rgba(15, 23, 42, 0.12));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3.8;
+}
+
+.dd-auswertung-route__overlay-line.is-serie-0,
+.dd-auswertung-route__overlay-point.is-serie-0,
+.dd-auswertung-route__overlay-legend span.is-serie-0,
+.dd-auswertung-route__overlay-current button.is-serie-0 {
+  --dd-overlay-series: var(--dd-color-danger);
+}
+
+.dd-auswertung-route__overlay-line.is-serie-1,
+.dd-auswertung-route__overlay-point.is-serie-1,
+.dd-auswertung-route__overlay-legend span.is-serie-1,
+.dd-auswertung-route__overlay-current button.is-serie-1 {
+  --dd-overlay-series: var(--dd-color-primary);
+}
+
+.dd-auswertung-route__overlay-line.is-serie-2,
+.dd-auswertung-route__overlay-point.is-serie-2,
+.dd-auswertung-route__overlay-legend span.is-serie-2,
+.dd-auswertung-route__overlay-current button.is-serie-2 {
+  --dd-overlay-series: var(--dd-color-low);
+}
+
+.dd-auswertung-route__overlay-line.is-serie-3,
+.dd-auswertung-route__overlay-point.is-serie-3,
+.dd-auswertung-route__overlay-legend span.is-serie-3,
+.dd-auswertung-route__overlay-current button.is-serie-3 {
+  --dd-overlay-series: #6f55c7;
+}
+
+.dd-auswertung-route__overlay-line.is-serie-4,
+.dd-auswertung-route__overlay-point.is-serie-4,
+.dd-auswertung-route__overlay-legend span.is-serie-4,
+.dd-auswertung-route__overlay-current button.is-serie-4 {
+  --dd-overlay-series: var(--dd-color-success);
+}
+
+.dd-auswertung-route__overlay-line,
+.dd-auswertung-route__overlay-point {
+  stroke: var(--dd-overlay-series);
+}
+
+.dd-auswertung-route__overlay-point {
+  fill: var(--dd-color-surface);
+  stroke-width: 3;
+}
+
+.dd-auswertung-route__overlay text {
+  fill: var(--dd-color-text-soft);
+  font-size: 12px;
+  font-weight: 850;
+  text-anchor: end;
+}
+
+.dd-auswertung-route__overlay-label {
+  text-anchor: middle !important;
+}
+
+.dd-auswertung-route__overlay-current {
+  display: grid;
+  min-width: 76px;
+  align-content: center;
+  gap: 0.52rem;
+}
+
+.dd-auswertung-route__overlay-current > span {
+  color: var(--dd-color-text-soft);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+.dd-auswertung-route__overlay-current button {
+  display: grid;
+  justify-items: end;
+  border-radius: var(--dd-radius-md);
+  padding: 0.38rem 0.5rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--dd-overlay-series);
+  box-shadow: var(--dd-shadow-soft);
+}
+
+.dd-auswertung-route__overlay-current strong {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.dd-auswertung-route__overlay-current small {
+  color: var(--dd-color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 820;
+}
+
+.dd-auswertung-route__overlay-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dd-space-2);
+}
+
+.dd-auswertung-route__overlay-legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  border-radius: var(--dd-radius-pill);
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  background: var(--dd-color-surface);
+  color: var(--dd-color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 850;
+  line-height: 1.15;
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-auswertung-route__overlay-legend span {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-overlay-series);
+}
+
+.dd-auswertung-route__prep-lists {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr) minmax(260px, 0.8fr);
+  gap: var(--dd-space-4);
+}
+
+.dd-auswertung-route__trend-panel h3,
+.dd-auswertung-route__range-panel h3 {
+  margin: 0;
+  color: var(--dd-color-text);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.dd-auswertung-route__trend-panel > div,
+.dd-auswertung-route__range-panel > div {
+  display: grid;
+  gap: var(--dd-space-2);
+}
+
+.dd-auswertung-route__trend-panel button,
+.dd-auswertung-route__range-panel button {
+  display: grid;
+  gap: 0.12rem var(--dd-space-2);
+  width: 100%;
+  border-radius: var(--dd-radius-lg);
+  padding: var(--dd-space-3);
+  cursor: pointer;
+  background: var(--dd-color-surface);
+  box-shadow: var(--dd-shadow-soft);
+  text-align: left;
+}
+
+.dd-auswertung-route__trend-panel button {
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.dd-auswertung-route__trend-panel i {
+  grid-row: span 2;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: var(--dd-radius-pill);
+  background: var(--dd-color-bg);
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-auswertung-route__trend-panel strong,
+.dd-auswertung-route__range-panel strong,
+.dd-auswertung-route__next strong {
+  color: var(--dd-color-text);
+}
+
+.dd-auswertung-route__trend-panel span {
+  color: var(--dd-color-primary);
+  font-weight: 900;
+}
+
+.dd-auswertung-route__trend-panel small {
+  color: var(--dd-color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.dd-auswertung-route__range-panel button {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.dd-auswertung-route__range-panel small {
+  color: var(--dd-color-primary);
+  font-weight: 900;
+}
+
+.dd-auswertung-route__mini-range {
+  position: relative;
+  grid-column: 1 / -1;
+  height: 26px;
+}
+
+.dd-auswertung-route__mini-range i,
+.dd-auswertung-route__mini-range b {
+  position: absolute;
+  top: 10px;
+  border-radius: var(--dd-radius-pill);
+}
+
+.dd-auswertung-route__mini-range i {
+  inset-inline: 0;
+  height: 7px;
+  background: linear-gradient(90deg, var(--dd-color-low-soft), var(--dd-color-success-soft), var(--dd-color-danger-soft));
+  box-shadow: var(--dd-shadow-inset);
+}
+
+.dd-auswertung-route__mini-range b {
+  width: 18px;
+  height: 18px;
+  background: var(--dd-color-primary);
+  box-shadow: var(--dd-shadow-soft);
+  transform: translate(-50%, -5px);
+}
+
+.dd-auswertung-route__next {
+  align-content: center;
+}
+
+.dd-auswertung-route__next strong {
+  font-size: 1.22rem;
+  font-weight: 900;
+}
+
+/* ==========================================================================
+   05   Hauptanalyse
    ========================================================================== */
 
 .dd-auswertung-route__main {
@@ -459,7 +887,7 @@
 }
 
 /* ==========================================================================
-   05   Wertliste
+   06   Wertliste
    ========================================================================== */
 
 .dd-auswertung-route__value-list {
@@ -522,7 +950,7 @@
 }
 
 /* ==========================================================================
-   06   Detailbereich
+   07   Detailbereich
    ========================================================================== */
 
 .dd-auswertung-route__detail header > strong {
@@ -609,6 +1037,7 @@
   color: var(--dd-color-text-soft);
   font-size: 0.76rem;
   font-weight: 850;
+  line-height: 1.15;
 }
 
 .dd-auswertung-route__chart {
@@ -616,25 +1045,26 @@
   min-height: 240px;
   border-radius: var(--dd-radius-xl);
   padding: var(--dd-space-3);
-  background: var(--dd-color-bg);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(231, 236, 244, 0.52));
   box-shadow: var(--dd-shadow-inset);
 }
 
 .dd-auswertung-route__chart line {
-  stroke: rgba(114, 119, 131, 0.4);
+  stroke: rgba(114, 119, 131, 0.32);
   stroke-width: 1;
 }
 
 .dd-auswertung-route__chart rect {
-  fill: rgba(22, 131, 74, 0.12);
+  fill: rgba(22, 131, 74, 0.1);
 }
 
-.dd-auswertung-route__chart polyline {
+.dd-auswertung-route__chart path {
   fill: none;
   stroke: var(--dd-color-primary);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 2.6;
+  filter: drop-shadow(0 6px 7px rgba(15, 82, 151, 0.16));
+  stroke-width: 3.1;
 }
 
 .dd-auswertung-route__chart-line {
@@ -678,7 +1108,7 @@
 }
 
 /* ==========================================================================
-   07   Vergleich
+   08   Vergleich
    ========================================================================== */
 
 .dd-auswertung-route__comparison-grid {
@@ -705,7 +1135,7 @@
 }
 
 /* ==========================================================================
-   08   Gruppenmatrix
+   09   Gruppenmatrix
    ========================================================================== */
 
 .dd-auswertung-route__group-grid {
@@ -785,12 +1215,14 @@
 }
 
 /* ==========================================================================
-   09   Responsive
+   10   Responsive
    ========================================================================== */
 
 @media (max-width: 1320px) {
   .dd-auswertung-route__kpis,
-  .dd-auswertung-route__group-grid {
+  .dd-auswertung-route__group-grid,
+  .dd-auswertung-route__prep-grid,
+  .dd-auswertung-route__prep-lists {
     grid-template-columns: repeat(3, minmax(180px, 1fr));
   }
 
@@ -846,7 +1278,9 @@
 @media (max-width: 1080px) {
   .dd-auswertung-route__headline,
   .dd-auswertung-route__main,
-  .dd-auswertung-route__filters {
+  .dd-auswertung-route__filters,
+  .dd-auswertung-route__prep-grid,
+  .dd-auswertung-route__prep-lists {
     grid-template-columns: 1fr;
   }
 
@@ -858,7 +1292,11 @@
 
   .dd-auswertung-route__priority header,
   .dd-auswertung-route__detail header,
-  .dd-auswertung-route__comparison header {
+  .dd-auswertung-route__comparison header,
+  .dd-auswertung-route__prep-head,
+  .dd-auswertung-route__overlay header,
+  .dd-auswertung-route__trend-panel header,
+  .dd-auswertung-route__range-panel header {
     flex-direction: column;
   }
 }
@@ -879,4 +1317,25 @@
   .dd-auswertung-route__detail header > strong {
     white-space: normal;
   }
-}
+
+  .dd-auswertung-route__overlay-chart {
+    grid-template-columns: 1fr;
+  }
+
+  .dd-auswertung-route__overlay-current {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .dd-auswertung-route__overlay-current > span {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .dd-auswertung-route__overlay-current button {
+    justify-items: center;
+  }
+}
+
+
+

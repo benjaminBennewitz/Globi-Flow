@@ -35,6 +35,51 @@ export class UebersichtPageComponent {
   /** Aggregierte Übersichtsdaten aus Mock oder später API. */
   protected readonly uebersicht$ = this.datenDashboardApi.ladeUebersicht();
 
+
+  /** Geführter Kernworkflow vom Befund bis zum Patientenbericht. */
+  public readonly workflowSchritte = [
+    {
+      nummer: '01',
+      titel: 'Patient wählen',
+      text: 'Arbeitskontext setzen oder neue Testperson anlegen.',
+      route: '/patienten',
+      icon: 'assignment_ind',
+      status: 'bereit'
+    },
+    {
+      nummer: '02',
+      titel: 'Befund importieren',
+      text: 'PDF analysieren, Rohtext extrahieren und Werte erkennen.',
+      route: '/importe',
+      icon: 'upload_file',
+      status: 'aktiv'
+    },
+    {
+      nummer: '03',
+      titel: 'Daten prüfen',
+      text: 'Nur unsichere oder auffällige Extraktionen manuell korrigieren.',
+      route: '/review',
+      icon: 'fact_check',
+      status: 'offen'
+    },
+    {
+      nummer: '04',
+      titel: 'Tendenzen auswerten',
+      text: 'Normalisierte Werte, Referenzbereiche und Verlauf überlagern.',
+      route: '/auswertung',
+      icon: 'monitoring',
+      status: 'bereit'
+    },
+    {
+      nummer: '05',
+      titel: 'Bericht freigeben',
+      text: 'Patientenverständliche Zusammenfassung aus geprüften Daten erzeugen.',
+      route: '/berichte',
+      icon: 'article',
+      status: 'gesperrt'
+    }
+  ];
+
   /** Gibt an, ob der Aktualisierungs-Overlay angezeigt wird. */
   public readonly aktualisierungAktiv: WritableSignal<boolean> = signal(false);
 
