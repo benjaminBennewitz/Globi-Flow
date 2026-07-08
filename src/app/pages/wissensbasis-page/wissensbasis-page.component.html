@@ -256,8 +256,8 @@
               }
             </div>
 
-            <input type="text" placeholder="Stand" [value]="quellenStand()"
-              (input)="quellenFeldSetzen('stand', $event)">
+            <input type="text" placeholder="Stand, z. B. 06.2026" [value]="quellenStand()"
+              (input)="quellenFeldSetzen('stand', $event)" (blur)="quellenStandNormalisieren()">
             <input type="text" placeholder="Referenz oder URL" [value]="quellenReferenz()"
               (input)="quellenFeldSetzen('referenz', $event)">
             <input type="text" placeholder="Interner Hinweis" [value]="quellenHinweis()"
@@ -326,11 +326,42 @@
         <input type="text" placeholder="z. B. LDL-Cholesterin" [value]="neuerAnzeigename()"
           (input)="anlageFeldSetzen('anzeigename', $event)">
       </label>
-      <label>
+      <label class="gf-wissensbasis-route__create-category-field">
         <span>Kategorie</span>
-        <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
-          (input)="anlageFeldSetzen('kategorie', $event)">
+        <div class="gf-wissensbasis-route__category-input-row">
+          <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
+            (focus)="kategorieEingabeAktivSetzen(true)" (blur)="kategorieEingabeVerzoegertDeaktivieren()"
+            (input)="anlageFeldSetzen('kategorie', $event)">
+          <button class="gf-wissensbasis-route__category-add" type="button" aria-label="Neue Kategorie anlegen"
+            (mousedown)="neueKategorieAnlageOeffnen($event)">
+            <span class="material-symbols-outlined" aria-hidden="true">add</span>
+          </button>
+        </div>
       </label>
+
+      @if (neueKategorieAnlageOffen()) {
+      <div class="gf-wissensbasis-route__category-create-row">
+        <input type="text" placeholder="Neue Kategorie benennen" [value]="neueKategorieEntwurf()"
+          (focus)="kategorieEingabeAktivSetzen(true)" (input)="neueKategorieEntwurfSetzen($event)"
+          (keydown.enter)="neueKategorieAlsPillAnlegen($event)">
+        <button type="button" aria-label="Kategorie übernehmen" (mousedown)="neueKategorieAlsPillAnlegen($event)">
+          <span class="material-symbols-outlined" aria-hidden="true">check</span>
+        </button>
+        <button type="button" aria-label="Kategorieanlage abbrechen" (mousedown)="neueKategorieAnlageAbbrechen($event)">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+      }
+
+      <div class="gf-wissensbasis-route__category-pills" [class.is-active]="neueKategorieEingabeAktiv()"
+        aria-label="Vorhandene Kategorien">
+        @for (kategorie of verfuegbareKategorien(); track kategorie) {
+        <button type="button" [disabled]="!neueKategorieEingabeAktiv()" [class.is-selected]="neueKategorie() === kategorie"
+          (mousedown)="kategorieAuswaehlen(kategorie, $event)">{{ kategorie }}</button>
+        } @empty {
+        <p>Noch keine Kategorien vorhanden.</p>
+        }
+      </div>
     </div>
 
     <footer>

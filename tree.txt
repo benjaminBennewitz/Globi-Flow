@@ -26,6 +26,7 @@ Globi-Flow/
 │   │   │   │   ├── auswertung.model.ts
 │   │   │   │   ├── bericht.model.ts
 │   │   │   │   ├── dashboard-view.model.ts
+│   │   │   │   ├── globale-suche.model.ts
 │   │   │   │   ├── importjob.model.ts
 │   │   │   │   ├── laborwert.model.ts
 │   │   │   │   ├── patient.model.ts

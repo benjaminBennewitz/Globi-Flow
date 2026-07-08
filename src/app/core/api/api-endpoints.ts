@@ -25,5 +25,6 @@ export const API_ENDPUNKTE = {
   wissensdatenbank: `${API_BASIS_URL}/knowledge/`,
   berichte: `${API_BASIS_URL}/reports/`,
   bericht: `${API_BASIS_URL}/reports/preview/`,
-  patientenbericht: `${API_BASIS_URL}/reports/patient-preview/`
+  patientenbericht: `${API_BASIS_URL}/reports/patient-preview/`,
+  globaleSuche: `${API_BASIS_URL}/search/`
 } as const;

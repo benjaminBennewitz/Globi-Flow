@@ -66,8 +66,40 @@
 
 <header class="gf-topbar" aria-label="Kopfleiste">
   <form class="gf-topbar__search-wrap" role="search" (submit)="sucheAbsenden($event)">
-    <gf-secure-search label="Patient suchen" placeholder="Patient suchen (ID, Name, Geb.-Datum) ..."
+    <gf-secure-search label="Global suchen" placeholder="Global suchen: Patient, Befund, Laborwert, Import, Wissen ..."
       [value]="suchbegriff()" (valueChange)="suchwertSetzen($event)"></gf-secure-search>
+
+    @if (suchergebnisseSichtbar()) {
+    <section class="gf-topbar__search-results" aria-label="Globale Suchergebnisse">
+      @if (sucheLaedt()) {
+      <p class="gf-topbar__search-state">Suche läuft ...</p>
+      } @else if (suchmeldung()) {
+      <p class="gf-topbar__search-state">{{ suchmeldung() }}</p>
+      } @else {
+      @for (gruppe of suchgruppen(); track gruppe.key) {
+      <article class="gf-topbar__search-group">
+        <header>
+          <strong>{{ gruppe.label }}</strong>
+          <a [routerLink]="gruppe.route" (click)="suchergebnisAuswaehlen()">Alle anzeigen</a>
+        </header>
+
+        <div>
+          @for (ergebnis of gruppe.items; track suchergebnisTrackKey(ergebnis)) {
+          <a class="gf-topbar__search-result" [attr.href]="ergebnis.route" (click)="suchergebnisOeffnen(ergebnis, $event)">
+            <span class="material-symbols-outlined" aria-hidden="true">{{ ergebnis.icon }}</span>
+            <span>
+              <strong>{{ ergebnis.title }}</strong>
+              <small>{{ ergebnis.subtitle }}</small>
+            </span>
+            <em>{{ ergebnis.badge }}</em>
+          </a>
+          }
+        </div>
+      </article>
+      }
+      }
+    </section>
+    }
   </form>
 
   <button class="gf-topbar__patient" type="button" [class.has-patient]="patientContext.aktiverPatient()"
@@ -92,6 +124,32 @@
     </a>
   </div>
 </header>
+
+@if (patientenwechselTreffer(); as wechselTreffer) {
+<section class="gf-search-switch" role="dialog" aria-modal="true" aria-labelledby="search-switch-title">
+  <div class="gf-search-switch__card">
+    <header>
+      <span class="material-symbols-outlined" aria-hidden="true">swap_horiz</span>
+      <div>
+        <h2 id="search-switch-title">Patientenkontext wechseln?</h2>
+        <p>Der Treffer gehört zu {{ wechselTreffer.patientName || 'einer anderen Testperson' }}. Aktuell geladen ist {{ aktuellerPatientName() }}.</p>
+      </div>
+    </header>
+    <article>
+      <strong>{{ wechselTreffer.title }}</strong>
+      <small>{{ wechselTreffer.subtitle }}</small>
+    </article>
+    <footer>
+      <button class="gf-button gf-button--secondary" type="button" (click)="patientenwechselAbbrechen()">Abbrechen</button>
+      <button class="gf-button gf-button--primary" type="button" (click)="patientenwechselBestaetigen()">Patient wechseln und öffnen</button>
+    </footer>
+  </div>
+</section>
+}
+
+@if (suchFokusLabel()) {
+<p class="gf-search-focus-note" role="status">Treffer fokussiert: {{ suchFokusLabel() }}</p>
+}
 
 @if (aktivesModal) {
 <section class="gf-header-modal" [class.is-patient]="aktivesModal === 'patient'" role="dialog" aria-modal="false"

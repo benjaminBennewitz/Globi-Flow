@@ -5,13 +5,14 @@
  * @module GlobiFlowApiService
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { API_ENDPUNKTE } from '../api/api-endpoints';
 import { AuswertungViewModel } from '../models/auswertung.model';
 import { BerichtViewModel } from '../models/bericht.model';
 import { DashboardViewModel } from '../models/dashboard-view.model';
+import { GlobaleSucheAntwort } from '../models/globale-suche.model';
 import { Importjob } from '../models/importjob.model';
 import { Laborwert } from '../models/laborwert.model';
 import { NeuerPatientInput, Patient } from '../models/patient.model';
@@ -193,6 +194,13 @@ export class GlobiFlowApiService {
   /** Startet die Demo-Analyse im Backend. */
   public demoAnalyseStarten(): Observable<Importjob> {
     return this.http.post<Importjob>(this.apiEndpunkte.demoAnalyse, {});
+  }
+
+
+  /** Sucht global und backendseitig über alle fachlichen Hauptbereiche. */
+  public globaleSuche(query: string): Observable<GlobaleSucheAntwort> {
+    const params = new HttpParams().set('q', query);
+    return this.http.get<GlobaleSucheAntwort>(this.apiEndpunkte.globaleSuche, { params });
   }
 
   /** Gibt die aktuell vorgesehenen API-Endpunkte für Debug- und Dev-Anzeigen zurück. */

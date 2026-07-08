@@ -5,7 +5,7 @@
  * @module WissensbasisPageComponent
  */
 
-import { ChangeDetectionStrategy, Component, WritableSignal, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, WritableSignal, computed, inject, signal } from '@angular/core';
 import { Wissenseintrag, WissenseintragStatus, Wissensquelle, WissensquelleTyp } from '../../core/models/wissenseintrag.model';
 import { IconActionComponent } from '../../shared/components/icon-action/icon-action.component';
 import { SecureSearchComponent } from '../../shared/components/secure-search/secure-search.component';
@@ -97,7 +97,7 @@ const LEERER_WISSENSEINTRAG: Wissenseintrag = {
   styleUrl: './wissensbasis-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WissensbasisPageComponent {
+export class WissensbasisPageComponent implements OnDestroy {
   /** Toast-Service für Statusrückmeldungen. */
   private readonly toastService = inject(ToastService);
 
@@ -137,6 +137,18 @@ export class WissensbasisPageComponent {
   /** Neue Kategorie für das Anlage-Modal. */
   public readonly neueKategorie: WritableSignal<string> = signal('');
 
+  /** Lokale Kategorien, die vor dem Speichern einer Wissenskarte ergänzt wurden. */
+  public readonly lokaleKategorien: WritableSignal<string[]> = signal([]);
+
+  /** Sichtbarkeit der Mini-Anlage für eine neue Kategorie. */
+  public readonly neueKategorieAnlageOffen: WritableSignal<boolean> = signal(false);
+
+  /** Eingabe für eine neue Kategorie-Pill. */
+  public readonly neueKategorieEntwurf: WritableSignal<string> = signal('');
+
+  /** Gibt an, ob die Kategorieeingabe im Anlageformular aktiv ist. */
+  public readonly neueKategorieEingabeAktiv: WritableSignal<boolean> = signal(false);
+
   /** Editorformular. */
   public readonly formular: WritableSignal<Wissensformular> = signal(this.formularAusEintrag(LEERER_WISSENSEINTRAG));
 
@@ -161,6 +173,9 @@ export class WissensbasisPageComponent {
   /** Sichtbarkeit der Quellenart-Auswahl. */
   public readonly quellenTypDropdownOffen: WritableSignal<boolean> = signal(false);
 
+  /** Timer zum verzögerten Deaktivieren der Kategoriepills. */
+  private kategorieBlurTimerId: ReturnType<typeof setTimeout> | null = null;
+
   /** Statusfilteroptionen. */
   public readonly statusOptionen: { key: WissensStatusFilter; label: string }[] = [
     { key: 'alle', label: 'Alle' },
@@ -181,14 +196,27 @@ export class WissensbasisPageComponent {
   /** Lädt die Wissensbasis aus der API. */
   public constructor() {
     this.globiFlowApi.ladeWissenseintraege().subscribe((eintraege: Wissenseintrag[]) => {
-      const daten = eintraege.length ? eintraege : [LEERER_WISSENSEINTRAG];
+      const daten = eintraege.length ? eintraege.map((eintrag: Wissenseintrag) => this.wissenseintragNormalisieren(eintrag)) : [LEERER_WISSENSEINTRAG];
       this.wissenseintraege.set(daten);
       this.eintragAuswaehlen(daten[0]);
     });
   }
 
+  /** Räumt verzögerte Kategorieaktionen auf. */
+  public ngOnDestroy(): void {
+    if (this.kategorieBlurTimerId) {
+      clearTimeout(this.kategorieBlurTimerId);
+    }
+  }
+
+  /** Vorhandene Kategorien für Anlageformular und neue Wissenskarten. */
+  public readonly verfuegbareKategorien = computed(() => {
+    const kategorien = [...this.wissenseintraege().map((eintrag: Wissenseintrag) => eintrag.kategorie.trim()), ...this.lokaleKategorien()].filter(Boolean);
+    return Array.from(new Set(kategorien)).sort((a: string, b: string) => a.localeCompare(b, 'de'));
+  });
+
   /** Kategorien der vorhandenen Einträge. */
-  public readonly kategorien = computed(() => ['alle', ...Array.from(new Set(this.wissenseintraege().map((eintrag: Wissenseintrag) => eintrag.kategorie)))]);
+  public readonly kategorien = computed(() => ['alle', ...this.verfuegbareKategorien()]);
 
   /** Gefilterte Wissenseinträge. */
   public readonly sichtbareEintraege = computed(() => this.wissenseintraege().filter((eintrag: Wissenseintrag) => this.eintragPasst(eintrag)));
@@ -303,8 +331,9 @@ export class WissensbasisPageComponent {
 
     this.globiFlowApi.wissenseintragAnlegen(eintrag).subscribe({
       next: (antwort: Wissenseintrag) => {
-        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => [antwort, ...eintraege.filter((wert: Wissenseintrag) => wert.id && wert.id !== antwort.id)]);
-        this.eintragAuswaehlen(antwort);
+        const normalisierteAntwort = this.wissenseintragNormalisieren(antwort);
+        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => [normalisierteAntwort, ...eintraege.filter((wert: Wissenseintrag) => wert.id && wert.id !== normalisierteAntwort.id)]);
+        this.eintragAuswaehlen(normalisierteAntwort);
         this.neuerLaborwertKey.set('');
         this.neuerAnzeigename.set('');
         this.neueKategorie.set('');
@@ -360,13 +389,14 @@ export class WissensbasisPageComponent {
 
     this.globiFlowApi.wissenseintragSpeichern(aktualisiert, eintrag.laborwertKey).subscribe({
       next: (antwort: Wissenseintrag) => {
-        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((wert: Wissenseintrag) => wert.id === id ? antwort : wert));
+        const normalisierteAntwort = this.wissenseintragNormalisieren(antwort);
+        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((wert: Wissenseintrag) => wert.id === id ? normalisierteAntwort : wert));
 
         if (this.aktiverEintragId() === id) {
-          this.formular.set(this.formularAusEintrag(antwort));
+          this.formular.set(this.formularAusEintrag(normalisierteAntwort));
         }
 
-        this.statusToast(antwort, status);
+        this.statusToast(normalisierteAntwort, status);
       },
       error: () => {
         this.toastService.zeige('Status nicht gespeichert', `${eintrag.anzeigename} konnte nicht aktualisiert werden.`, 'danger');
@@ -387,9 +417,10 @@ export class WissensbasisPageComponent {
 
     this.globiFlowApi.wissenseintragSpeichern(payload, eintrag.laborwertKey).subscribe({
       next: (antwort: Wissenseintrag) => {
-        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((wert: Wissenseintrag) => wert.id === formular.id ? antwort : wert));
-        this.eintragAuswaehlen(antwort);
-        this.toastService.zeige('Änderungen gespeichert', `${antwort.anzeigename} wurde in der Datenbank aktualisiert.`, 'success');
+        const normalisierteAntwort = this.wissenseintragNormalisieren(antwort);
+        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((wert: Wissenseintrag) => wert.id === formular.id ? normalisierteAntwort : wert));
+        this.eintragAuswaehlen(normalisierteAntwort);
+        this.toastService.zeige('Änderungen gespeichert', `${normalisierteAntwort.anzeigename} wurde in der Datenbank aktualisiert.`, 'success');
       },
       error: () => {
         this.toastService.zeige('Speichern fehlgeschlagen', `${formular.anzeigename} konnte nicht aktualisiert werden.`, 'danger');
@@ -425,7 +456,7 @@ export class WissensbasisPageComponent {
       id: `quelle-local-${Date.now()}`,
       titel,
       typ: this.quellenTyp(),
-      stand: this.quellenStand().trim() || 'ohne Stand',
+      stand: this.normalisiereQuellenStand(this.quellenStand()) || 'ohne Stand',
       referenz: this.quellenReferenz().trim(),
       hinweis: this.quellenHinweis().trim()
     };
@@ -434,7 +465,7 @@ export class WissensbasisPageComponent {
       id: vorhandeneQuelle?.id ?? quellenEntwurf.id,
       titel: vorhandeneQuelle?.titel ?? quellenEntwurf.titel,
       typ: vorhandeneQuelle?.typ ?? quellenEntwurf.typ,
-      stand: quellenEntwurf.stand !== 'ohne Stand' ? quellenEntwurf.stand : vorhandeneQuelle?.stand ?? quellenEntwurf.stand,
+      stand: this.normalisiereQuellenStand(quellenEntwurf.stand !== 'ohne Stand' ? quellenEntwurf.stand : vorhandeneQuelle?.stand ?? quellenEntwurf.stand) || 'ohne Stand',
       referenz: quellenEntwurf.referenz || vorhandeneQuelle?.referenz || '',
       hinweis: quellenEntwurf.hinweis || vorhandeneQuelle?.hinweis || ''
     };
@@ -476,7 +507,7 @@ export class WissensbasisPageComponent {
     event?.preventDefault();
     this.quellenTitel.set(quelle.titel);
     this.quellenTyp.set(quelle.typ);
-    this.quellenStand.set(quelle.stand);
+    this.quellenStand.set(this.normalisiereQuellenStand(quelle.stand));
     this.quellenReferenz.set(quelle.referenz);
     this.quellenHinweis.set(quelle.hinweis);
     this.quellenVorschlaegeOffen.set(false);
@@ -522,6 +553,81 @@ export class WissensbasisPageComponent {
   /** Gibt das Label der aktuellen Quellenart zurück. */
   public quellenTypLabel(): string {
     return this.quellenTypen.find((typ) => typ.key === this.quellenTyp())?.label ?? 'Demo';
+  }
+
+
+  /** Aktiviert oder deaktiviert die Kategoriepills im Anlageformular. */
+  public kategorieEingabeAktivSetzen(aktiv: boolean): void {
+    if (this.kategorieBlurTimerId) {
+      clearTimeout(this.kategorieBlurTimerId);
+    }
+
+    this.neueKategorieEingabeAktiv.set(aktiv);
+  }
+
+  /** Deaktiviert Kategoriepills verzögert, damit Pill-Klicks noch ausgeführt werden. */
+  public kategorieEingabeVerzoegertDeaktivieren(): void {
+    if (this.kategorieBlurTimerId) {
+      clearTimeout(this.kategorieBlurTimerId);
+    }
+
+    this.kategorieBlurTimerId = setTimeout(() => this.neueKategorieEingabeAktiv.set(false), 140);
+  }
+
+  /** Übernimmt eine vorhandene Kategorie exakt in das Anlageformular. */
+  public kategorieAuswaehlen(kategorie: string, event?: Event): void {
+    event?.preventDefault();
+    this.neueKategorie.set(kategorie);
+    this.neueKategorieEingabeAktiv.set(true);
+  }
+
+  /** Öffnet die Mini-Anlage für eine neue Kategorie. */
+  public neueKategorieAnlageOeffnen(event?: Event): void {
+    event?.preventDefault();
+    this.neueKategorieAnlageOffen.set(true);
+    this.neueKategorieEingabeAktiv.set(true);
+    this.neueKategorieEntwurf.set(this.neueKategorie().trim());
+  }
+
+  /** Bricht die Mini-Anlage für eine neue Kategorie ab. */
+  public neueKategorieAnlageAbbrechen(event?: Event): void {
+    event?.preventDefault();
+    this.neueKategorieAnlageOffen.set(false);
+    this.neueKategorieEntwurf.set('');
+  }
+
+  /** Aktualisiert die Mini-Eingabe für eine neue Kategorie. */
+  public neueKategorieEntwurfSetzen(event: Event): void {
+    const eingabe = event.target as HTMLInputElement;
+    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\;]/g, '').slice(0, 60);
+    this.neueKategorieEntwurf.set(wert);
+  }
+
+  /** Fügt eine neue Kategorie als Pill hinzu und wählt sie direkt aus. */
+  public neueKategorieAlsPillAnlegen(event?: Event): void {
+    event?.preventDefault();
+    const kategorie = this.neueKategorieEntwurf().trim();
+
+    if (!kategorie) {
+      return;
+    }
+
+    const vorhandeneKategorie = this.verfuegbareKategorien().find((wert: string) => wert.toLowerCase() === kategorie.toLowerCase());
+    const zielKategorie = vorhandeneKategorie ?? kategorie;
+
+    if (!vorhandeneKategorie) {
+      this.lokaleKategorien.update((kategorien: string[]) => [...kategorien, zielKategorie]);
+    }
+
+    this.neueKategorie.set(zielKategorie);
+    this.neueKategorieEntwurf.set('');
+    this.neueKategorieAnlageOffen.set(false);
+    this.neueKategorieEingabeAktiv.set(true);
+  }
+
+  /** Normalisiert das Quellenstandsdatum im Formular. */
+  public quellenStandNormalisieren(): void {
+    this.quellenStand.set(this.normalisiereQuellenStand(this.quellenStand()));
   }
 
   /** Aktualisiert die Suche über die zentrale Suchkomponente. */
@@ -657,7 +763,7 @@ export class WissensbasisPageComponent {
       einflussfaktoren: formular.einflussfaktoren,
       hinweise: formular.hinweise,
       disclaimer: formular.disclaimer,
-      quellen: [...formular.quellen],
+      quellen: formular.quellen.map((quelle: Wissensquelle) => ({ ...quelle, stand: this.normalisiereQuellenStand(quelle.stand) || 'ohne Stand' })),
       version: formular.version,
       status: formular.status,
       geaendertAm: this.heutigesDatumLabel(),
@@ -724,6 +830,44 @@ export class WissensbasisPageComponent {
   /** Bildet eine stabile Quellenidentität ohne technische ID. */
   private quellenIdentitaetsSchluessel(quelle: Pick<Wissensquelle, 'titel' | 'typ' | 'referenz'>): string {
     return `${this.quellenTitelSchluessel(quelle.titel)}|${quelle.typ}|${quelle.referenz.trim().toLowerCase()}`;
+  }
+
+
+  /** Normalisiert einen ganzen Wissenseintrag für eine konsistente Anzeige. */
+  private wissenseintragNormalisieren(eintrag: Wissenseintrag): Wissenseintrag {
+    return {
+      ...eintrag,
+      quellen: eintrag.quellen.map((quelle: Wissensquelle) => ({ ...quelle, stand: this.normalisiereQuellenStand(quelle.stand) || 'ohne Stand' }))
+    };
+  }
+
+  /** Normalisiert Quellenstände auf MM.JJJJ, sofern Monat und Jahr erkennbar sind. */
+  private normalisiereQuellenStand(wert: string): string {
+    const rohwert = wert.trim();
+
+    if (!rohwert || rohwert === 'ohne Stand') {
+      return rohwert;
+    }
+
+    const isoTreffer = rohwert.match(/^(\d{4})-(\d{1,2})(?:-\d{1,2})?$/);
+
+    if (isoTreffer) {
+      return `${isoTreffer[2].padStart(2, '0')}.${isoTreffer[1]}`;
+    }
+
+    const deutschesDatum = rohwert.match(/^(?:\d{1,2}\.)?(\d{1,2})\.(\d{4})$/);
+
+    if (deutschesDatum) {
+      return `${deutschesDatum[1].padStart(2, '0')}.${deutschesDatum[2]}`;
+    }
+
+    const kompaktDatum = rohwert.match(/^(\d{1,2})\/(\d{4})$/);
+
+    if (kompaktDatum) {
+      return `${kompaktDatum[1].padStart(2, '0')}.${kompaktDatum[2]}`;
+    }
+
+    return rohwert;
   }
 
   /** Zeigt passende Toasts für Statusaktionen. */
