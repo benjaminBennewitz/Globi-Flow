@@ -181,14 +181,12 @@ export class ReviewPageComponent {
 
   /** Stellt einen Kandidaten zurück. */
   public kandidatZurueckstellen(kandidat: ReviewKandidat): void {
-    this.statusSetzen(kandidat.id, 'offen');
-    this.toastService.zeige('Review zurückgestellt', `${kandidat.anzeigename} bleibt in der Warteschlange.`, 'warning');
+    this.kandidatInApiSpeichern({ ...kandidat, status: 'offen' }, 'Review zurückgestellt', `${kandidat.anzeigename} bleibt in der Warteschlange.`, 'warning');
   }
 
-  /** Speichert die aktuelle Korrektur lokal. */
+  /** Speichert die aktuelle Korrektur über die Backend-API. */
   public korrekturSpeichern(kandidat: ReviewKandidat): void {
-    this.statusSetzen(kandidat.id, 'korrigiert');
-    this.toastService.zeige('Korrektur gespeichert', `${kandidat.anzeigename} wurde lokal korrigiert.`, 'success');
+    this.kandidatInApiSpeichern({ ...kandidat, status: 'korrigiert' }, 'Korrektur gespeichert', `${kandidat.anzeigename} wurde in der Datenbank aktualisiert.`, 'success');
   }
 
   /** Speichert und springt zum nächsten offenen Kandidaten. */
@@ -214,28 +212,59 @@ export class ReviewPageComponent {
       return;
     }
 
-    this.review.update((wert: ReviewViewModel) => ({
-      ...wert,
-      kandidaten: wert.kandidaten.map((kandidat: ReviewKandidat) => kandidaten.some((eintrag: ReviewKandidat) => eintrag.id === kandidat.id) ? { ...kandidat, status: 'bestaetigt' } : kandidat)
-    }));
-    this.toastService.zeige('Sichere Werte bestätigt', `${kandidaten.length} Werte wurden lokal bestätigt.`, 'success');
+    const ids = kandidaten.map((kandidat: ReviewKandidat) => kandidat.id);
+    this.globiFlowApi.reviewKandidatenStatusSetzen(ids, 'bestaetigt').subscribe({
+      next: (antwort: ReviewViewModel) => {
+        this.review.update((wert: ReviewViewModel) => ({
+          ...wert,
+          kandidaten: wert.kandidaten.map((kandidat: ReviewKandidat) => antwort.kandidaten.find((eintrag: ReviewKandidat) => eintrag.id === kandidat.id) ?? kandidat)
+        }));
+        this.toastService.zeige('Sichere Werte bestätigt', `${kandidaten.length} Werte wurden in der Datenbank bestätigt.`, 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Bestätigung fehlgeschlagen', 'Die Reviewwerte konnten nicht gespeichert werden.', 'danger');
+      }
+    });
   }
 
   /** Übernimmt alle geprüften Werte im aktiven Kontext für die nächste Workflowstufe. */
   public gepruefteUebernehmen(): void {
     const kandidaten = this.kandidatenFuerKontext(this.review()).filter((kandidat: ReviewKandidat) => kandidat.status === 'bestaetigt' || kandidat.status === 'korrigiert');
+    const befund = this.patientContext.aktiverBefund();
 
-    if (!kandidaten.length) {
+    if (!kandidaten.length || !befund) {
       this.toastService.zeige('Keine geprüften Werte', 'Bitte zuerst Werte korrigieren oder bestätigen.', 'warning');
       return;
     }
 
-    this.toastService.zeige('Geprüfte Werte vorbereitet', `${kandidaten.length} Werte sind bereit für Auswertung und Bericht.`, 'success');
+    this.globiFlowApi.befundFreigeben(befund.id).subscribe({
+      next: () => {
+        this.patientContext.patientenNeuLaden();
+        this.toastService.zeige('Befund freigegeben', `${kandidaten.length} geprüfte Werte sind bereit für Auswertung und Bericht.`, 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Freigabe fehlgeschlagen', 'Der Befund konnte nicht freigegeben werden.', 'danger');
+      }
+    });
   }
 
   /** Setzt einen Reviewstatus lokal. */
   private statusSetzen(id: string, status: ReviewStatus): void {
     this.kandidatAktualisieren(id, { status });
+  }
+
+  /** Speichert einen Kandidaten optimistisch über die API. */
+  private kandidatInApiSpeichern(kandidat: ReviewKandidat, titel: string, beschreibung: string, status: 'success' | 'warning'): void {
+    this.statusSetzen(kandidat.id, kandidat.status);
+    this.globiFlowApi.reviewKandidatSpeichern(kandidat).subscribe({
+      next: (antwort: ReviewKandidat) => {
+        this.kandidatAktualisieren(antwort.id, antwort);
+        this.toastService.zeige(titel, beschreibung, status);
+      },
+      error: () => {
+        this.toastService.zeige('Speichern fehlgeschlagen', `${kandidat.anzeigename} konnte nicht in der Datenbank aktualisiert werden.`, 'danger');
+      }
+    });
   }
 
   /** Aktualisiert einen Kandidaten im lokalen Zustand. */

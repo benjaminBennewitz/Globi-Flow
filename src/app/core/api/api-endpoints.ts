@@ -15,11 +15,15 @@ export const API_ENDPUNKTE = {
   uebersicht: `${API_BASIS_URL}/overview/`,
   auswertung: `${API_BASIS_URL}/auswertung/`,
   importjobs: `${API_BASIS_URL}/imports/jobs/`,
+  imports: `${API_BASIS_URL}/imports/`,
   upload: `${API_BASIS_URL}/imports/upload/`,
+  manuellerImport: `${API_BASIS_URL}/imports/manual/`,
   demoAnalyse: `${API_BASIS_URL}/imports/demo/`,
   review: `${API_BASIS_URL}/imports/review/`,
+  reviewBulk: `${API_BASIS_URL}/imports/review/bulk/`,
   freigabe: `${API_BASIS_URL}/lab-reports/release/`,
   wissensdatenbank: `${API_BASIS_URL}/knowledge/`,
+  berichte: `${API_BASIS_URL}/reports/`,
   bericht: `${API_BASIS_URL}/reports/preview/`,
   patientenbericht: `${API_BASIS_URL}/reports/patient-preview/`
 } as const;

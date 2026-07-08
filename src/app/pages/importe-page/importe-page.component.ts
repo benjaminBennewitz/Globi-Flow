@@ -10,6 +10,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Importjob, ImportjobAnalyseArt, ImportjobDataset, ImportjobOcrStatus, ImportjobSchrittStatus, ImportjobStatus } from '../../core/models/importjob.model';
 import { pruefeSicherePdfDatei, SICHERE_DATEI_MAX_LABEL } from '../../core/security/sichere-datei.util';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
+import { PatientContextService } from '../../core/services/patient-context.service';
 import { ToastService } from '../../shared/services/toast.service';
 
 /** Importlistenfilter für Statusgruppen. */
@@ -50,6 +51,9 @@ export class ImportePageComponent {
 
   /** API-Service für Importdaten. */
   private readonly globiFlowApi = inject(GlobiFlowApiService);
+
+  /** Globaler Patientenkontext für Importzuordnung. */
+  private readonly patientContext = inject(PatientContextService);
 
   /** Uploadbereich für automatisches Scrollen. */
   private uploadBereich?: ElementRef<HTMLElement>;
@@ -315,26 +319,29 @@ export class ImportePageComponent {
     }
   }
 
-  /** Legt einen manuellen Importjob als Fallback an. */
+  /** Legt einen manuellen Importjob als Backend-Fallback an. */
   public manuelleEingabeAnlegen(): void {
     const name = this.manuellAnzeigename().trim() || 'Manueller Laborwert';
-    const job = this.fallbackJobErstellen('manuelle-erfassung-demo.pdf', 'Manuelle Testperson', 'textschicht', 'review', 100, 76);
-    const angereicherterJob: Importjob = {
-      ...job,
-      dateiname: 'manuelle-erfassung-demo.pdf',
-      pipelineSchritt: 'Manuelle Erfassung für Review vorbereitet',
-      erkannteWerte: 1,
-      unsichereWerte: 1,
-      datasets: [{ id: `dataset-manuell-${Date.now()}`, name, werte: 1, review: 1, confidence: 76, status: 'review' }],
-      logEintraege: [
-        { id: `log-manuell-${Date.now()}-1`, zeitpunkt: this.zeitLabel(), titel: 'Manuelle Eingabe erfasst', beschreibung: `${name} ${this.manuellErgebnis()} ${this.manuellEinheit()} · Referenz ${this.manuellReferenz()}`, status: 'review' }
-      ]
-    };
 
-    this.importjobs.update((jobs: Importjob[]) => [angereicherterJob, ...jobs]);
-    this.ausgewaehlterJobId.set(angereicherterJob.id);
-    this.manuelleEingabeSchliessen();
-    this.toastService.zeige('Manuelle Eingabe angelegt', `${name} wurde als Review-Fallback vorbereitet.`, 'success');
+    this.globiFlowApi.manuellenImportAnlegen({
+      patientId: this.patientContext.aktiverPatient().id,
+      key: this.manuellLaborwertKey().trim(),
+      name,
+      ergebnis: this.manuellErgebnis().trim(),
+      einheit: this.manuellEinheit().trim(),
+      referenz: this.manuellReferenz().trim()
+    }).subscribe({
+      next: (job: Importjob) => {
+        this.importjobs.update((jobs: Importjob[]) => [job, ...jobs.filter((eintrag: Importjob) => eintrag.id !== job.id)]);
+        this.ausgewaehlterJobId.set(job.id);
+        this.manuelleEingabeSchliessen();
+        this.patientContext.patientenNeuLaden();
+        this.toastService.zeige('Manuelle Eingabe angelegt', `${name} wurde als Review-Fallback gespeichert.`, 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Manuelle Eingabe fehlgeschlagen', `${name} konnte nicht gespeichert werden.`, 'danger');
+      }
+    });
   }
 
   /** Deaktiviert den Upload-Hinweis nach erster bewusster Interaktion. */

@@ -6,6 +6,7 @@
  */
 
 import { Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { NeuerPatientInput, Patient, PatientBefund, PatientQuelle } from '../models/patient.model';
 import { normalisiereSichereSuche } from '../security/sichere-suche.util';
 import { GlobiFlowApiService } from './globi-flow-api.service';
@@ -99,44 +100,31 @@ export class PatientContextService {
     this.patientenFilter.set(filter);
   }
 
-  /** Erstellt lokal eine neue Testperson und gibt sie zurück. */
-  public patientAnlegen(input: NeuerPatientInput): Patient {
-    const name = `${input.vorname.trim()} ${input.nachname.trim()}`.trim() || 'Neue Testperson';
-    const nummer = input.nummer.trim() || this.naechstePatientenNummer();
-    const patient: Patient = {
-      id: `patient-local-${Date.now()}`,
-      nummer,
-      name,
-      vorname: input.vorname.trim(),
-      nachname: input.nachname.trim(),
-      geburtsdatum: input.geburtsdatum,
-      geschlecht: input.geschlecht,
-      gewichtKg: input.gewichtKg,
-      groesseCm: input.groesseCm,
-      lebensstil: input.lebensstil.trim() || 'nicht angegeben',
-      kontext: 'lokal angelegt',
-      quelle: 'manuell',
-      status: 'leer',
-      befunde: 0,
-      offeneReviews: 0,
-      letzterBefund: 'kein Befund',
-      berichtStatus: 'keine Daten',
-      notiz: input.notiz.trim(),
-      befundListe: []
-    };
+  /** Erstellt eine neue Testperson über die Backend-API und aktualisiert den lokalen Signalzustand. */
+  public patientAnlegen(input: NeuerPatientInput): Observable<Patient> {
+    return this.globiFlowApi.patientAnlegen(input).pipe(
+      tap((patient: Patient) => {
+        this.patienten.update((patienten: Patient[]) => [patient, ...patienten.filter((eintrag: Patient) => eintrag.id && eintrag.id !== patient.id)]);
+      })
+    );
+  }
 
-    this.patienten.update((patienten: Patient[]) => [patient, ...patienten.filter((eintrag: Patient) => eintrag.id)]);
-    return patient;
+  /** Lädt die Patientendaten nach Backend-Änderungen neu. */
+  public patientenNeuLaden(): void {
+    this.patientenAusApiLaden(false);
   }
 
   /** Lädt Patientendaten aus der Backend-API. */
-  private patientenAusApiLaden(): void {
+  private patientenAusApiLaden(kontextZuruecksetzen = true): void {
     this.globiFlowApi.ladePatienten().subscribe({
       next: (patienten: Patient[]) => {
         const daten = patienten.length ? patienten : [LEERER_PATIENT];
         this.patienten.set(daten);
-        this.aktiverPatientId.set(daten[0].id);
-        this.aktiverBefundId.set(daten[0].befundListe[0]?.id ?? '');
+        const aktiverPatientNochVorhanden = daten.some((patient: Patient) => patient.id === this.aktiverPatientId());
+        if (kontextZuruecksetzen || !aktiverPatientNochVorhanden) {
+          this.aktiverPatientId.set(daten[0].id);
+          this.aktiverBefundId.set(daten[0].befundListe[0]?.id ?? '');
+        }
       }
     });
   }
@@ -150,9 +138,4 @@ export class PatientContextService {
     return suchePasst && filterPasst;
   }
 
-  /** Erzeugt eine einfache lokale Testpersonen-ID. */
-  private naechstePatientenNummer(): string {
-    const nummer = this.patienten().length + 1;
-    return `TP-2026-${nummer.toString().padStart(3, '0')}`;
-  }
 }

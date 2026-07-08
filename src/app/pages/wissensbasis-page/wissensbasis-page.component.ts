@@ -248,8 +248,7 @@ export class WissensbasisPageComponent {
     const laborwertKey = this.neuerLaborwertKey().trim() || 'neuer_laborwert';
     const anzeigename = this.neuerAnzeigename().trim() || 'Neuer Laborwert';
     const kategorie = this.neueKategorie().trim() || 'Neue Kategorie';
-    const eintrag: Wissenseintrag = {
-      id: `wissen-local-${Date.now()}`,
+    const eintrag: Partial<Wissenseintrag> = {
       laborwertKey,
       anzeigename,
       kategorie,
@@ -264,18 +263,25 @@ export class WissensbasisPageComponent {
       quellen: [],
       version: 1,
       status: 'entwurf',
-      geaendertAm: '12.06.2026',
+      geaendertAm: this.heutigesDatumLabel(),
       geaendertVon: 'Admin',
-      versionen: [{ version: 1, datum: '12.06.2026', bearbeitetVon: 'Admin', notiz: 'Neuer Entwurf angelegt.' }]
+      versionen: [{ version: 1, datum: this.heutigesDatumLabel(), bearbeitetVon: 'Admin', notiz: 'Neuer Entwurf angelegt.' }]
     };
 
-    this.wissenseintraege.update((eintraege: Wissenseintrag[]) => [eintrag, ...eintraege]);
-    this.eintragAuswaehlen(eintrag);
-    this.neuerLaborwertKey.set('');
-    this.neuerAnzeigename.set('');
-    this.neueKategorie.set('');
-    this.anlageModalSchliessen();
-    this.toastService.zeige('Wissenskarte angelegt', `${anzeigename} wurde als Entwurf erstellt.`, 'success');
+    this.globiFlowApi.wissenseintragAnlegen(eintrag).subscribe({
+      next: (antwort: Wissenseintrag) => {
+        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => [antwort, ...eintraege.filter((wert: Wissenseintrag) => wert.id && wert.id !== antwort.id)]);
+        this.eintragAuswaehlen(antwort);
+        this.neuerLaborwertKey.set('');
+        this.neuerAnzeigename.set('');
+        this.neueKategorie.set('');
+        this.anlageModalSchliessen();
+        this.toastService.zeige('Wissenskarte angelegt', `${antwort.anzeigename} wurde als Entwurf gespeichert.`, 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Anlage fehlgeschlagen', 'Die Wissenskarte konnte nicht in der API angelegt werden.', 'danger');
+      }
+    });
   }
 
   /** Löscht den im Dialog gewählten Eintrag. */
@@ -286,28 +292,53 @@ export class WissensbasisPageComponent {
       return;
     }
 
-    this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.filter((wert: Wissenseintrag) => wert.id !== eintrag.id));
+    this.globiFlowApi.wissenseintragLoeschen(eintrag).subscribe({
+      next: () => {
+        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.filter((wert: Wissenseintrag) => wert.id !== eintrag.id));
 
-    if (this.aktiverEintragId() === eintrag.id && this.wissenseintraege()[0]) {
-      this.eintragAuswaehlen(this.wissenseintraege()[0]);
-    }
+        if (this.aktiverEintragId() === eintrag.id && this.wissenseintraege()[0]) {
+          this.eintragAuswaehlen(this.wissenseintraege()[0]);
+        }
 
-    this.loeschDialogSchliessen();
-    this.toastService.zeige('Wissenskarte gelöscht', `${eintrag.anzeigename} wurde entfernt.`, 'danger');
+        this.loeschDialogSchliessen();
+        this.toastService.zeige('Wissenskarte gelöscht', `${eintrag.anzeigename} wurde aus der Datenbank entfernt.`, 'danger');
+      },
+      error: () => {
+        this.toastService.zeige('Löschen fehlgeschlagen', `${eintrag.anzeigename} konnte nicht gelöscht werden.`, 'danger');
+      }
+    });
   }
 
   /** Setzt den Status eines Wissenseintrags lokal. */
   public eintragStatusSetzen(id: string, status: WissenseintragStatus): void {
-    this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((eintrag: Wissenseintrag) => eintrag.id === id ? { ...eintrag, status, geaendertAm: '12.06.2026' } : eintrag));
     const eintrag = this.wissenseintraege().find((wert: Wissenseintrag) => wert.id === id);
 
-    if (eintrag && this.aktiverEintragId() === id) {
-      this.formular.set(this.formularAusEintrag(eintrag));
+    if (!eintrag) {
+      return;
     }
 
-    if (eintrag) {
-      this.statusToast(eintrag, status);
-    }
+    const aktualisiert: Wissenseintrag & { aenderungsnotiz?: string } = {
+      ...eintrag,
+      status,
+      geaendertAm: this.heutigesDatumLabel(),
+      geaendertVon: 'Admin',
+      aenderungsnotiz: `Status auf ${status} gesetzt.`
+    };
+
+    this.globiFlowApi.wissenseintragSpeichern(aktualisiert, eintrag.laborwertKey).subscribe({
+      next: (antwort: Wissenseintrag) => {
+        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((wert: Wissenseintrag) => wert.id === id ? antwort : wert));
+
+        if (this.aktiverEintragId() === id) {
+          this.formular.set(this.formularAusEintrag(antwort));
+        }
+
+        this.statusToast(antwort, status);
+      },
+      error: () => {
+        this.toastService.zeige('Status nicht gespeichert', `${eintrag.anzeigename} konnte nicht aktualisiert werden.`, 'danger');
+      }
+    });
   }
 
   /** Öffnet den Löschdialog für den aktiven Eintrag. */
@@ -315,11 +346,22 @@ export class WissensbasisPageComponent {
     this.loeschDialogOeffnen(this.formular().id);
   }
 
-  /** Speichert Formularwerte lokal in den Mockdaten. */
+  /** Speichert Formularwerte dauerhaft über die Backend-API. */
   public entwurfSpeichern(): void {
     const formular = this.formular();
-    this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((eintrag: Wissenseintrag) => eintrag.id === formular.id ? this.eintragAusFormular(eintrag, formular) : eintrag));
-    this.toastService.zeige('Änderungen gespeichert', `${formular.anzeigename} wurde lokal aktualisiert.`, 'success');
+    const eintrag = this.aktiverEintrag();
+    const payload = this.formularZuEintrag(eintrag, formular);
+
+    this.globiFlowApi.wissenseintragSpeichern(payload, eintrag.laborwertKey).subscribe({
+      next: (antwort: Wissenseintrag) => {
+        this.wissenseintraege.update((eintraege: Wissenseintrag[]) => eintraege.map((wert: Wissenseintrag) => wert.id === formular.id ? antwort : wert));
+        this.eintragAuswaehlen(antwort);
+        this.toastService.zeige('Änderungen gespeichert', `${antwort.anzeigename} wurde in der Datenbank aktualisiert.`, 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Speichern fehlgeschlagen', `${formular.anzeigename} konnte nicht aktualisiert werden.`, 'danger');
+      }
+    });
   }
 
   /** Setzt den Formularstatus ohne sofortige Speicherung. */
@@ -331,7 +373,6 @@ export class WissensbasisPageComponent {
   public statusSetzenUndSpeichern(status: WissenseintragStatus): void {
     this.statusSetzen(status);
     this.entwurfSpeichern();
-    this.statusToast(this.aktiverEintrag(), status);
   }
 
   /** Öffnet oder schließt den Quellenindex. */
@@ -506,10 +547,23 @@ export class WissensbasisPageComponent {
       quellen: [...formular.quellen],
       version: formular.version,
       status: formular.status,
-      geaendertAm: '12.06.2026',
+      geaendertAm: this.heutigesDatumLabel(),
       geaendertVon: 'Admin',
-      versionen: formular.aenderungsnotiz.trim() ? [...eintrag.versionen, { version: formular.version, datum: '12.06.2026', bearbeitetVon: 'Admin', notiz: formular.aenderungsnotiz.trim() }] : eintrag.versionen
+      versionen: formular.aenderungsnotiz.trim() ? [...eintrag.versionen, { version: formular.version, datum: this.heutigesDatumLabel(), bearbeitetVon: 'Admin', notiz: formular.aenderungsnotiz.trim() }] : eintrag.versionen
     };
+  }
+
+  /** Wandelt Formularzustand in einen API-Payload um. */
+  private formularZuEintrag(eintrag: Wissenseintrag, formular: Wissensformular): Wissenseintrag & { aenderungsnotiz?: string } {
+    return {
+      ...this.eintragAusFormular(eintrag, formular),
+      aenderungsnotiz: formular.aenderungsnotiz.trim()
+    };
+  }
+
+  /** Liefert ein deutsches Datumslabel für Änderungsvermerke. */
+  private heutigesDatumLabel(): string {
+    return new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
   /** Zeigt passende Toasts für Statusaktionen. */

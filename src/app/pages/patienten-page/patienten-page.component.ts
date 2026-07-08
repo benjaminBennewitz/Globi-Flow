@@ -9,6 +9,7 @@ import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } fr
 import { RouterLink } from '@angular/router';
 import { NeuerPatientInput, Patient, PatientGeschlecht, PatientQuelle, PatientStatus } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
+import { ToastService } from '../../shared/services/toast.service';
 import { IconActionComponent } from '../../shared/components/icon-action/icon-action.component';
 import { SecureSearchComponent } from '../../shared/components/secure-search/secure-search.component';
 
@@ -26,6 +27,9 @@ type PatientenSortierung = 'aktualisiert' | 'review' | 'name';
 export class PatientenPageComponent {
   /** Globaler Patientenkontext. */
   public readonly patientContext = inject(PatientContextService);
+
+  /** Toast-Service für API-Rückmeldungen. */
+  private readonly toastService = inject(ToastService);
 
   /** Gibt an, ob das Anlage-Modal geöffnet ist. */
   public readonly modalOffen: WritableSignal<boolean> = signal(false);
@@ -189,16 +193,22 @@ export class PatientenPageComponent {
     this.neueNotiz.set(this.eingabewert(event).slice(0, 180));
   }
 
-  /** Erstellt eine Testperson und setzt sie optional aktiv. */
+  /** Erstellt eine Testperson über die API und setzt sie optional aktiv. */
   public patientAnlegen(aktivSetzen: boolean): void {
-    const patient = this.patientContext.patientAnlegen(this.neuerPatientInput());
+    this.patientContext.patientAnlegen(this.neuerPatientInput()).subscribe({
+      next: (patient: Patient) => {
+        if (aktivSetzen) {
+          this.patientContext.patientSetzen(patient);
+        }
 
-    if (aktivSetzen) {
-      this.patientContext.patientSetzen(patient);
-    }
-
-    this.formularLeeren();
-    this.modalSchliessen();
+        this.formularLeeren();
+        this.modalSchliessen();
+        this.toastService.zeige('Testperson angelegt', `${patient.name} wurde in der Datenbank gespeichert.`, 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Speichern fehlgeschlagen', 'Die Testperson konnte nicht in der API angelegt werden.', 'danger');
+      }
+    });
   }
 
   /** Gibt eine Statusklasse zurück. */
