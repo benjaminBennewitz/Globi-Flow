@@ -61,6 +61,9 @@ export interface Wissenseintrag {
   /** Medizinische Kategorie. */
   kategorie: string;
 
+  /** Stabile Farbe für Diagramme und Verlaufslinien. */
+  farbe: string;
+
   /** Kurze Patientenerklärung. */
   patientKurztext: string;
 

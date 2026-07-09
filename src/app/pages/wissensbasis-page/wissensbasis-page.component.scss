@@ -34,6 +34,13 @@
   gap: var(--gf-space-4);
 }
 
+.gf-wissensbasis-route__headline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: var(--gf-space-2);
+}
+
 .gf-wissensbasis-route__headline h1 {
   margin: 0.6rem 0 0;
   color: var(--gf-color-text);
@@ -244,6 +251,15 @@ gf-secure-search {
   white-space: nowrap;
 }
 
+.gf-wissensbasis-route__entry-color,
+.gf-wissensbasis-route__editor-color {
+  display: inline-block;
+  width: 0.72rem;
+  height: 0.72rem;
+  border-radius: var(--gf-radius-pill);
+  box-shadow: var(--gf-shadow-soft);
+}
+
 .gf-wissensbasis-route__entry {
   min-height: 128px;
   max-height: 148px;
@@ -278,6 +294,7 @@ gf-secure-search {
 
 .gf-wissensbasis-route__entry-main {
   display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
   gap: var(--gf-space-2);
   width: 100%;
   height: 100%;
@@ -285,6 +302,12 @@ gf-secure-search {
   cursor: pointer;
   background: transparent;
   text-align: left;
+}
+
+.gf-wissensbasis-route__entry-main strong,
+.gf-wissensbasis-route__entry-main small,
+.gf-wissensbasis-route__entry-main i {
+  grid-column: 1 / -1;
 }
 
 .gf-wissensbasis-route__entry-actions {
@@ -387,6 +410,27 @@ gf-secure-search {
 .gf-wissensbasis-route__form label {
   display: grid;
   gap: var(--gf-space-2);
+}
+
+.gf-wissensbasis-route__color-field {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.gf-wissensbasis-route__color-field span {
+  grid-column: 1 / -1;
+}
+
+.gf-wissensbasis-route__color-field input[type='color'] {
+  min-height: 2.9rem;
+  padding: 0.32rem;
+  cursor: pointer;
+}
+
+.gf-wissensbasis-route__color-field small {
+  color: var(--gf-color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 850;
 }
 
 .gf-wissensbasis-route__form label span,
@@ -760,64 +804,6 @@ gf-secure-search {
 
 .gf-wissensbasis-route__create-category-field {
   grid-column: 3 / 4;
-}
-
-.gf-wissensbasis-route__category-input-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 42px;
-  gap: var(--gf-space-2);
-  align-items: center;
-}
-
-.gf-wissensbasis-route__category-add,
-.gf-wissensbasis-route__category-create-row button {
-  display: grid;
-  place-items: center;
-  border-radius: var(--gf-radius-lg);
-  cursor: pointer;
-  background: var(--gf-color-bg);
-  color: var(--gf-color-primary);
-  box-shadow: var(--gf-shadow-soft);
-  transition: box-shadow 160ms var(--gf-ease-out), transform 160ms var(--gf-ease-out), background 160ms var(--gf-ease-out), color 160ms var(--gf-ease-out);
-}
-
-.gf-wissensbasis-route__category-add {
-  width: 42px;
-  height: 42px;
-}
-
-.gf-wissensbasis-route__category-add:hover,
-.gf-wissensbasis-route__category-add:focus-visible,
-.gf-wissensbasis-route__category-create-row button:hover,
-.gf-wissensbasis-route__category-create-row button:focus-visible {
-  background: var(--gf-color-primary);
-  color: #ffffff;
-  box-shadow: var(--gf-shadow-raised);
-  transform: translateY(-1px);
-}
-
-.gf-wissensbasis-route__category-add:hover .material-symbols-outlined,
-.gf-wissensbasis-route__category-add:focus-visible .material-symbols-outlined,
-.gf-wissensbasis-route__category-create-row button:hover .material-symbols-outlined,
-.gf-wissensbasis-route__category-create-row button:focus-visible .material-symbols-outlined {
-  color: #ffffff;
-}
-
-.gf-wissensbasis-route__category-create-row {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 1fr) 42px 42px;
-  gap: var(--gf-space-2);
-  align-items: center;
-  border-radius: var(--gf-radius-lg);
-  padding: var(--gf-space-2);
-  background: var(--gf-color-bg-soft);
-  box-shadow: var(--gf-shadow-inset);
-}
-
-.gf-wissensbasis-route__category-create-row button {
-  width: 42px;
-  height: 42px;
 }
 
 .gf-wissensbasis-route__category-pills {

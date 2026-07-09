@@ -56,7 +56,28 @@ export interface BefundFreigabeAntwort {
 }
 
 
-/** Antwort nach dem Zurücksetzen der klinischen Demo-Daten. */
+/** Antwort nach dem Zurücksetzen der Wissensbasis. */
+export interface WissensbasisResetAntwort {
+  /** API-Status. */
+  status: string;
+
+  /** Sichtbare Rückmeldung. */
+  message: string;
+
+  /** Anzahl der zurückgesetzten Wissenseinträge. */
+  entries: number;
+
+  /** Anzahl der gepflegten Laborwertdefinitionen. */
+  analytes: number;
+
+  /** Anzahl der Quellen. */
+  sources: number;
+
+  /** Aktualisierte Wissenseinträge. */
+  items: Wissenseintrag[];
+}
+
+
 export interface DemoDatenResetAntwort {
   /** API-Status. */
   status: string;
@@ -189,6 +210,11 @@ export class GlobiFlowApiService {
   /** Löscht einen Wissenseintrag. */
   public wissenseintragLoeschen(eintrag: Wissenseintrag): Observable<void> {
     return this.http.delete<void>(this.detailUrl(this.apiEndpunkte.wissensdatenbank, eintrag.laborwertKey));
+  }
+
+  /** Setzt die Wissensbasis auf den Mindestbestand zurück. */
+  public wissensbasisZuruecksetzen(): Observable<WissensbasisResetAntwort> {
+    return this.http.post<WissensbasisResetAntwort>(this.apiEndpunkte.wissensdatenbankReset, {});
   }
 
   /** Liefert die kompakte Patientenbericht-Vorschau. */

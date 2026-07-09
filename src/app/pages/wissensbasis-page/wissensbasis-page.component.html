@@ -8,10 +8,16 @@
       <p>Laborwert-Erklärungen, Quellen, Versionen und Freigaben für Auswertung und Patientenbericht pflegen.</p>
     </div>
 
-    <button class="gf-button gf-button--secondary" type="button" (click)="quellenindexUmschalten()">
-      <span class="material-symbols-outlined" aria-hidden="true">library_books</span>
-      Quellenindex
-    </button>
+    <div class="gf-wissensbasis-route__headline-actions">
+      <button class="gf-button gf-button--secondary" type="button" (click)="resetDialogOeffnen()">
+        <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+        Mindestwerte zurücksetzen
+      </button>
+      <button class="gf-button gf-button--secondary" type="button" (click)="quellenindexUmschalten()">
+        <span class="material-symbols-outlined" aria-hidden="true">library_books</span>
+        Quellenindex
+      </button>
+    </div>
   </header>
 
   <section class="gf-wissensbasis-route__kpis" aria-label="Wissensbasis-Kennzahlen">
@@ -76,6 +82,7 @@
         <article class="gf-wissensbasis-route__entry" [class.is-active]="eintrag.id === aktiverEintrag().id">
           <button type="button" class="gf-wissensbasis-route__entry-main" (click)="eintragAuswaehlen(eintrag)">
             <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</span>
+            <b class="gf-wissensbasis-route__entry-color" [style.background]="eintrag.farbe" aria-hidden="true"></b>
             <strong>{{ eintrag.anzeigename }}</strong>
             <small>{{ eintrag.laborwertKey }} · {{ eintrag.kategorie }}</small>
             <i>v{{ eintrag.version }} · {{ eintrag.quellen.length }} Quellen</i>
@@ -102,6 +109,7 @@
       <header>
         <div>
           <span class="gf-chip {{ statusKlasse(form.status) }}">{{ statusLabel(form.status) }}</span>
+          <span class="gf-wissensbasis-route__editor-color" [style.background]="form.farbe" aria-hidden="true"></span>
           <h2 id="editor-title">{{ form.anzeigename }}</h2>
           <p>{{ form.laborwertKey }} · Version {{ form.version }}</p>
         </div>
@@ -130,6 +138,11 @@
           <label>
             <span>Kategorie</span>
             <input type="text" [value]="form.kategorie" (input)="formularfeldSetzen('kategorie', $event)">
+          </label>
+          <label class="gf-wissensbasis-route__color-field">
+            <span>Diagrammfarbe</span>
+            <input type="color" [value]="form.farbe" (input)="formularfeldSetzen('farbe', $event)">
+            <small>{{ form.farbe }}</small>
           </label>
           <label>
             <span>Status</span>
@@ -328,30 +341,10 @@
       </label>
       <label class="gf-wissensbasis-route__create-category-field">
         <span>Kategorie</span>
-        <div class="gf-wissensbasis-route__category-input-row">
-          <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
-            (focus)="kategorieEingabeAktivSetzen(true)" (blur)="kategorieEingabeVerzoegertDeaktivieren()"
-            (input)="anlageFeldSetzen('kategorie', $event)">
-          <button class="gf-wissensbasis-route__category-add" type="button" aria-label="Neue Kategorie anlegen"
-            (mousedown)="neueKategorieAnlageOeffnen($event)">
-            <span class="material-symbols-outlined" aria-hidden="true">add</span>
-          </button>
-        </div>
+        <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
+          (focus)="kategorieEingabeAktivSetzen(true)" (blur)="kategorieEingabeVerzoegertDeaktivieren()"
+          (input)="anlageFeldSetzen('kategorie', $event)">
       </label>
-
-      @if (neueKategorieAnlageOffen()) {
-      <div class="gf-wissensbasis-route__category-create-row">
-        <input type="text" placeholder="Neue Kategorie benennen" [value]="neueKategorieEntwurf()"
-          (focus)="kategorieEingabeAktivSetzen(true)" (input)="neueKategorieEntwurfSetzen($event)"
-          (keydown.enter)="neueKategorieAlsPillAnlegen($event)">
-        <button type="button" aria-label="Kategorie übernehmen" (mousedown)="neueKategorieAlsPillAnlegen($event)">
-          <span class="material-symbols-outlined" aria-hidden="true">check</span>
-        </button>
-        <button type="button" aria-label="Kategorieanlage abbrechen" (mousedown)="neueKategorieAnlageAbbrechen($event)">
-          <span class="material-symbols-outlined" aria-hidden="true">close</span>
-        </button>
-      </div>
-      }
 
       <div class="gf-wissensbasis-route__category-pills" [class.is-active]="neueKategorieEingabeAktiv()"
         aria-label="Vorhandene Kategorien">
@@ -368,6 +361,29 @@
       <button class="gf-button gf-button--secondary" type="button" (click)="anlageModalSchliessen()">Abbrechen</button>
       <button class="gf-button gf-button--primary" type="button" (click)="eintragAnlegen()">Anlegen und
         bearbeiten</button>
+    </footer>
+  </div>
+</section>
+}
+
+@if (resetDialogOffen()) {
+<section class="gf-wissensbasis-route__delete-modal" role="dialog" aria-modal="true"
+  aria-labelledby="reset-wissen-title">
+  <div class="gf-wissensbasis-route__delete-card">
+    <header>
+      <div>
+        <h2 id="reset-wissen-title">Wissensbasis zurücksetzen?</h2>
+        <p>Alle aktuellen Wissenskarten werden durch den kontrollierten Mindestbestand für Blutbild, Stoffwechsel, Leber, Niere, Lipide, Entzündung und Schilddrüse ersetzt.</p>
+      </div>
+      <gf-icon-action icon="close" label="Resetdialog schließen" tone="danger"
+        (action)="resetDialogSchliessen()"></gf-icon-action>
+    </header>
+
+    <footer>
+      <button class="gf-button gf-button--secondary" type="button" (click)="resetDialogSchliessen()">Abbrechen</button>
+      <button class="gf-button gf-button--danger" type="button" [disabled]="resetLaeuft()" (click)="wissensbasisZuruecksetzen()">
+        {{ resetLaeuft() ? 'Setze zurück...' : 'Mindestbestand wiederherstellen' }}
+      </button>
     </footer>
   </div>
 </section>

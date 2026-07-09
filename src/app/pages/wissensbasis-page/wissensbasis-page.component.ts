@@ -29,6 +29,9 @@ interface Wissensformular {
   /** Kategorie. */
   kategorie: string;
 
+  /** Stabile Diagrammfarbe. */
+  farbe: string;
+
   /** Kurze Patientenerklärung. */
   patientKurztext: string;
 
@@ -73,6 +76,7 @@ const LEERER_WISSENSEINTRAG: Wissenseintrag = {
   laborwertKey: '',
   anzeigename: 'Daten werden geladen',
   kategorie: 'Wissensbasis',
+  farbe: '#0f5297',
   patientKurztext: '',
   patientLangtext: '',
   arztinformation: '',
@@ -137,15 +141,6 @@ export class WissensbasisPageComponent implements OnDestroy {
   /** Neue Kategorie für das Anlage-Modal. */
   public readonly neueKategorie: WritableSignal<string> = signal('');
 
-  /** Lokale Kategorien, die vor dem Speichern einer Wissenskarte ergänzt wurden. */
-  public readonly lokaleKategorien: WritableSignal<string[]> = signal([]);
-
-  /** Sichtbarkeit der Mini-Anlage für eine neue Kategorie. */
-  public readonly neueKategorieAnlageOffen: WritableSignal<boolean> = signal(false);
-
-  /** Eingabe für eine neue Kategorie-Pill. */
-  public readonly neueKategorieEntwurf: WritableSignal<string> = signal('');
-
   /** Gibt an, ob die Kategorieeingabe im Anlageformular aktiv ist. */
   public readonly neueKategorieEingabeAktiv: WritableSignal<boolean> = signal(false);
 
@@ -172,6 +167,12 @@ export class WissensbasisPageComponent implements OnDestroy {
 
   /** Sichtbarkeit der Quellenart-Auswahl. */
   public readonly quellenTypDropdownOffen: WritableSignal<boolean> = signal(false);
+
+  /** Sichtbarkeit des Wissensbasis-Resetdialogs. */
+  public readonly resetDialogOffen: WritableSignal<boolean> = signal(false);
+
+  /** Gibt an, ob der Wissensbasis-Reset gerade läuft. */
+  public readonly resetLaeuft: WritableSignal<boolean> = signal(false);
 
   /** Timer zum verzögerten Deaktivieren der Kategoriepills. */
   private kategorieBlurTimerId: ReturnType<typeof setTimeout> | null = null;
@@ -210,10 +211,7 @@ export class WissensbasisPageComponent implements OnDestroy {
   }
 
   /** Vorhandene Kategorien für Anlageformular und neue Wissenskarten. */
-  public readonly verfuegbareKategorien = computed(() => {
-    const kategorien = [...this.wissenseintraege().map((eintrag: Wissenseintrag) => eintrag.kategorie.trim()), ...this.lokaleKategorien()].filter(Boolean);
-    return Array.from(new Set(kategorien)).sort((a: string, b: string) => a.localeCompare(b, 'de'));
-  });
+  public readonly verfuegbareKategorien = computed(() => Array.from(new Set(this.wissenseintraege().map((eintrag: Wissenseintrag) => eintrag.kategorie.trim()).filter(Boolean))).sort((a: string, b: string) => a.localeCompare(b, 'de')));
 
   /** Kategorien der vorhandenen Einträge. */
   public readonly kategorien = computed(() => ['alle', ...this.verfuegbareKategorien()]);
@@ -284,6 +282,39 @@ export class WissensbasisPageComponent implements OnDestroy {
     this.formular.set(this.formularAusEintrag(eintrag));
   }
 
+  /** Öffnet den Resetdialog. */
+  public resetDialogOeffnen(): void {
+    this.resetDialogOffen.set(true);
+  }
+
+  /** Schließt den Resetdialog. */
+  public resetDialogSchliessen(): void {
+    this.resetDialogOffen.set(false);
+  }
+
+  /** Setzt die Wissensbasis auf den fachlichen Mindestbestand zurück. */
+  public wissensbasisZuruecksetzen(): void {
+    if (this.resetLaeuft()) {
+      return;
+    }
+
+    this.resetLaeuft.set(true);
+    this.globiFlowApi.wissensbasisZuruecksetzen().subscribe({
+      next: (antwort) => {
+        const daten = antwort.items.length ? antwort.items.map((eintrag: Wissenseintrag) => this.wissenseintragNormalisieren(eintrag)) : [LEERER_WISSENSEINTRAG];
+        this.wissenseintraege.set(daten);
+        this.eintragAuswaehlen(daten[0]);
+        this.resetLaeuft.set(false);
+        this.resetDialogSchliessen();
+        this.toastService.zeige('Wissensbasis zurückgesetzt', `${antwort.entries} Mindestwerte wurden wiederhergestellt.`, 'success');
+      },
+      error: () => {
+        this.resetLaeuft.set(false);
+        this.toastService.zeige('Reset fehlgeschlagen', 'Die Wissensbasis konnte nicht zurückgesetzt werden.', 'danger');
+      }
+    });
+  }
+
   /** Öffnet das Anlage-Modal. */
   public anlageModalOeffnen(): void {
     this.anlageModalOffen.set(true);
@@ -313,6 +344,7 @@ export class WissensbasisPageComponent implements OnDestroy {
       laborwertKey,
       anzeigename,
       kategorie,
+      farbe: this.standardFarbeFuerKey(laborwertKey),
       patientKurztext: '',
       patientLangtext: '',
       arztinformation: '',
@@ -581,50 +613,6 @@ export class WissensbasisPageComponent implements OnDestroy {
     this.neueKategorieEingabeAktiv.set(true);
   }
 
-  /** Öffnet die Mini-Anlage für eine neue Kategorie. */
-  public neueKategorieAnlageOeffnen(event?: Event): void {
-    event?.preventDefault();
-    this.neueKategorieAnlageOffen.set(true);
-    this.neueKategorieEingabeAktiv.set(true);
-    this.neueKategorieEntwurf.set(this.neueKategorie().trim());
-  }
-
-  /** Bricht die Mini-Anlage für eine neue Kategorie ab. */
-  public neueKategorieAnlageAbbrechen(event?: Event): void {
-    event?.preventDefault();
-    this.neueKategorieAnlageOffen.set(false);
-    this.neueKategorieEntwurf.set('');
-  }
-
-  /** Aktualisiert die Mini-Eingabe für eine neue Kategorie. */
-  public neueKategorieEntwurfSetzen(event: Event): void {
-    const eingabe = event.target as HTMLInputElement;
-    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\;]/g, '').slice(0, 60);
-    this.neueKategorieEntwurf.set(wert);
-  }
-
-  /** Fügt eine neue Kategorie als Pill hinzu und wählt sie direkt aus. */
-  public neueKategorieAlsPillAnlegen(event?: Event): void {
-    event?.preventDefault();
-    const kategorie = this.neueKategorieEntwurf().trim();
-
-    if (!kategorie) {
-      return;
-    }
-
-    const vorhandeneKategorie = this.verfuegbareKategorien().find((wert: string) => wert.toLowerCase() === kategorie.toLowerCase());
-    const zielKategorie = vorhandeneKategorie ?? kategorie;
-
-    if (!vorhandeneKategorie) {
-      this.lokaleKategorien.update((kategorien: string[]) => [...kategorien, zielKategorie]);
-    }
-
-    this.neueKategorie.set(zielKategorie);
-    this.neueKategorieEntwurf.set('');
-    this.neueKategorieAnlageOffen.set(false);
-    this.neueKategorieEingabeAktiv.set(true);
-  }
-
   /** Normalisiert das Quellenstandsdatum im Formular. */
   public quellenStandNormalisieren(): void {
     this.quellenStand.set(this.normalisiereQuellenStand(this.quellenStand()));
@@ -663,8 +651,9 @@ export class WissensbasisPageComponent implements OnDestroy {
   public formularfeldSetzen(feld: keyof Wissensformular, event: Event): void {
     const eingabe = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
     const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '');
+    const formularwert = feld === 'farbe' ? this.normalisiereFarbeingabe(wert) : wert;
 
-    this.formular.update((formular: Wissensformular) => ({ ...formular, [feld]: wert }));
+    this.formular.update((formular: Wissensformular) => ({ ...formular, [feld]: formularwert }));
   }
 
   /** Aktualisiert die Quellenart. */
@@ -733,6 +722,7 @@ export class WissensbasisPageComponent implements OnDestroy {
       laborwertKey: eintrag.laborwertKey,
       anzeigename: eintrag.anzeigename,
       kategorie: eintrag.kategorie,
+      farbe: eintrag.farbe || this.standardFarbeFuerKey(eintrag.laborwertKey),
       patientKurztext: eintrag.patientKurztext,
       patientLangtext: eintrag.patientLangtext,
       arztinformation: eintrag.arztinformation,
@@ -755,6 +745,7 @@ export class WissensbasisPageComponent implements OnDestroy {
       laborwertKey: formular.laborwertKey,
       anzeigename: formular.anzeigename,
       kategorie: formular.kategorie,
+      farbe: this.normalisiereFarbeingabe(formular.farbe),
       patientKurztext: formular.patientKurztext,
       patientLangtext: formular.patientLangtext,
       arztinformation: formular.arztinformation,
@@ -837,6 +828,7 @@ export class WissensbasisPageComponent implements OnDestroy {
   private wissenseintragNormalisieren(eintrag: Wissenseintrag): Wissenseintrag {
     return {
       ...eintrag,
+      farbe: eintrag.farbe || this.standardFarbeFuerKey(eintrag.laborwertKey),
       quellen: eintrag.quellen.map((quelle: Wissensquelle) => ({ ...quelle, stand: this.normalisiereQuellenStand(quelle.stand) || 'ohne Stand' }))
     };
   }
@@ -868,6 +860,19 @@ export class WissensbasisPageComponent implements OnDestroy {
     }
 
     return rohwert;
+  }
+
+  /** Normalisiert Farbeingaben auf sichere Hexwerte. */
+  private normalisiereFarbeingabe(wert: string): string {
+    const bereinigt = wert.trim();
+    return /^#[0-9a-fA-F]{6}$/.test(bereinigt) ? bereinigt.toLowerCase() : '#0f5297';
+  }
+
+  /** Liefert eine stabile Fallbackfarbe für neue Wissenskarten. */
+  private standardFarbeFuerKey(key: string): string {
+    const farben = ['#b91c1c', '#dc2626', '#ea580c', '#d97706', '#ca8a04', '#65a30d', '#16a34a', '#059669', '#0d9488', '#0891b2', '#0284c7', '#2563eb', '#4f46e5', '#7c3aed', '#9333ea', '#c026d3', '#db2777', '#e11d48', '#be123c', '#9f1239', '#0f766e', '#0369a1', '#1d4ed8', '#4338ca', '#6d28d9', '#86198f', '#a21caf', '#be185d', '#92400e', '#166534', '#0f5297', '#475569'];
+    const summe = key.split('').reduce((wert: number, zeichen: string) => wert + zeichen.charCodeAt(0), 0);
+    return farben[summe % farben.length];
   }
 
   /** Zeigt passende Toasts für Statusaktionen. */

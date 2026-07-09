@@ -60,6 +60,9 @@ export interface AuswertungLaborwert {
   /** Medizinischer Status im Verhältnis zum Referenzbereich. */
   status: LaborwertStatus;
 
+  /** Stabile Diagrammfarbe aus der Wissensbasis. */
+  farbe: string;
+
   /** Fachliche Priorität für die Sortierung. */
   prioritaet: LaborwertPrioritaet;
 

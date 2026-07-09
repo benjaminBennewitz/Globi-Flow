@@ -23,6 +23,7 @@ export const API_ENDPUNKTE = {
   reviewBulk: `${API_BASIS_URL}/imports/review/bulk/`,
   freigabe: `${API_BASIS_URL}/lab-reports/release/`,
   wissensdatenbank: `${API_BASIS_URL}/knowledge/`,
+  wissensdatenbankReset: `${API_BASIS_URL}/knowledge/reset/`,
   berichte: `${API_BASIS_URL}/reports/`,
   bericht: `${API_BASIS_URL}/reports/preview/`,
   patientenbericht: `${API_BASIS_URL}/reports/patient-preview/`,

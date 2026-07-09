@@ -4,6 +4,7 @@
 @let sichtbareWerte = gefilterteWerte(ansicht);
 @let overlayWerte = ausgewaehlteOverlayWerte(ansicht);
 @let topWertListe = topWerte(ansicht);
+@let auswahlWertListe = overlayWertAuswahl(ansicht);
 @let tendenzWerte = relevanteTendenzen(ansicht);
 @let referenzWerte = referenzfeldWerte(ansicht);
 
@@ -101,9 +102,9 @@
           <div>
             <span>Überlagerbarer Verlauf</span>
             <strong>Wertauswahl Verlauf</strong>
-            <small>Bis zu {{ maximaleOverlayWerte() }} aktive Linien. Alle Werte stammen aus dem aktuellen Befund und werden auf Referenzpositionen normalisiert.</small>
+            <small>{{ overlayBeschreibung(ansicht) }}</small>
           </div>
-          <small>{{ ansicht.zeitraum }}</small>
+          <small>{{ overlayWerte.length }} aktive Linien</small>
         </header>
 
         <div class="gf-auswertung-route__overlay-chart">
@@ -122,9 +123,9 @@
             <text x="66" y="204">niedrig</text>
 
             @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
-            <path class="gf-auswertung-route__overlay-line {{ overlayFarbKlasse(index) }}" pathLength="100"
+            <path class="gf-auswertung-route__overlay-line" [class.is-snapshot]="istSnapshotVerlauf(eintrag)" [class.is-focused]="istOverlayWertFokussiert(eintrag)" [class.is-muted]="istOverlayWertAusgegraut(eintrag)" pathLength="100" [style.stroke]="wertFarbe(eintrag)"
               [attr.d]="normalisierteVerlaufPfad(eintrag)"></path>
-            <circle class="gf-auswertung-route__overlay-point {{ overlayFarbKlasse(index) }}"
+            <circle class="gf-auswertung-route__overlay-point" [class.is-snapshot]="istSnapshotVerlauf(eintrag)" [class.is-focused]="istOverlayWertFokussiert(eintrag)" [class.is-muted]="istOverlayWertAusgegraut(eintrag)" [style.stroke]="wertFarbe(eintrag)"
               [attr.cx]="normalisierterLetzterPunktX(eintrag)" [attr.cy]="normalisierterLetzterPunktY(eintrag)" r="4.6">
             </circle>
             }
@@ -140,7 +141,7 @@
           <div class="gf-auswertung-route__overlay-current" aria-label="Aktuelle normalisierte Werte">
             <span>Aktuell</span>
             @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
-            <button class="{{ overlayFarbKlasse(index) }}" type="button" (click)="wertAuswaehlen(eintrag)">
+            <button type="button" [class.is-focused]="istOverlayWertFokussiert(eintrag)" [class.is-muted]="istOverlayWertAusgegraut(eintrag)" [style.--gf-overlay-series]="wertFarbe(eintrag)" [attr.title]="eintrag.name + ' hervorheben'" (click)="overlayWertHervorheben(eintrag)">
               <strong>{{ zahlKurz(eintrag.wert) }}</strong>
               <small>{{ eintrag.einheit }}</small>
             </button>
@@ -148,26 +149,28 @@
           </div>
         </div>
 
-        <div class="gf-auswertung-route__overlay-legend">
-          @for (eintrag of overlayWerte; track eintrag.id; let index = $index) {
-          <button type="button" (click)="wertAuswaehlen(eintrag)">
-            <span class="{{ overlayFarbKlasse(index) }}"></span>
-            {{ eintrag.name }}
-          </button>
-          }
-        </div>
-
         <div class="gf-auswertung-route__overlay-selector" aria-label="Aktive Werte im Verlauf">
           <header>
             <strong>Alle Werte im aktuellen Befund</strong>
-            <span>{{ overlayWerte.length }}/{{ maximaleOverlayWerte() }} aktiv</span>
+            <div class="gf-auswertung-route__overlay-selector-actions">
+              <span>{{ overlayWerte.length }}/{{ topWertListe.length }} aktiv</span>
+              <button type="button" (click)="alleOverlayWerteAktivieren(ansicht)">Alle aktivieren</button>
+              <button type="button" (click)="alleOverlayWerteDeaktivieren()">Alle deaktivieren</button>
+            </div>
           </header>
-          <div>
-            @for (eintrag of topWertListe; track eintrag.id) {
+          <div class="gf-auswertung-route__overlay-filter" aria-label="Statusfilter für Verlaufsauswahl">
+            @for (filter of statusFilter; track filter.key) {
+            <button type="button" [class.is-active]="overlayStatus() === filter.key" (click)="overlayStatusSetzen(filter.key)">{{ filter.label }}</button>
+            }
+          </div>
+
+          <div class="gf-auswertung-route__overlay-selector-list">
+            @for (eintrag of auswahlWertListe; track eintrag.id) {
             <button type="button" [class.is-active]="istOverlayWertAktiv(eintrag, ansicht)"
               [attr.title]="istOverlayWertAktiv(eintrag, ansicht) ? 'Im Verlauf deaktivieren' : 'Im Verlauf aktivieren'"
               (click)="overlayWertUmschalten(eintrag, ansicht)">
               <i class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</i>
+              <b class="gf-auswertung-route__value-color" [style.background]="wertFarbe(eintrag)" aria-hidden="true"></b>
               <strong>{{ eintrag.name }}</strong>
               <small>{{ messwert(eintrag.wert, eintrag.einheit) }} · {{ trendDeltaText(eintrag, ansicht) }}</small>
               <em>{{ istOverlayWertAktiv(eintrag, ansicht) ? 'aktiv' : 'inaktiv' }}</em>
@@ -273,7 +276,7 @@
           <strong>{{ eintrag.name }}</strong>
           <span>{{ messwert(eintrag.wert, eintrag.einheit) }}</span>
           <small>{{ aenderungKurzText(eintrag, ansicht) }}</small>
-          <i class="{{ trendKlasse(eintrag.trend) }}">{{ eintrag.trend }}</i>
+          <i class="{{ trendKlasse(eintrag.trend) }}">{{ trendLabel(eintrag.trend) }}</i>
         </button>
         }
       </div>
@@ -319,6 +322,11 @@
         <span>niedrig</span>
         <span>Referenzbereich</span>
         <span>erhöht</span>
+      </div>
+
+      <div class="gf-auswertung-route__chart-head">
+        <strong>Zeitentwicklung pro Wert</strong>
+        <span>{{ detailChartBeschreibung(wert, ansicht) }}</span>
       </div>
 
       <svg class="gf-auswertung-route__chart" [class.is-animation-a]="diagrammAnimationsToken() % 2 === 0"

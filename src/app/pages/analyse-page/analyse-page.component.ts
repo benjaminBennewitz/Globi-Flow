@@ -19,10 +19,16 @@ import { PatientContextService } from '../../core/services/patient-context.servi
 type AuswertungStatusFilter = LaborwertStatus | 'alle';
 
 /** Maximale Anzahl gleichzeitig überlagerter Verlaufslinien. */
-const MAX_AKTIVE_OVERLAY_WERTE = 5;
+const MAX_AKTIVE_OVERLAY_WERTE = 64;
 
 /** Relevanzschwelle für Trendwechsel im Befundvergleich. */
 const TRENDWECHSEL_SCHWELLE_PROZENT = 10;
+
+/** Linker Startpunkt für Snapshot-Linien ohne Vorbefund. */
+const SNAPSHOT_VERLAUF_START_X = 98;
+
+/** Rechter Endpunkt für Snapshot-Linien ohne Vorbefund. */
+const SNAPSHOT_VERLAUF_END_X = 614;
 
 
 /** Route `/auswertung` mit analytischer Laborwertansicht. */
@@ -54,6 +60,12 @@ export class AnalysePageComponent {
   /** Aktiver Statusfilter. */
   public readonly aktiverStatus: WritableSignal<AuswertungStatusFilter> = signal('alle');
 
+  /** Aktiver Statusfilter der Verlaufsauswahl. */
+  public readonly overlayStatus: WritableSignal<AuswertungStatusFilter> = signal('alle');
+
+  /** Fokussierter Wert im überlagerten Verlauf. */
+  public readonly overlayFokusWertId: WritableSignal<string | null> = signal(null);
+
   /** Aktuell selektierter Laborwert. */
   public readonly aktiverWertId: WritableSignal<string> = signal('auswertung-ldl');
 
@@ -62,6 +74,9 @@ export class AnalysePageComponent {
 
   /** Manuell aktivierte Werte für den normalisierten Verlauf. */
   public readonly aktiveOverlayWertIds: WritableSignal<string[]> = signal([]);
+
+  /** Gibt an, ob die Verlaufsauswahl manuell gesetzt wurde. */
+  public readonly overlayAuswahlManuell: WritableSignal<boolean> = signal(false);
 
   /** Statusfilter für die Oberfläche. */
   public readonly statusFilter: { key: AuswertungStatusFilter; label: string }[] = [
@@ -140,12 +155,18 @@ export class AnalysePageComponent {
     return [...ansicht.werte].sort((a: AuswertungLaborwert, b: AuswertungLaborwert) => this.sortierwert(b) - this.sortierwert(a));
   }
 
+  /** Liefert die gefilterte Wertliste für die Verlaufsauswahl. */
+  public overlayWertAuswahl(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
+    const status = this.overlayStatus();
+    return this.topWerte(ansicht).filter((wert: AuswertungLaborwert) => status === 'alle' || wert.status === status);
+  }
+
   /** Liefert die aktuell aktiven Verlaufslinien. */
   public ausgewaehlteOverlayWerte(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
     const sichtbareWerte = this.topWerte(ansicht);
     const aktiveIds = this.aktiveOverlayWertIds().filter((id: string) => sichtbareWerte.some((wert: AuswertungLaborwert) => wert.id === id));
 
-    if (aktiveIds.length === 0) {
+    if (!this.overlayAuswahlManuell() && aktiveIds.length === 0) {
       return sichtbareWerte.slice(0, MAX_AKTIVE_OVERLAY_WERTE);
     }
 
@@ -163,7 +184,9 @@ export class AnalysePageComponent {
     const sichtbareIds = sichtbareWerte.map((eintrag: AuswertungLaborwert) => eintrag.id);
     const gespeicherteIds = this.aktiveOverlayWertIds();
     const standardIds = sichtbareWerte.slice(0, MAX_AKTIVE_OVERLAY_WERTE).map((eintrag: AuswertungLaborwert) => eintrag.id);
-    const aktuelleIds = (gespeicherteIds.length > 0 ? gespeicherteIds : standardIds).filter((id: string) => sichtbareIds.includes(id));
+    const aktuelleIds = (this.overlayAuswahlManuell() ? gespeicherteIds : standardIds).filter((id: string) => sichtbareIds.includes(id));
+
+    this.overlayAuswahlManuell.set(true);
 
     if (aktuelleIds.includes(wert.id)) {
       this.aktiveOverlayWertIds.set(aktuelleIds.filter((id: string) => id !== wert.id));
@@ -171,9 +194,46 @@ export class AnalysePageComponent {
       return;
     }
 
-    const naechsteIds = [...aktuelleIds, wert.id].slice(-MAX_AKTIVE_OVERLAY_WERTE);
+    const naechsteIds = [...aktuelleIds, wert.id].slice(0, MAX_AKTIVE_OVERLAY_WERTE);
     this.aktiveOverlayWertIds.set(naechsteIds);
     this.diagrammAnimationsToken.update((token: number) => token + 1);
+  }
+
+  /** Aktiviert alle sichtbaren Werte im normalisierten Verlauf. */
+  public alleOverlayWerteAktivieren(ansicht: AuswertungViewModel): void {
+    this.overlayAuswahlManuell.set(true);
+    this.aktiveOverlayWertIds.set(this.topWerte(ansicht).slice(0, MAX_AKTIVE_OVERLAY_WERTE).map((eintrag: AuswertungLaborwert) => eintrag.id));
+    this.diagrammAnimationsToken.update((token: number) => token + 1);
+  }
+
+  /** Deaktiviert alle Werte im normalisierten Verlauf. */
+  public alleOverlayWerteDeaktivieren(): void {
+    this.overlayAuswahlManuell.set(true);
+    this.aktiveOverlayWertIds.set([]);
+    this.overlayFokusWertId.set(null);
+    this.diagrammAnimationsToken.update((token: number) => token + 1);
+  }
+
+  /** Setzt den Statusfilter der Verlaufsauswahl. */
+  public overlayStatusSetzen(status: AuswertungStatusFilter): void {
+    this.overlayStatus.set(status);
+  }
+
+  /** Fokussiert eine Linie im überlagerten Verlauf oder hebt den Fokus wieder auf. */
+  public overlayWertHervorheben(wert: AuswertungLaborwert): void {
+    this.wertAuswaehlen(wert);
+    this.overlayFokusWertId.set(this.overlayFokusWertId() === wert.id ? null : wert.id);
+  }
+
+  /** Prüft, ob ein Wert im überlagerten Verlauf fokussiert ist. */
+  public istOverlayWertFokussiert(wert: AuswertungLaborwert): boolean {
+    return this.overlayFokusWertId() === wert.id;
+  }
+
+  /** Prüft, ob ein Wert wegen aktivem Fokus ausgegraut werden soll. */
+  public istOverlayWertAusgegraut(wert: AuswertungLaborwert): boolean {
+    const fokusId = this.overlayFokusWertId();
+    return Boolean(fokusId && fokusId !== wert.id);
   }
 
   /** Liefert die Anzahl maximal aktivierbarer Verlaufslinien. */
@@ -206,7 +266,12 @@ export class AnalysePageComponent {
 
   /** Beschreibt die Referenzfeldlogik für die Oberfläche. */
   public referenzMethodik(): string {
-    return 'Marker links bedeutet eher niedrig, Marker mittig liegt im Referenzbereich, Marker rechts eher erhöht.';
+    return 'Jeder Wert wird gegen seinen eigenen Referenzbereich normalisiert. Der Status normal, erhöht oder niedrig kommt aus der Backend-Auswertung und dem erkannten Referenzbereich.';
+  }
+
+  /** Beschreibt den Detailchart eines Einzelwerts. */
+  public detailChartBeschreibung(wert: AuswertungLaborwert, ansicht: AuswertungViewModel): string {
+    return this.hatWertVergleich(wert, ansicht) ? 'Zeitentwicklung dieses Laborwerts über die vorhandenen Befunde. Das grüne Band zeigt den Referenzbereich dieses Werts.' : 'Für diesen Laborwert liegt aktuell nur ein Befundpunkt vor. Sobald weitere Befunde vorhanden sind, entsteht hier eine echte Zeitentwicklung.';
   }
 
   /** Liefert den aktuell selektierten Wert oder den ersten sichtbaren Wert. */
@@ -375,7 +440,26 @@ export class AnalysePageComponent {
 
   /** Liefert einen weich gezogenen Verlaufspfad mit normalisierter Skala. */
   public normalisierteVerlaufPfad(wert: AuswertungLaborwert): string {
+    if (this.istSnapshotVerlauf(wert)) {
+      const y = this.normalisierterPunktY(wert, wert.verlauf[0]?.wert ?? wert.wert);
+      return `M ${SNAPSHOT_VERLAUF_START_X.toFixed(1)} ${y.toFixed(1)} L ${SNAPSHOT_VERLAUF_END_X.toFixed(1)} ${y.toFixed(1)}`;
+    }
+
     return this.weicherSvgPfad(wert.verlauf.map((punkt, index: number) => ({ x: this.normalisierterPunktX(wert, index), y: this.normalisierterPunktY(wert, punkt.wert) })));
+  }
+
+  /** Prüft, ob der Verlauf nur aus einem aktuellen Befund besteht. */
+  public istSnapshotVerlauf(wert: AuswertungLaborwert): boolean {
+    return wert.verlauf.length <= 1;
+  }
+
+  /** Erklärt die Darstellung des überlagerten Verlaufs. */
+  public overlayBeschreibung(ansicht: AuswertungViewModel): string {
+    if (!this.hatVergleich(ansicht)) {
+      return `Bis zu ${this.maximaleOverlayWerte()} aktive Linien. Ohne Vorbefund zeigt der Chart den aktuellen Befund als horizontale Snapshot-Linien. Jede Linie wird auf den eigenen Referenzbereich normalisiert.`;
+    }
+
+    return `Bis zu ${this.maximaleOverlayWerte()} aktive Linien. Jede Linie nutzt den eigenen Referenzbereich als Y-Achse; die X-Achse zeigt die Befundzeit.`;
   }
 
   /** Berechnet X-Koordinaten für den normalisierten Overlay-Chart. */
@@ -390,12 +474,26 @@ export class AnalysePageComponent {
 
   /** Berechnet Y-Koordinaten für den normalisierten Overlay-Chart. */
   public normalisierterPunktY(wert: AuswertungLaborwert, messwert: number): number {
-    const grenzen = this.skalaGrenzen(wert);
-    return this.runden(202 - this.prozent(messwert, grenzen.min, grenzen.max) * 1.64);
+    const referenzSpanne = Math.max(wert.referenzMax - wert.referenzMin, 0.0001);
+    const position = (messwert - wert.referenzMin) / referenzSpanne;
+
+    if (position < 0) {
+      return this.runden(158 + Math.min(Math.abs(position), 1) * 44);
+    }
+
+    if (position > 1) {
+      return this.runden(96 - Math.min(position - 1, 1) * 58);
+    }
+
+    return this.runden(158 - position * 62);
   }
 
   /** Berechnet die X-Koordinate des letzten Overlay-Punkts. */
   public normalisierterLetzterPunktX(wert: AuswertungLaborwert): number {
+    if (this.istSnapshotVerlauf(wert)) {
+      return SNAPSHOT_VERLAUF_END_X;
+    }
+
     return this.normalisierterPunktX(wert, Math.max(wert.verlauf.length - 1, 0));
   }
 
@@ -405,9 +503,9 @@ export class AnalysePageComponent {
     return this.normalisierterPunktY(wert, letzterPunkt?.wert ?? wert.wert);
   }
 
-  /** Liefert eine stabile Farbreihe für überlagerte Werte. */
-  public overlayFarbKlasse(index: number): string {
-    return `is-serie-${index % 5}`;
+  /** Liefert die stabile Wissensbasis-Farbe eines Laborwerts. */
+  public wertFarbe(wert: AuswertungLaborwert): string {
+    return /^#[0-9a-fA-F]{6}$/.test(wert.farbe || '') ? wert.farbe : '#0f5297';
   }
 
   /** Formatiert Werte für die kompakte Chart-Seitenleiste. */
