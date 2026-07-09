@@ -2,8 +2,10 @@
 
 @if (auswertung$ | async; as ansicht) {
 @let sichtbareWerte = gefilterteWerte(ansicht);
-@let overlayWerte = sichtbareWerte.slice(0, 4);
-@let referenzWerte = sichtbareWerte.slice(0, 3);
+@let overlayWerte = ausgewaehlteOverlayWerte(ansicht);
+@let topWertListe = topWerte(ansicht);
+@let tendenzWerte = relevanteTendenzen(ansicht);
+@let referenzWerte = referenzfeldWerte(ansicht);
 
 <section class="gf-auswertung-route" aria-labelledby="auswertung-title">
   <header class="gf-auswertung-route__headline">
@@ -66,10 +68,11 @@
 
   <div class="gf-auswertung-route__kpis">
     @for (kennzahl of kennzahlen(ansicht); track kennzahl.label) {
-    <article class="gf-auswertung-route__kpi is-{{ kennzahl.status }}" tabindex="0">
+    <article class="gf-auswertung-route__kpi is-{{ kennzahl.status }}" tabindex="0" [attr.title]="kennzahl.beschreibung">
       <span>{{ kennzahl.label }}</span>
       <strong>{{ kennzahl.wert }}</strong>
       <small>{{ kennzahl.hinweis }}</small>
+      <p>{{ kennzahl.beschreibung }}</p>
       <i class="material-symbols-outlined" aria-hidden="true">{{ kennzahl.icon }}</i>
     </article>
     }
@@ -130,13 +133,14 @@
         <header>
           <div>
             <span>Überlagerbarer Verlauf</span>
-            <strong>Top-Werte normalisiert</strong>
+            <strong>Wertauswahl Verlauf</strong>
+            <small>Bis zu {{ maximaleOverlayWerte() }} aktive Linien. Alle Werte stammen aus dem aktuellen Befund und werden auf Referenzpositionen normalisiert.</small>
           </div>
           <small>{{ ansicht.zeitraum }}</small>
         </header>
 
         <div class="gf-auswertung-route__overlay-chart">
-          <svg viewBox="0 0 700 260" role="img" aria-label="Normalisierte Verlaufslinien der priorisierten Werte">
+          <svg viewBox="0 0 700 260" role="img" aria-label="Normalisierte Verlaufslinien der aktivierten Werte">
             <rect class="gf-auswertung-route__overlay-frame" x="86" y="38" width="540" height="164" rx="18"></rect>
             <rect class="gf-auswertung-route__overlay-band is-high" x="86" y="38" width="540" height="58" rx="18">
             </rect>
@@ -185,6 +189,25 @@
           </button>
           }
         </div>
+
+        <div class="gf-auswertung-route__overlay-selector" aria-label="Aktive Werte im Verlauf">
+          <header>
+            <strong>Alle Werte im aktuellen Befund</strong>
+            <span>{{ overlayWerte.length }}/{{ maximaleOverlayWerte() }} aktiv</span>
+          </header>
+          <div>
+            @for (eintrag of topWertListe; track eintrag.id) {
+            <button type="button" [class.is-active]="istOverlayWertAktiv(eintrag, ansicht)"
+              [attr.title]="istOverlayWertAktiv(eintrag, ansicht) ? 'Im Verlauf deaktivieren' : 'Im Verlauf aktivieren'"
+              (click)="overlayWertUmschalten(eintrag, ansicht)">
+              <i class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</i>
+              <strong>{{ eintrag.name }}</strong>
+              <small>{{ messwert(eintrag.wert, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent) }}%</small>
+              <em>{{ istOverlayWertAktiv(eintrag, ansicht) ? 'aktiv' : 'inaktiv' }}</em>
+            </button>
+            }
+          </div>
+        </div>
       </article>
     </div>
 
@@ -192,17 +215,20 @@
       <article class="gf-auswertung-route__trend-panel">
         <header>
           <h3>Tendenzen</h3>
-          <span>{{ trendAnzahl(ansicht) }} relevant</span>
+          <span>{{ tendenzWerte.length }} relevant</span>
         </header>
+        <p>{{ trendMethodik(ansicht) }}</p>
         <div>
-          @for (eintrag of overlayWerte; track eintrag.id) {
+          @for (eintrag of tendenzWerte; track eintrag.id) {
           <button type="button" (click)="wertAuswaehlen(eintrag)">
             <i class="material-symbols-outlined {{ trendKlasse(eintrag.trend) }}" aria-hidden="true">{{
               trendIcon(eintrag.trend) }}</i>
             <strong>{{ eintrag.name }}</strong>
             <span>{{ delta(eintrag.veraenderungProzent) }}%</span>
-            <small>{{ trendLabel(eintrag.trend) }} · {{ statusLabel(eintrag.status) }}</small>
+            <small>{{ messwert(eintrag.vorherigerWert, eintrag.einheit) }} → {{ messwert(eintrag.wert, eintrag.einheit) }} · {{ statusLabel(eintrag.status) }}</small>
           </button>
+          } @empty {
+          <div class="gf-auswertung-route__empty-note">Keine relevante Veränderung über der aktuellen Schwelle.</div>
           }
         </div>
       </article>
@@ -210,13 +236,15 @@
       <article class="gf-auswertung-route__range-panel">
         <header>
           <h3>Referenzfelder</h3>
-          <span>aktuell gegen Normbereich</span>
+          <span>{{ referenzWerte.length }} Werte</span>
         </header>
+        <p>{{ referenzMethodik() }}</p>
         <div>
           @for (eintrag of referenzWerte; track eintrag.id) {
           <button type="button" (click)="wertAuswaehlen(eintrag)">
             <strong>{{ eintrag.name }}</strong>
             <small>{{ messwert(eintrag.wert, eintrag.einheit) }}</small>
+            <em>{{ statusLabel(eintrag.status) }}</em>
             <span class="gf-auswertung-route__mini-range">
               <i></i>
               <b [style.left]="normalisiertePosition(eintrag)"></b>

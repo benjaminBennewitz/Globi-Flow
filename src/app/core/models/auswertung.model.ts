@@ -117,6 +117,9 @@ export interface AuswertungKennzahl {
   /** Kurzer Kontext. */
   hinweis: string;
 
+  /** Transparente Erklärung der Berechnungslogik. */
+  beschreibung?: string;
+
   /** Material-Symbol. */
   icon: string;
 

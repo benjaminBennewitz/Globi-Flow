@@ -18,6 +18,12 @@ import { PatientContextService } from '../../core/services/patient-context.servi
 /** Statusfilter der Auswertungsroute. */
 type AuswertungStatusFilter = LaborwertStatus | 'alle';
 
+/** Maximale Anzahl gleichzeitig überlagerter Verlaufslinien. */
+const MAX_AKTIVE_OVERLAY_WERTE = 5;
+
+/** Relevanzschwelle für Trendwechsel im Befundvergleich. */
+const TRENDWECHSEL_SCHWELLE_PROZENT = 10;
+
 
 /** Route `/auswertung` mit analytischer Laborwertansicht. */
 @Component({
@@ -54,6 +60,9 @@ export class AnalysePageComponent {
   /** Schaltet ungeprüfte Werte in der Auswertung aus. */
   public readonly nurGepruefteWerte: WritableSignal<boolean> = signal(false);
 
+  /** Manuell aktivierte Werte für den normalisierten Verlauf. */
+  public readonly aktiveOverlayWertIds: WritableSignal<string[]> = signal([]);
+
   /** Statusfilter für die Oberfläche. */
   public readonly statusFilter: { key: AuswertungStatusFilter; label: string }[] = [
     { key: 'alle', label: 'Alle' },
@@ -63,25 +72,94 @@ export class AnalysePageComponent {
     { key: 'normal', label: 'Normal' }
   ];
 
-  /** Erzeugt KPI-Karten für die Analyse. */
+  /** Erzeugt transparente KPI-Karten für die Analyse. */
   public kennzahlen(ansicht: AuswertungViewModel): AuswertungKennzahl[] {
-    const auffaellig = ansicht.werte.filter((wert: AuswertungLaborwert) => wert.status === 'hoch' || wert.status === 'niedrig').length;
+    const auffaellig = this.auffaelligeWerte(ansicht).length;
     const stark = ansicht.werte.filter((wert: AuswertungLaborwert) => wert.prioritaet === 'hoch').length;
-    const review = ansicht.werte.filter((wert: AuswertungLaborwert) => wert.reviewStatus === 'review').length;
-    const trend = ansicht.werte.filter((wert: AuswertungLaborwert) => Math.abs(wert.veraenderungProzent) >= 10).length;
+    const review = this.reviewAnzahl(ansicht);
+    const trend = this.relevanteTendenzen(ansicht).length;
 
     return [
-      { label: 'Laborwerte', wert: ansicht.werte.length, hinweis: 'auswertbar', icon: 'science', status: 'info' },
-      { label: 'Auffällig', wert: auffaellig, hinweis: 'außer Referenz', icon: 'priority_high', status: 'warning' },
-      { label: 'Stark auffällig', wert: stark, hinweis: 'hoch priorisiert', icon: 'emergency_home', status: 'danger' },
-      { label: 'Review offen', wert: review, hinweis: 'ärztlich prüfen', icon: 'fact_check', status: 'review' },
-      { label: 'Trendwechsel', wert: trend, hinweis: 'relevante Änderung', icon: 'trending_up', status: 'success' }
+      { label: 'Laborwerte', wert: ansicht.werte.length, hinweis: 'aktueller Befund', beschreibung: 'Alle normalisierten Werte des ausgewählten Befunds, die fachlich ausgewertet werden können.', icon: 'science', status: 'info' },
+      { label: 'Auffällig', wert: auffaellig, hinweis: 'außer Referenz', beschreibung: 'Werte mit Status erhöht oder niedrig. Grundlage ist der erkannte Referenzbereich des aktuellen Befunds.', icon: 'priority_high', status: 'warning' },
+      { label: 'Stark auffällig', wert: stark, hinweis: 'hoch priorisiert', beschreibung: 'Werte mit hoher Priorität. Diese Priorität kommt aus den Backend-Regeln und berücksichtigt Abweichung, Status und Prüfbedarf.', icon: 'emergency_home', status: 'danger' },
+      { label: 'Review offen', wert: review, hinweis: 'ärztlich prüfen', beschreibung: 'Werte mit offenem Review-Status. Sie sollten vor Freigabe und Patientenbericht geprüft werden.', icon: 'fact_check', status: 'review' },
+      { label: 'Trendwechsel', wert: trend, hinweis: `≥ ${TRENDWECHSEL_SCHWELLE_PROZENT}% zum Vergleich`, beschreibung: `Aktueller Befund verglichen mit ${ansicht.vergleichsBefund}. Gezählt werden Werte ab ±${TRENDWECHSEL_SCHWELLE_PROZENT}% Veränderung.`, icon: 'trending_up', status: 'success' }
     ];
   }
 
   /** Liefert gefilterte und priorisierte Laborwerte. */
   public gefilterteWerte(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
     return ansicht.werte.filter((wert: AuswertungLaborwert) => this.passtZuFilter(wert)).sort((a: AuswertungLaborwert, b: AuswertungLaborwert) => this.sortierwert(b) - this.sortierwert(a));
+  }
+
+  /** Liefert alle auffälligen Werte des aktuellen Befunds. */
+  public auffaelligeWerte(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
+    return ansicht.werte.filter((wert: AuswertungLaborwert) => wert.status === 'hoch' || wert.status === 'niedrig');
+  }
+
+  /** Liefert die priorisierte Wertliste für die manuelle Verlaufsauswahl. */
+  public topWerte(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
+    return [...ansicht.werte].sort((a: AuswertungLaborwert, b: AuswertungLaborwert) => this.sortierwert(b) - this.sortierwert(a));
+  }
+
+  /** Liefert die aktuell aktiven Verlaufslinien. */
+  public ausgewaehlteOverlayWerte(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
+    const sichtbareWerte = this.topWerte(ansicht);
+    const aktiveIds = this.aktiveOverlayWertIds().filter((id: string) => sichtbareWerte.some((wert: AuswertungLaborwert) => wert.id === id));
+
+    if (aktiveIds.length === 0) {
+      return sichtbareWerte.slice(0, MAX_AKTIVE_OVERLAY_WERTE);
+    }
+
+    return aktiveIds.map((id: string) => sichtbareWerte.find((wert: AuswertungLaborwert) => wert.id === id)).filter((wert: AuswertungLaborwert | undefined): wert is AuswertungLaborwert => Boolean(wert));
+  }
+
+  /** Prüft, ob ein Wert im normalisierten Verlauf aktiv ist. */
+  public istOverlayWertAktiv(wert: AuswertungLaborwert, ansicht: AuswertungViewModel): boolean {
+    return this.ausgewaehlteOverlayWerte(ansicht).some((eintrag: AuswertungLaborwert) => eintrag.id === wert.id);
+  }
+
+  /** Schaltet einen Wert für den normalisierten Verlauf ein oder aus. */
+  public overlayWertUmschalten(wert: AuswertungLaborwert, ansicht: AuswertungViewModel): void {
+    const sichtbareWerte = this.topWerte(ansicht);
+    const sichtbareIds = sichtbareWerte.map((eintrag: AuswertungLaborwert) => eintrag.id);
+    const gespeicherteIds = this.aktiveOverlayWertIds();
+    const standardIds = sichtbareWerte.slice(0, MAX_AKTIVE_OVERLAY_WERTE).map((eintrag: AuswertungLaborwert) => eintrag.id);
+    const aktuelleIds = (gespeicherteIds.length > 0 ? gespeicherteIds : standardIds).filter((id: string) => sichtbareIds.includes(id));
+
+    if (aktuelleIds.includes(wert.id)) {
+      this.aktiveOverlayWertIds.set(aktuelleIds.filter((id: string) => id !== wert.id));
+      return;
+    }
+
+    const naechsteIds = [...aktuelleIds, wert.id].slice(-MAX_AKTIVE_OVERLAY_WERTE);
+    this.aktiveOverlayWertIds.set(naechsteIds);
+  }
+
+  /** Liefert die Anzahl maximal aktivierbarer Verlaufslinien. */
+  public maximaleOverlayWerte(): number {
+    return MAX_AKTIVE_OVERLAY_WERTE;
+  }
+
+  /** Liefert Werte mit relevanter Veränderung zum Vergleichsbefund. */
+  public relevanteTendenzen(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
+    return this.topWerte(ansicht).filter((wert: AuswertungLaborwert) => Math.abs(wert.veraenderungProzent) >= TRENDWECHSEL_SCHWELLE_PROZENT).sort((a: AuswertungLaborwert, b: AuswertungLaborwert) => Math.abs(b.veraenderungProzent) - Math.abs(a.veraenderungProzent));
+  }
+
+  /** Liefert Werte für das Referenzfeld-Menü. */
+  public referenzfeldWerte(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
+    return this.topWerte(ansicht);
+  }
+
+  /** Beschreibt die Trendlogik für die Oberfläche. */
+  public trendMethodik(ansicht: AuswertungViewModel): string {
+    return `Verglichen wird der aktuelle Befund mit ${ansicht.vergleichsBefund}. Relevant ist eine Veränderung ab ±${TRENDWECHSEL_SCHWELLE_PROZENT}%.`;
+  }
+
+  /** Beschreibt die Referenzfeldlogik für die Oberfläche. */
+  public referenzMethodik(): string {
+    return 'Marker links bedeutet eher niedrig, Marker mittig liegt im Referenzbereich, Marker rechts eher erhöht.';
   }
 
   /** Liefert den aktuell selektierten Wert oder den ersten sichtbaren Wert. */
@@ -226,7 +304,7 @@ export class AnalysePageComponent {
 
   /** Zählt Werte mit deutlicher Verlaufstendenz. */
   public trendAnzahl(ansicht: AuswertungViewModel): number {
-    return ansicht.werte.filter((wert: AuswertungLaborwert) => Math.abs(wert.veraenderungProzent) >= 10).length;
+    return this.relevanteTendenzen(ansicht).length;
   }
 
   /** Berechnet die normalisierte Position eines Laborwerts im erweiterten Referenzfeld. */
