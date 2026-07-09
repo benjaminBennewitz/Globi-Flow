@@ -27,4 +27,3 @@ export const routes: Routes = [
   { path: 'berichte', component: BerichtePageComponent },
   { path: '**', redirectTo: 'uebersicht' }
 ];
-

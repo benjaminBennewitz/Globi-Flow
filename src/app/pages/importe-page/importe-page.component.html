@@ -36,6 +36,16 @@
     }
   </div>
 
+  @if (uploadAktiv()) {
+  <aside class="gf-import-route__running-banner" role="status">
+    <span class="gf-import-route__spinner" aria-hidden="true"></span>
+    <div>
+      <strong>Upload wird vorbereitet</strong>
+      <p>Die PDF wird an die lokale Analyse übergeben. Bei Scan-PDFs kann OCR einige Minuten dauern.</p>
+    </div>
+  </aside>
+  }
+
   <div class="gf-import-route__grid">
     <section #uploadBereich class="gf-import-route__upload gf-neu-card" [class.is-dragging]="dragAktiv()"
       [class.has-error]="uploadFehler()" [class.has-route-highlight]="uploadHinweisAktiv()"
@@ -78,8 +88,8 @@
       <div class="gf-import-route__upload-actions">
         <button class="gf-button gf-button--secondary" type="button" (click)="dateiInput.click()">Datei
           auswählen</button>
-        <button class="gf-button gf-button--primary" type="button" [disabled]="!dateiName() || dateiPruefungAktiv()"
-          (click)="importStarten()">Import starten</button>
+        <button class="gf-button gf-button--primary" type="button" [disabled]="!dateiName() || dateiPruefungAktiv() || uploadAktiv()"
+          (click)="importStarten()">{{ uploadAktiv() ? 'Upload läuft' : 'Import starten' }}</button>
       </div>
 
       <ul class="gf-import-route__rules" aria-label="Upload-Regeln">
@@ -105,6 +115,16 @@
       <div class="gf-import-route__progress" aria-label="Importfortschritt">
         <span [style.width.%]="job.fortschritt"></span>
       </div>
+
+      @if (importLaeuft(job)) {
+      <aside class="gf-import-route__job-running" role="status">
+        <span class="gf-import-route__spinner" aria-hidden="true"></span>
+        <div>
+          <strong>{{ job.pipelineSchritt }}</strong>
+          <p>{{ laufenderJobHinweis(job) }}</p>
+        </div>
+      </aside>
+      }
 
       <dl class="gf-import-route__active-meta">
         <div>

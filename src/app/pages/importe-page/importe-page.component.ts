@@ -10,6 +10,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Importjob, ImportjobAnalyseArt, ImportjobDataset, ImportjobOcrStatus, ImportjobSchrittStatus, ImportjobStatus } from '../../core/models/importjob.model';
 import { pruefeSicherePdfDatei, SICHERE_DATEI_MAX_LABEL } from '../../core/security/sichere-datei.util';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
+import { ImportJobMonitorService } from '../../core/services/import-job-monitor.service';
 import { PatientContextService } from '../../core/services/patient-context.service';
 import { ToastService } from '../../shared/services/toast.service';
 
@@ -55,6 +56,9 @@ export class ImportePageComponent implements OnDestroy {
   /** Globaler Patientenkontext für Importzuordnung. */
   private readonly patientContext = inject(PatientContextService);
 
+  /** Routeunabhängiger Monitor für laufende Importjobs. */
+  private readonly importJobMonitor = inject(ImportJobMonitorService);
+
   /** Uploadbereich für automatisches Scrollen. */
   private uploadBereich?: ElementRef<HTMLElement>;
 
@@ -64,8 +68,8 @@ export class ImportePageComponent implements OnDestroy {
   /** Lokal geprüfte PDF-Datei für den API-Upload. */
   private ausgewaehlteDatei: File | null = null;
 
-  /** Regelmäßige Aktualisierung für synchrone und spätere Background-Importe. */
-  private readonly importPoller = window.setInterval(() => this.importjobsLaden(true), 6000);
+  /** Regelmäßige Aktualisierung für laufende Background-Importe. */
+  private importPoller: number | null = null;
 
   /** Importjobs aus der Backend-API. */
   public readonly importjobs: WritableSignal<Importjob[]> = signal([]);
@@ -93,6 +97,12 @@ export class ImportePageComponent implements OnDestroy {
 
   /** Gibt an, ob eine Datei aktuell geprüft wird. */
   public readonly dateiPruefungAktiv: WritableSignal<boolean> = signal(false);
+
+  /** Gibt an, ob ein Upload-Request aktuell läuft. */
+  public readonly uploadAktiv: WritableSignal<boolean> = signal(false);
+
+  /** Merkt den zuletzt gestarteten Importjob. */
+  public readonly gestarteterJobId: WritableSignal<string> = signal('');
 
   /** Aktiviert den animierten Hinweisrahmen für die Upload-Zone. */
   public readonly uploadHinweisAktiv: WritableSignal<boolean> = signal(false);
@@ -140,7 +150,14 @@ export class ImportePageComponent implements OnDestroy {
   private importjobsLaden(still: boolean = false): void {
     this.globiFlowApi.ladeImportjobs().subscribe((jobs: Importjob[]) => {
       const bisherAktiv = this.ausgewaehlterJobId();
+      const gestarteterJob = jobs.find((job: Importjob) => job.id === this.gestarteterJobId());
       this.importjobs.set(jobs);
+      this.pollingNachStatusAktualisieren(jobs);
+
+      if (gestarteterJob && this.importLaeuft(gestarteterJob)) {
+        this.ausgewaehlterJobId.set(gestarteterJob.id);
+        return;
+      }
 
       if (!still || !jobs.some((job: Importjob) => job.id === bisherAktiv)) {
         this.ausgewaehlterJobId.set(jobs[0]?.id ?? '');
@@ -150,7 +167,36 @@ export class ImportePageComponent implements OnDestroy {
 
   /** Räumt den Import-Poller beim Verlassen der Route auf. */
   public ngOnDestroy(): void {
+    this.pollingStoppen();
+  }
+
+  /** Startet schnelles Polling nur bei aktiven Importen. */
+  private pollingStarten(): void {
+    if (this.importPoller !== null) {
+      return;
+    }
+
+    this.importPoller = window.setInterval(() => this.importjobsLaden(true), 2500);
+  }
+
+  /** Stoppt das Importseiten-Polling. */
+  private pollingStoppen(): void {
+    if (this.importPoller === null) {
+      return;
+    }
+
     window.clearInterval(this.importPoller);
+    this.importPoller = null;
+  }
+
+  /** Aktiviert Polling nur, solange Jobs wirklich laufen. */
+  private pollingNachStatusAktualisieren(jobs: Importjob[]): void {
+    if (jobs.some((job: Importjob) => this.importLaeuft(job))) {
+      this.pollingStarten();
+      return;
+    }
+
+    this.pollingStoppen();
   }
 
   /** Importfilter für die Historie. */
@@ -169,14 +215,14 @@ export class ImportePageComponent implements OnDestroy {
     const reviewJobs = importjobs.filter((job: Importjob) => job.status === 'review').length;
     const ocrJobs = importjobs.filter((job: Importjob) => job.ocrStatus !== 'nicht_erforderlich').length;
     const fehlerJobs = importjobs.filter((job: Importjob) => job.status === 'fehler').length;
-    const confidence = this.durchschnitt(importjobs.filter((job: Importjob) => job.confidence > 0).map((job: Importjob) => job.confidence));
+    const confidence = aktiveJobs ? 0 : this.durchschnitt(importjobs.filter((job: Importjob) => job.confidence > 0).map((job: Importjob) => job.confidence));
 
     return [
-      { label: 'Aktive Jobs', wert: aktiveJobs, hinweis: 'laufen oder warten', icon: 'sync', status: 'info' },
+      { label: 'Aktive Jobs', wert: aktiveJobs, hinweis: aktiveJobs ? 'OCR läuft lokal' : 'keine Warteschlange', icon: aktiveJobs ? 'progress_activity' : 'sync', status: 'info' },
       { label: 'Warten auf Review', wert: reviewJobs, hinweis: 'ärztlich prüfen', icon: 'fact_check', status: 'warning' },
       { label: 'OCR erforderlich', wert: ocrJobs, hinweis: 'lokale OCR-Pipeline', icon: 'document_scanner', status: 'info' },
       { label: 'Fehlerhafte Importe', wert: fehlerJobs, hinweis: 'Retry oder manuell', icon: 'error', status: 'danger' },
-      { label: 'Ø Confidence', wert: `${confidence}%`, hinweis: 'erkannte Werte', icon: 'verified', status: 'success' }
+      { label: 'Ø Confidence', wert: `${confidence}%`, hinweis: aktiveJobs ? 'wartet auf Ergebnis' : 'erkannte Werte', icon: 'verified', status: 'success' }
     ];
   }
 
@@ -263,6 +309,20 @@ export class ImportePageComponent implements OnDestroy {
     return labels[status];
   }
 
+  /** Prüft, ob ein Importjob noch aktiv verarbeitet wird. */
+  public importLaeuft(job: Importjob): boolean {
+    return job.status === 'wartet' || job.status === 'analysiert';
+  }
+
+  /** Liefert einen kurzen Laufzeit-Hinweis für aktive Jobs. */
+  public laufenderJobHinweis(job: Importjob): string {
+    if (job.ocrStatus === 'aktiv' || job.analyseArt === 'ocr') {
+      return 'OCR verarbeitet die gescannten PDF-Seiten lokal. Du kannst die Route wechseln; der Job läuft weiter.';
+    }
+
+    return 'Die Datei wird lokal analysiert. Du kannst währenddessen in anderen Bereichen weiterarbeiten.';
+  }
+
   /** Lädt die optimierte Testdaten-PDF aus den lokalen Assets herunter. */
   public testdatenPdfHerunterladen(): void {
     const link = document.createElement('a');
@@ -278,6 +338,8 @@ export class ImportePageComponent implements OnDestroy {
       this.importjobs.update((jobs: Importjob[]) => [job, ...jobs.filter((eintrag: Importjob) => eintrag.id !== job.id)]);
       this.ausgewaehlterJobId.set(job.id);
       this.aktiverFilter.set('alle');
+      this.importJobMonitor.importJobBeobachten(job);
+      this.pollingNachStatusAktualisieren([job]);
       this.toastService.zeige('Demo-Analyse gestartet', 'Der Importjob wurde aus der Backend-API geladen.', 'success');
     });
   }
@@ -290,18 +352,23 @@ export class ImportePageComponent implements OnDestroy {
     }
 
     const aktiverPatient = this.patientContext.aktiverPatient();
+    this.uploadAktiv.set(true);
 
     this.globiFlowApi.laborbefundHochladen(this.ausgewaehlteDatei, aktiverPatient.id).subscribe({
       next: (job: Importjob) => {
         this.importjobs.update((jobs: Importjob[]) => [job, ...jobs.filter((eintrag: Importjob) => eintrag.id !== job.id)]);
         this.ausgewaehlterJobId.set(job.id);
+        this.gestarteterJobId.set(job.id);
         this.aktiverFilter.set('alle');
         this.dateiEntfernen();
-        this.patientContext.patientenNeuLaden();
-        window.setTimeout(() => this.importjobsLaden(true), 850);
-        this.toastService.zeige('Importjob angelegt', `Die PDF wurde ${aktiverPatient.name} zugeordnet und lokal analysiert.`, 'success');
+        this.uploadAktiv.set(false);
+        this.importJobMonitor.importJobBeobachten(job);
+        this.pollingStarten();
+        this.importjobsLaden(true);
+        this.toastService.zeige('Importjob läuft', `Die PDF wurde ${aktiverPatient.name} zugeordnet. OCR läuft im Hintergrund weiter.`, 'success');
       },
       error: () => {
+        this.uploadAktiv.set(false);
         this.toastService.zeige('Upload fehlgeschlagen', 'Die API konnte die PDF nicht annehmen oder analysieren.', 'danger');
       }
     });
