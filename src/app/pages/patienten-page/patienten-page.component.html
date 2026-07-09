@@ -99,12 +99,27 @@
         }
       </section>
 
-      <footer>
-        <button class="gf-button gf-button--secondary" type="button"
-          (click)="patientAuswaehlen(patient)">Auswählen</button>
-        <a class="gf-button gf-button--secondary" routerLink="/review" (click)="patientAuswaehlen(patient)">Review</a>
-        <a class="gf-button gf-button--primary" routerLink="/auswertung"
-          (click)="patientAuswaehlen(patient)">Auswertung</a>
+      <footer class="gf-patienten-route__actions">
+        <div class="gf-patienten-route__action-group" aria-label="Patient bearbeiten oder löschen">
+          <button class="gf-patienten-route__icon-action" type="button" title="Testperson bearbeiten" aria-label="Testperson bearbeiten" (click)="patientBearbeiten(patient)">
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+          </button>
+          <button class="gf-patienten-route__icon-action is-danger" type="button" title="Testperson löschen" aria-label="Testperson löschen" (click)="patientLoeschenAnfragen(patient)">
+            <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+          </button>
+        </div>
+
+        <div class="gf-patienten-route__action-group is-system" aria-label="Patientenaktionen">
+          <button class="gf-patienten-route__icon-action" type="button" title="Als aktiven Patienten auswählen" aria-label="Als aktiven Patienten auswählen" (click)="patientAuswaehlen(patient)">
+            <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+          </button>
+          <a class="gf-patienten-route__icon-action" routerLink="/review" title="Review öffnen" aria-label="Review öffnen" (click)="patientAuswaehlen(patient)">
+            <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
+          </a>
+          <a class="gf-patienten-route__icon-action is-primary" routerLink="/auswertung" title="Auswertung öffnen" aria-label="Auswertung öffnen" (click)="patientAuswaehlen(patient)">
+            <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+          </a>
+        </div>
       </footer>
     </article>
     }
@@ -116,8 +131,8 @@
   <div class="gf-patienten-route__modal-card">
     <header>
       <div>
-        <h2 id="patient-modal-title">Testperson anlegen</h2>
-        <p>Neue lokale Testperson für Import, Review und Auswertung vorbereiten.</p>
+        <h2 id="patient-modal-title">{{ istEditModus() ? 'Testperson bearbeiten' : 'Testperson anlegen' }}</h2>
+        <p>{{ istEditModus() ? 'Stammdaten und Anamnese-Status der Testperson aktualisieren.' : 'Neue lokale Testperson für Import, Review und Auswertung vorbereiten.' }}</p>
       </div>
       <gf-icon-action icon="close" label="Modal schließen" tone="danger" (action)="modalSchliessen()"></gf-icon-action>
     </header>
@@ -198,9 +213,27 @@
 
     <footer>
       <button class="gf-button gf-button--secondary" type="button" (click)="modalSchliessen()">Abbrechen</button>
-      <button class="gf-button gf-button--secondary" type="button" (click)="patientAnlegen(false)">Speichern</button>
-      <button class="gf-button gf-button--primary" type="button" (click)="patientAnlegen(true)">Speichern und
+      <button class="gf-button gf-button--secondary" type="button" (click)="patientSpeichern(false)">Speichern</button>
+      <button class="gf-button gf-button--primary" type="button" (click)="patientSpeichern(true)">Speichern und
         auswählen</button>
+    </footer>
+  </div>
+</section>
+}
+
+@if (patientZumLoeschen(); as patient) {
+<section class="gf-patienten-route__delete-modal" role="dialog" aria-modal="true" aria-labelledby="patient-delete-title">
+  <div class="gf-patienten-route__delete-card">
+    <header>
+      <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+      <div>
+        <h2 id="patient-delete-title">Testperson löschen?</h2>
+        <p>{{ patient.name }} und alle zugehörigen lokalen Befunde, Werte, Reviews und Berichte werden entfernt.</p>
+      </div>
+    </header>
+    <footer>
+      <button class="gf-button gf-button--secondary" type="button" (click)="patientLoeschenAbbrechen()">Abbrechen</button>
+      <button class="gf-button gf-button--primary is-danger" type="button" (click)="patientLoeschen()">Endgültig löschen</button>
     </footer>
   </div>
 </section>

@@ -31,8 +31,14 @@ export class PatientenPageComponent {
   /** Toast-Service für API-Rückmeldungen. */
   private readonly toastService = inject(ToastService);
 
-  /** Gibt an, ob das Anlage-Modal geöffnet ist. */
+  /** Gibt an, ob das Anlage- oder Bearbeitungsmodal geöffnet ist. */
   public readonly modalOffen: WritableSignal<boolean> = signal(false);
+
+  /** Testperson, die aktuell bearbeitet wird. */
+  public readonly bearbeiteterPatient: WritableSignal<Patient | null> = signal(null);
+
+  /** Testperson, deren Löschung bestätigt werden muss. */
+  public readonly patientZumLoeschen: WritableSignal<Patient | null> = signal(null);
 
   /** Aktive Sortierung. */
   public readonly sortierung: WritableSignal<PatientenSortierung> = signal('aktualisiert');
@@ -103,12 +109,23 @@ export class PatientenPageComponent {
 
   /** Öffnet das Anlage-Modal. */
   public modalOeffnen(): void {
+    this.bearbeiteterPatient.set(null);
+    this.formularLeeren();
     this.modalOffen.set(true);
   }
 
-  /** Schließt das Anlage-Modal. */
+  /** Öffnet das Bearbeitungsmodal und füllt das Formular. */
+  public patientBearbeiten(patient: Patient): void {
+    this.bearbeiteterPatient.set(patient);
+    this.formularMitPatientFuellen(patient);
+    this.modalOffen.set(true);
+  }
+
+  /** Schließt das Anlage- oder Bearbeitungsmodal. */
   public modalSchliessen(): void {
     this.modalOffen.set(false);
+    this.bearbeiteterPatient.set(null);
+    this.geschlechtAuswahlOffen.set(false);
   }
 
   /** Aktualisiert die globale Patientensuche. */
@@ -163,7 +180,7 @@ export class PatientenPageComponent {
 
   /** Aktualisiert das Geburtsdatum. */
   public geburtsdatumAendern(event: Event): void {
-    this.neuesGeburtsdatum.set(this.eingabewert(event).replace(/[^\d-]/g, '').slice(0, 10));
+    this.neuesGeburtsdatum.set(this.eingabewert(event).replace(/[^\d.-]/g, '').slice(0, 10));
   }
 
   /** Aktualisiert das Gewicht. */
@@ -217,22 +234,61 @@ export class PatientenPageComponent {
     this.neueNotiz.set(this.eingabewert(event).slice(0, 180));
   }
 
-  /** Erstellt eine Testperson über die API und setzt sie optional aktiv. */
-  public patientAnlegen(aktivSetzen: boolean): void {
-    this.patientContext.patientAnlegen(this.neuerPatientInput()).subscribe({
-      next: (patient: Patient) => {
-        if (aktivSetzen) {
-          this.patientContext.patientSetzen(patient);
+  /** Speichert eine neue oder bestehende Testperson über die API und setzt sie optional aktiv. */
+  public patientSpeichern(aktivSetzen: boolean): void {
+    const patient = this.bearbeiteterPatient();
+    const request$ = patient
+      ? this.patientContext.patientAktualisieren(patient.id, this.neuerPatientInput())
+      : this.patientContext.patientAnlegen(this.neuerPatientInput());
+
+    request$.subscribe({
+      next: (gespeicherterPatient: Patient) => {
+        if (aktivSetzen || patient?.id === this.patientContext.aktiverPatient().id) {
+          this.patientContext.patientSetzen(gespeicherterPatient);
         }
 
         this.formularLeeren();
         this.modalSchliessen();
-        this.toastService.zeige('Testperson angelegt', `${patient.name} wurde in der Datenbank gespeichert.`, 'success');
+        this.toastService.zeige(patient ? 'Testperson aktualisiert' : 'Testperson angelegt', `${gespeicherterPatient.name} wurde in der Datenbank gespeichert.`, 'success');
       },
       error: () => {
-        this.toastService.zeige('Speichern fehlgeschlagen', 'Die Testperson konnte nicht in der API angelegt werden.', 'danger');
+        this.toastService.zeige('Speichern fehlgeschlagen', 'Die Testperson konnte nicht in der API gespeichert werden.', 'danger');
       }
     });
+  }
+
+  /** Öffnet die Löschbestätigung für eine Testperson. */
+  public patientLoeschenAnfragen(patient: Patient): void {
+    this.patientZumLoeschen.set(patient);
+  }
+
+  /** Bricht die Löschbestätigung ab. */
+  public patientLoeschenAbbrechen(): void {
+    this.patientZumLoeschen.set(null);
+  }
+
+  /** Löscht eine Testperson nach Bestätigung aus der Datenbank. */
+  public patientLoeschen(): void {
+    const patient = this.patientZumLoeschen();
+
+    if (!patient) {
+      return;
+    }
+
+    this.patientContext.patientLoeschen(patient.id).subscribe({
+      next: () => {
+        this.patientZumLoeschen.set(null);
+        this.toastService.zeige('Testperson gelöscht', `${patient.name} wurde entfernt.`, 'success');
+      },
+      error: () => {
+        this.toastService.zeige('Löschen fehlgeschlagen', 'Die Testperson konnte nicht gelöscht werden.', 'danger');
+      }
+    });
+  }
+
+  /** Gibt an, ob das Formular eine bestehende Testperson bearbeitet. */
+  public istEditModus(): boolean {
+    return !!this.bearbeiteterPatient();
   }
 
   /** Gibt eine Statusklasse zurück. */
@@ -259,7 +315,7 @@ export class PatientenPageComponent {
       vorname: this.neuerVorname(),
       nachname: this.neuerNachname(),
       nummer: this.neueNummer(),
-      geburtsdatum: this.neuesGeburtsdatum(),
+      geburtsdatum: this.geburtsdatumFuerApi(this.neuesGeburtsdatum()),
       geschlecht: this.neuesGeschlecht(),
       gewichtKg: this.zahlOderNull(this.neuesGewicht()),
       groesseCm: this.zahlOderNull(this.neueGroesse()),
@@ -269,6 +325,23 @@ export class PatientenPageComponent {
       drogen: this.neueDrogen(),
       notiz: this.neueNotiz()
     };
+  }
+
+  /** Füllt das Formular mit bestehenden Patientendaten. */
+  private formularMitPatientFuellen(patient: Patient): void {
+    this.neuerVorname.set(patient.vorname);
+    this.neuerNachname.set(patient.nachname);
+    this.neueNummer.set(patient.nummer);
+    this.neuesGeburtsdatum.set(patient.geburtsdatum);
+    this.neuesGewicht.set(patient.gewichtKg?.toString() ?? '');
+    this.neueGroesse.set(patient.groesseCm?.toString() ?? '');
+    this.neuerLebensstil.set(patient.lebensstil);
+    this.neuesNichtrauchen.set(patient.nichtrauchen);
+    this.neuerAlkohol.set(patient.alkohol);
+    this.neueDrogen.set(patient.drogen);
+    this.neuesGeschlecht.set(patient.geschlecht);
+    this.geschlechtAuswahlOffen.set(false);
+    this.neueNotiz.set(patient.notiz);
   }
 
   /** Leert das Modalformular. */
@@ -286,6 +359,18 @@ export class PatientenPageComponent {
     this.neuesGeschlecht.set('unbekannt');
     this.geschlechtAuswahlOffen.set(false);
     this.neueNotiz.set('');
+  }
+
+  /** Normalisiert deutsche und ISO-Datumswerte für die Backend-API. */
+  private geburtsdatumFuerApi(wert: string): string {
+    const datum = wert.trim();
+    const deutscherTreffer = datum.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+
+    if (deutscherTreffer) {
+      return `${deutscherTreffer[3]}-${deutscherTreffer[2]}-${deutscherTreffer[1]}`;
+    }
+
+    return datum;
   }
 
   /** Wandelt Texteingaben in Zahlen oder null um. */

@@ -214,15 +214,17 @@
     @for (patient of patientContext.gefiltertePatienten(); track patient.id) {
     <button type="button" [class.is-active]="patient.id === patientContext.aktiverPatient().id"
       (click)="patientContext.patientSetzen(patient); modalSchliessen()">
-      <span class="gf-header-modal__patient-copy">
+      <span class="gf-header-modal__patient-main">
         <strong>{{ patient.name }}</strong>
-        <em>{{ patient.nummer }} · {{ patient.kontext }}</em>
+        <span>{{ patient.nummer }} · {{ patient.kontext }}</span>
       </span>
-      <span class="gf-header-modal__patient-states" aria-label="Patientenstatus">
-        <i [class.is-positive]="patient.nichtrauchen">{{ patient.nichtrauchen ? 'Nichtraucher' : 'Rauchen offen' }}</i>
-        <i [class.is-warning]="patient.alkohol">{{ patient.alkohol ? 'Alkohol' : 'kein Alkohol' }}</i>
-        <i [class.is-danger]="patient.drogen">{{ patient.drogen ? 'Drogen' : 'keine Drogen' }}</i>
+      <span class="gf-header-modal__patient-meta">
         <small>{{ patient.offeneReviews }} Review</small>
+        <span class="gf-header-modal__patient-states" aria-label="Anamnese-Status">
+          <i [class.is-ok]="patient.nichtrauchen" [class.is-bad]="!patient.nichtrauchen" title="Nichtraucherstatus"></i>
+          <i [class.is-bad]="patient.alkohol" [class.is-ok]="!patient.alkohol" title="Alkoholstatus"></i>
+          <i [class.is-bad]="patient.drogen" [class.is-ok]="!patient.drogen" title="Drogenstatus"></i>
+        </span>
       </span>
     </button>
     }
