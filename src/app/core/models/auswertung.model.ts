@@ -45,6 +45,9 @@ export interface AuswertungLaborwert {
   /** Vorheriger Messwert. */
   vorherigerWert: number;
 
+  /** Gibt an, ob für diesen Wert ein echter Vorbefund existiert. */
+  hatVergleich?: boolean;
+
   /** Einheit des Messwerts. */
   einheit: string;
 
@@ -134,6 +137,9 @@ export interface AuswertungViewModel {
 
   /** Vergleichsbefund. */
   vergleichsBefund: string;
+
+  /** Gibt an, ob ein echter Vergleichsbefund existiert. */
+  hatVergleich?: boolean;
 
   /** Zeitraum der Auswertung. */
   zeitraum: string;

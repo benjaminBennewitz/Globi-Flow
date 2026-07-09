@@ -26,45 +26,10 @@
       </article>
       <article>
         <span>Vergleich</span>
-        <strong>{{ ansicht.vergleichsBefund }}</strong>
+        <strong>{{ vergleichsBefundLabel(ansicht) }}</strong>
       </article>
     </div>
   </header>
-
-  <section class="gf-auswertung-route__filters gf-neu-card" aria-label="Auswertungsfilter">
-    <div class="gf-auswertung-route__patient-context">
-      <span>Aktiver Patient</span>
-      <strong>{{ patientContext.aktiverPatient().name }}</strong>
-      <small>{{ patientContext.aktiverPatient().nummer }} · über Topbar oder Patientenroute wechseln</small>
-    </div>
-
-    <div>
-      <span>Gruppe</span>
-      <div class="gf-auswertung-route__chips">
-        <button type="button" [class.is-active]="aktiveGruppe() === 'alle'" (click)="gruppeSetzen('alle')">Alle</button>
-        @for (gruppe of ansicht.gruppen; track gruppe.key) {
-        <button type="button" [class.is-active]="aktiveGruppe() === gruppe.name" (click)="gruppeSetzen(gruppe.name)">{{
-          gruppe.name }}</button>
-        }
-      </div>
-    </div>
-
-    <div>
-      <span>Status</span>
-      <div class="gf-auswertung-route__chips">
-        @for (filter of statusFilter; track filter.key) {
-        <button type="button" [class.is-active]="aktiverStatus() === filter.key" (click)="statusSetzen(filter.key)">{{
-          filter.label }}</button>
-        }
-      </div>
-    </div>
-
-    <button class="gf-auswertung-route__toggle" type="button" [class.is-active]="nurGepruefteWerte()"
-      (click)="gepruefteUmschalten()">
-      <span class="material-symbols-outlined" aria-hidden="true">verified</span>
-      Nur geprüfte Werte
-    </button>
-  </section>
 
   <div class="gf-auswertung-route__kpis">
     @for (kennzahl of kennzahlen(ansicht); track kennzahl.label) {
@@ -91,7 +56,8 @@
     </header>
 
     <div class="gf-auswertung-route__prep-grid">
-      <article class="gf-auswertung-route__score">
+      <div class="gf-auswertung-route__prep-metrics">
+        <article class="gf-auswertung-route__score">
         <span>Aufbereitungsscore</span>
         <div class="gf-auswertung-route__score-ring" [style.background]="scoreGradient(ansicht)"
           aria-label="Aufbereitungsscore">
@@ -102,9 +68,9 @@
         </div>
         <p>Confidence minus Review-Risiko. Dieser Wert sagt nicht, ob jemand gesund ist, sondern ob die Daten sauber
           genug für Verlauf und Bericht sind.</p>
-      </article>
+        </article>
 
-      <article class="gf-auswertung-route__distribution">
+        <article class="gf-auswertung-route__distribution">
         <span>Statusverteilung</span>
         <div class="gf-auswertung-route__distribution-donut" [style.background]="verteilungsGradient(ansicht)"
           aria-label="Statusverteilung">
@@ -127,7 +93,8 @@
             <dd>{{ reviewAnzahl(ansicht) }}</dd>
           </div>
         </dl>
-      </article>
+        </article>
+      </div>
 
       <article class="gf-auswertung-route__overlay">
         <header>
@@ -140,7 +107,7 @@
         </header>
 
         <div class="gf-auswertung-route__overlay-chart">
-          <svg viewBox="0 0 700 260" role="img" aria-label="Normalisierte Verlaufslinien der aktivierten Werte">
+          <svg [class.is-animation-a]="diagrammAnimationsToken() % 2 === 0" [class.is-animation-b]="diagrammAnimationsToken() % 2 === 1" viewBox="0 0 700 260" role="img" aria-label="Normalisierte Verlaufslinien der aktivierten Werte">
             <rect class="gf-auswertung-route__overlay-frame" x="86" y="38" width="540" height="164" rx="18"></rect>
             <rect class="gf-auswertung-route__overlay-band is-high" x="86" y="38" width="540" height="58" rx="18">
             </rect>
@@ -202,7 +169,7 @@
               (click)="overlayWertUmschalten(eintrag, ansicht)">
               <i class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ statusLabel(eintrag.status) }}</i>
               <strong>{{ eintrag.name }}</strong>
-              <small>{{ messwert(eintrag.wert, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent) }}%</small>
+              <small>{{ messwert(eintrag.wert, eintrag.einheit) }} · {{ trendDeltaText(eintrag, ansicht) }}</small>
               <em>{{ istOverlayWertAktiv(eintrag, ansicht) ? 'aktiv' : 'inaktiv' }}</em>
             </button>
             }
@@ -270,6 +237,32 @@
           <h2 id="priority-title">Priorisierte Auffälligkeiten</h2>
           <p>{{ sichtbareWerte.length }} Werte passend zur aktuellen Filterung.</p>
         </div>
+
+        <div class="gf-auswertung-route__priority-controls" aria-label="Filter für priorisierte Auffälligkeiten">
+          <div>
+            <span>Gruppe</span>
+            <div class="gf-auswertung-route__chips">
+              <button type="button" [class.is-active]="aktiveGruppe() === 'alle'" (click)="gruppeSetzen('alle')">Alle</button>
+              @for (gruppe of ansicht.gruppen; track gruppe.key) {
+              <button type="button" [class.is-active]="aktiveGruppe() === gruppe.name" (click)="gruppeSetzen(gruppe.name)">{{ gruppe.name }}</button>
+              }
+            </div>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <div class="gf-auswertung-route__chips">
+              @for (filter of statusFilter; track filter.key) {
+              <button type="button" [class.is-active]="aktiverStatus() === filter.key" (click)="statusSetzen(filter.key)">{{ filter.label }}</button>
+              }
+            </div>
+          </div>
+
+          <button class="gf-auswertung-route__toggle" type="button" [class.is-active]="nurGepruefteWerte()" (click)="gepruefteUmschalten()">
+            <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+            Nur geprüfte Werte
+          </button>
+        </div>
       </header>
 
       <div class="gf-auswertung-route__value-list">
@@ -279,8 +272,7 @@
           <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
           <strong>{{ eintrag.name }}</strong>
           <span>{{ messwert(eintrag.wert, eintrag.einheit) }}</span>
-          <small>{{ delta(eintrag.veraenderungAbsolut, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent)
-            }}%</small>
+          <small>{{ aenderungKurzText(eintrag, ansicht) }}</small>
           <i class="{{ trendKlasse(eintrag.trend) }}">{{ eintrag.trend }}</i>
         </button>
         }
@@ -304,11 +296,11 @@
         </div>
         <div>
           <dt>Vorher</dt>
-          <dd>{{ messwert(wert.vorherigerWert, wert.einheit) }}</dd>
+          <dd>{{ vorherigerWertText(wert, ansicht) }}</dd>
         </div>
         <div>
           <dt>Änderung</dt>
-          <dd>{{ delta(wert.veraenderungAbsolut, wert.einheit) }} · {{ delta(wert.veraenderungProzent) }}%</dd>
+          <dd>{{ aenderungKurzText(wert, ansicht) }}</dd>
         </div>
         <div>
           <dt>Confidence</dt>
@@ -348,22 +340,25 @@
     <header>
       <div>
         <h2 id="comparison-title">Befundvergleich</h2>
-        <p>Aktueller Befund gegen vorherigen Befund mit absoluter und prozentualer Veränderung.</p>
+        <p>{{ vergleichBeschreibung(ansicht) }}</p>
       </div>
       <a class="gf-button gf-button--secondary" routerLink="/review">Review öffnen</a>
     </header>
 
+    @if (hatVergleich(ansicht)) {
     <div class="gf-auswertung-route__comparison-grid">
       @for (eintrag of sichtbareWerte.slice(0, 6); track eintrag.id) {
       <article>
         <span class="gf-chip {{ statusKlasse(eintrag.status) }}">{{ eintrag.status }}</span>
         <strong>{{ eintrag.name }}</strong>
         <p>{{ messwert(eintrag.vorherigerWert, eintrag.einheit) }} → {{ messwert(eintrag.wert, eintrag.einheit) }}</p>
-        <small class="{{ trendKlasse(eintrag.trend) }}">{{ delta(eintrag.veraenderungAbsolut, eintrag.einheit) }} · {{
-          delta(eintrag.veraenderungProzent) }}%</small>
+        <small class="{{ trendKlasse(eintrag.trend) }}">{{ delta(eintrag.veraenderungAbsolut, eintrag.einheit) }} · {{ delta(eintrag.veraenderungProzent) }}%</small>
       </article>
       }
     </div>
+    } @else {
+    <div class="gf-auswertung-route__empty-note">Für diesen Patienten liegt im aktiven Kontext nur ein Befund vor. Der Vergleich wird eingeblendet, sobald ein älterer Befund vorhanden ist.</div>
+    }
   </section>
   }
 

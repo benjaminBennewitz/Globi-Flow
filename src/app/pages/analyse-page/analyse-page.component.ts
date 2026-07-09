@@ -72,19 +72,56 @@ export class AnalysePageComponent {
     { key: 'normal', label: 'Normal' }
   ];
 
+  /** Prüft, ob ein echter Vorbefund für den aktuellen Kontext existiert. */
+  public hatVergleich(ansicht: AuswertungViewModel): boolean {
+    return Boolean(ansicht.hatVergleich && ansicht.vergleichsBefund);
+  }
+
+  /** Prüft, ob ein Einzelwert einen echten Vorbefund besitzt. */
+  public hatWertVergleich(wert: AuswertungLaborwert, ansicht: AuswertungViewModel): boolean {
+    return this.hatVergleich(ansicht) && wert.hatVergleich !== false;
+  }
+
+  /** Gibt den Vergleichsbefund lesbar aus. */
+  public vergleichsBefundLabel(ansicht: AuswertungViewModel): string {
+    return this.hatVergleich(ansicht) ? ansicht.vergleichsBefund : 'Kein Vorbefund';
+  }
+
+  /** Gibt den kompakten Trendtext für eine Wertzeile zurück. */
+  public trendDeltaText(wert: AuswertungLaborwert, ansicht: AuswertungViewModel): string {
+    return this.hatWertVergleich(wert, ansicht) ? `${this.delta(wert.veraenderungProzent)}%` : 'kein Verlauf';
+  }
+
+  /** Gibt den Vorwert lesbar aus. */
+  public vorherigerWertText(wert: AuswertungLaborwert, ansicht: AuswertungViewModel): string {
+    return this.hatWertVergleich(wert, ansicht) ? this.messwert(wert.vorherigerWert, wert.einheit) : 'Kein Vorbefund';
+  }
+
+  /** Gibt die Änderung lesbar aus. */
+  public aenderungKurzText(wert: AuswertungLaborwert, ansicht: AuswertungViewModel): string {
+    return this.hatWertVergleich(wert, ansicht) ? `${this.delta(wert.veraenderungAbsolut, wert.einheit)} · ${this.delta(wert.veraenderungProzent)}%` : 'kein Verlauf';
+  }
+
+  /** Beschreibt den aktiven Vergleichszustand. */
+  public vergleichBeschreibung(ansicht: AuswertungViewModel): string {
+    return this.hatVergleich(ansicht) ? `Aktueller Befund gegen ${ansicht.vergleichsBefund} mit absoluter und prozentualer Veränderung.` : 'Noch kein echter Vorbefund für diesen Patienten vorhanden.';
+  }
+
   /** Erzeugt transparente KPI-Karten für die Analyse. */
   public kennzahlen(ansicht: AuswertungViewModel): AuswertungKennzahl[] {
     const auffaellig = this.auffaelligeWerte(ansicht).length;
     const stark = ansicht.werte.filter((wert: AuswertungLaborwert) => wert.prioritaet === 'hoch').length;
     const review = this.reviewAnzahl(ansicht);
-    const trend = this.relevanteTendenzen(ansicht).length;
+    const trend = this.hatVergleich(ansicht) ? this.relevanteTendenzen(ansicht).length : 0;
+    const trendHinweis = this.hatVergleich(ansicht) ? `≥ ${TRENDWECHSEL_SCHWELLE_PROZENT}% zum Vergleich` : 'kein Vorbefund';
+    const trendBeschreibung = this.hatVergleich(ansicht) ? `Aktueller Befund verglichen mit ${ansicht.vergleichsBefund}. Gezählt werden Werte ab ±${TRENDWECHSEL_SCHWELLE_PROZENT}% Veränderung.` : 'Für den aktiven Patienten gibt es im ausgewählten Kontext keinen vorherigen Befund. Trendwechsel werden deshalb nicht gezählt.';
 
     return [
       { label: 'Laborwerte', wert: ansicht.werte.length, hinweis: 'aktueller Befund', beschreibung: 'Alle normalisierten Werte des ausgewählten Befunds, die fachlich ausgewertet werden können.', icon: 'science', status: 'info' },
       { label: 'Auffällig', wert: auffaellig, hinweis: 'außer Referenz', beschreibung: 'Werte mit Status erhöht oder niedrig. Grundlage ist der erkannte Referenzbereich des aktuellen Befunds.', icon: 'priority_high', status: 'warning' },
       { label: 'Stark auffällig', wert: stark, hinweis: 'hoch priorisiert', beschreibung: 'Werte mit hoher Priorität. Diese Priorität kommt aus den Backend-Regeln und berücksichtigt Abweichung, Status und Prüfbedarf.', icon: 'emergency_home', status: 'danger' },
       { label: 'Review offen', wert: review, hinweis: 'ärztlich prüfen', beschreibung: 'Werte mit offenem Review-Status. Sie sollten vor Freigabe und Patientenbericht geprüft werden.', icon: 'fact_check', status: 'review' },
-      { label: 'Trendwechsel', wert: trend, hinweis: `≥ ${TRENDWECHSEL_SCHWELLE_PROZENT}% zum Vergleich`, beschreibung: `Aktueller Befund verglichen mit ${ansicht.vergleichsBefund}. Gezählt werden Werte ab ±${TRENDWECHSEL_SCHWELLE_PROZENT}% Veränderung.`, icon: 'trending_up', status: 'success' }
+      { label: 'Trendwechsel', wert: trend, hinweis: trendHinweis, beschreibung: trendBeschreibung, icon: 'trending_up', status: 'success' }
     ];
   }
 
@@ -130,11 +167,13 @@ export class AnalysePageComponent {
 
     if (aktuelleIds.includes(wert.id)) {
       this.aktiveOverlayWertIds.set(aktuelleIds.filter((id: string) => id !== wert.id));
+      this.diagrammAnimationsToken.update((token: number) => token + 1);
       return;
     }
 
     const naechsteIds = [...aktuelleIds, wert.id].slice(-MAX_AKTIVE_OVERLAY_WERTE);
     this.aktiveOverlayWertIds.set(naechsteIds);
+    this.diagrammAnimationsToken.update((token: number) => token + 1);
   }
 
   /** Liefert die Anzahl maximal aktivierbarer Verlaufslinien. */
@@ -144,7 +183,11 @@ export class AnalysePageComponent {
 
   /** Liefert Werte mit relevanter Veränderung zum Vergleichsbefund. */
   public relevanteTendenzen(ansicht: AuswertungViewModel): AuswertungLaborwert[] {
-    return this.topWerte(ansicht).filter((wert: AuswertungLaborwert) => Math.abs(wert.veraenderungProzent) >= TRENDWECHSEL_SCHWELLE_PROZENT).sort((a: AuswertungLaborwert, b: AuswertungLaborwert) => Math.abs(b.veraenderungProzent) - Math.abs(a.veraenderungProzent));
+    if (!this.hatVergleich(ansicht)) {
+      return [];
+    }
+
+    return this.topWerte(ansicht).filter((wert: AuswertungLaborwert) => this.hatWertVergleich(wert, ansicht) && Math.abs(wert.veraenderungProzent) >= TRENDWECHSEL_SCHWELLE_PROZENT).sort((a: AuswertungLaborwert, b: AuswertungLaborwert) => Math.abs(b.veraenderungProzent) - Math.abs(a.veraenderungProzent));
   }
 
   /** Liefert Werte für das Referenzfeld-Menü. */
@@ -154,6 +197,10 @@ export class AnalysePageComponent {
 
   /** Beschreibt die Trendlogik für die Oberfläche. */
   public trendMethodik(ansicht: AuswertungViewModel): string {
+    if (!this.hatVergleich(ansicht)) {
+      return 'Für diese Testperson liegt im ausgewählten Kontext kein vorheriger Befund vor. Sobald ein zweiter Befund vorhanden ist, werden echte Veränderungen angezeigt.';
+    }
+
     return `Verglichen wird der aktuelle Befund mit ${ansicht.vergleichsBefund}. Relevant ist eine Veränderung ab ±${TRENDWECHSEL_SCHWELLE_PROZENT}%.`;
   }
 
