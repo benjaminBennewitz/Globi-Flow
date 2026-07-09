@@ -6,7 +6,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, effect, inject, signal } from '@angular/core';
-import { BerichtLaborwert, BerichtViewModel, BerichtWertStatus } from '../../core/models/bericht.model';
+import { BerichtLaborwert, BerichtPruefEintrag, BerichtViewModel, BerichtWertStatus } from '../../core/models/bericht.model';
 import { Patient, PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
@@ -32,7 +32,10 @@ export class BerichtePageComponent {
   private readonly globiFlowApi = inject(GlobiFlowApiService);
 
   /** Druckfertige Berichtsdaten aus der API. */
-  public readonly bericht = signal<BerichtViewModel>({ id: '', berichtsdatum: '', version: '1.0', gesamtstatus: '', gesamttext: '', gepruefteWerte: 0, normaleWerte: 0, auffaelligeWerte: 0, reviewWerte: 0, werte: [], kategorien: [], empfehlungen: [], fragen: [], quellen: [], disclaimer: '' });
+  public readonly bericht = signal<BerichtViewModel>({ id: '', berichtsdatum: '', version: '1.0', gesamtstatus: '', gesamttext: '', gesamtWerte: 0, gepruefteWerte: 0, normaleWerte: 0, auffaelligeWerte: 0, reviewWerte: 0, werte: [], kategorien: [], empfehlungen: [], fragen: [], quellen: [], disclaimer: '', istDruckbar: false, wissensbasisVollstaendig: true, fehlendeWissensbasisTexte: [], offeneReviewEintraege: [] });
+
+  /** Sichtbarkeit der Wissensbasis-Detailbox. */
+  public readonly wissensbasisDetailsOffen = signal(false);
 
   /** Aktiver Patient. */
   public readonly patient = computed(() => this.patientContext.aktiverPatient());
@@ -57,35 +60,87 @@ export class BerichtePageComponent {
   /** Auffällige oder prüfpflichtige Werte für die interne Kurzsicht. */
   public readonly auffaelligeWerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status !== 'normal'));
 
-  /** Noch nicht druckfreigegebene Werte. */
+  /** Noch nicht druckfreigegebene Werte aus der Werteliste. */
   public readonly offenePruefwerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status === 'review'));
+
+  /** Noch offene Backend-Reviewpunkte. */
+  public readonly offeneReviewEintraege = computed(() => this.bericht().offeneReviewEintraege ?? []);
+
+  /** Anzahl aller offenen Reviewpunkte. */
+  public readonly offeneReviewAnzahl = computed(() => Math.max(this.bericht().reviewWerte, this.offenePruefwerte().length, this.offeneReviewEintraege().length));
+
+  /** Fehlende Wissensbasis-Texte aus Backend oder Fallback aus Werteliste. */
+  public readonly fehlendeWissensbasisTexte = computed<BerichtPruefEintrag[]>(() => {
+    const backendEintraege = this.bericht().fehlendeWissensbasisTexte ?? [];
+    if (backendEintraege.length) {
+      return backendEintraege;
+    }
+
+    return this.bericht().werte
+      .filter((wert: BerichtLaborwert) => !wert.erklaerung)
+      .map((wert: BerichtLaborwert) => ({ id: wert.key, name: wert.name, gruppe: wert.gruppe, hinweis: 'Patientenkurztext in der Wissensbasis fehlt.' }));
+  });
 
   /** Druckfähige Werte ohne offene Reviewwerte. */
   public readonly freigegebeneWerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status !== 'review'));
 
-  /** Auffällige druckfähige Werte für Verlaufsgrafiken. */
-  public readonly trendWerte = computed(() => this.freigegebeneWerte().filter((wert: BerichtLaborwert) => wert.status !== 'normal'));
+  /** Aussagekräftige Trendwerte mit echtem Verlauf. */
+  public readonly trendWerte = computed(() => this.freigegebeneWerte().filter((wert: BerichtLaborwert) => wert.status !== 'normal' && wert.trend !== 'stabil' && wert.verlauf.length > 1).slice(0, 4));
 
   /** Normale Werte für die kompakte Ergebnissicht. */
   public readonly normaleWerte = computed(() => this.bericht().werte.filter((wert: BerichtLaborwert) => wert.status === 'normal'));
 
   /** Druckfertige Werte für die Ergebnistabelle. */
-  public readonly druckWerte = computed(() => [...this.freigegebeneWerte().filter((wert: BerichtLaborwert) => wert.status !== 'normal'), ...this.normaleWerte()].slice(0, 10));
+  public readonly druckWerte = computed(() => [...this.freigegebeneWerte().filter((wert: BerichtLaborwert) => wert.status !== 'normal'), ...this.normaleWerte()]);
+
+  /** Gibt an, ob es druckbare Empfehlungen gibt. */
+  public readonly hatEmpfehlungen = computed(() => this.bericht().empfehlungen.length > 0);
+
+  /** Druckwert-Seiten, damit keine Wertkarten abgeschnitten werden. */
+  public readonly druckWertSeiten = computed(() => this.chunk(this.druckWerte(), 10));
+
+  /** Gibt an, ob der Bericht gedruckt werden darf. */
+  public readonly druckFreigegeben = computed(() => !!this.patient() && !!this.befund() && !!this.bericht().disclaimer && this.offeneReviewAnzahl() === 0 && this.bericht().istDruckbar !== false);
+
+  /** Gibt an, ob Fragen für das Arztgespräch vorhanden sind. */
+  public readonly hatFragen = computed(() => this.bericht().fragen.length > 0);
+
+  /** Quellenseiten, damit Quellen nicht abgeschnitten werden. */
+  public readonly quellenSeiten = computed(() => this.chunk(this.bericht().quellen, 10, false));
+
+  /** Gibt an, ob eine Fallback-Abschlussseite benötigt wird. */
+  public readonly hatAbschlussFallback = computed(() => !this.hatFragen() && this.quellenSeiten().length === 0);
+
+  /** Anzahl sichtbarer Druckseiten. */
+  public readonly gesamtSeiten = computed(() => 1 + (this.hatEmpfehlungen() ? 1 : 0) + this.druckWertSeiten().length + (this.hatFragen() ? 1 : 0) + this.quellenSeiten().length + (this.hatAbschlussFallback() ? 1 : 0));
 
   /** Prüfpunkte vor Druck oder Export. */
   public readonly freigabeChecks = computed(() => [
-    { label: 'Patient gewählt', ok: !!this.patient() },
-    { label: 'Befund gewählt', ok: !!this.befund() },
-    { label: 'Keine offenen Reviewwerte im Druck', ok: this.offenePruefwerte().length === 0 },
-    { label: 'Wissensbasis-Texte vorhanden', ok: this.bericht().werte.every((wert: BerichtLaborwert) => !!wert.erklaerung) },
-    { label: 'Disclaimer vorhanden', ok: !!this.bericht().disclaimer }
+    { key: 'patient', label: 'Patient gewählt', ok: !!this.patient(), details: [] as BerichtPruefEintrag[] },
+    { key: 'befund', label: 'Befund gewählt', ok: !!this.befund(), details: [] as BerichtPruefEintrag[] },
+    { key: 'review', label: 'Keine offenen Reviewwerte im Druck', ok: this.offeneReviewAnzahl() === 0, details: this.offeneReviewEintraege() },
+    { key: 'wissen', label: 'Wissensbasis-Texte vorhanden', ok: this.fehlendeWissensbasisTexte().length === 0, details: this.fehlendeWissensbasisTexte() },
+    { key: 'disclaimer', label: 'Disclaimer vorhanden', ok: !!this.bericht().disclaimer, details: [] as BerichtPruefEintrag[] }
   ]);
+
+  /** Öffnet oder schließt die Liste fehlender Wissensbasis-Texte. */
+  public wissensbasisDetailsUmschalten(): void {
+    if (!this.fehlendeWissensbasisTexte().length) {
+      return;
+    }
+
+    this.wissensbasisDetailsOffen.update((wert: boolean) => !wert);
+  }
 
   /** Öffnet den nativen Druckdialog, wenn der Bericht druckfähig ist. */
   public drucken(): void {
-    if (this.offenePruefwerte().length > 0) {
+    if (this.offeneReviewAnzahl() > 0 || this.bericht().istDruckbar === false) {
       this.toastService.zeige('Druck blockiert', 'Offene Reviewwerte müssen vor dem finalen Patientenbericht freigegeben oder entfernt werden.', 'warning');
       return;
+    }
+
+    if (this.fehlendeWissensbasisTexte().length > 0) {
+      this.toastService.zeige('Wissensbasis unvollständig', `${this.fehlendeWissensbasisTexte().length} Patiententexte fehlen noch.`, 'warning');
     }
 
     window.print();
@@ -153,12 +208,12 @@ export class BerichtePageComponent {
 
   /** Baut SVG-Punkte für eine Verlaufslinie. */
   public sparklinePunkte(wert: BerichtLaborwert): string {
-    const werte = wert.verlauf;
+    const werte = wert.verlauf.length ? wert.verlauf : [wert.wert];
     const min = Math.min(...werte);
     const max = Math.max(...werte);
     const spannweite = Math.max(max - min, 1);
     return werte.map((punkt: number, index: number) => {
-      const x = (index / Math.max(werte.length - 1, 1)) * 100;
+      const x = werte.length === 1 ? 50 : (index / Math.max(werte.length - 1, 1)) * 100;
       const y = 34 - ((punkt - min) / spannweite) * 28;
       return `${x.toFixed(1)},${this.begrenzen(y, 4, 34).toFixed(1)}`;
     }).join(' ');
@@ -179,13 +234,50 @@ export class BerichtePageComponent {
     return befund?.name ?? 'kein Befund gewählt';
   }
 
+  /** Liefert einen lesbaren Seitenzähler. */
+  public seiteLabel(index: number): string {
+    return `Seite ${index} / ${this.gesamtSeiten()}`;
+  }
+
+  /** Berechnet die Seitennummer der Ergebnisseite. */
+  public ergebnisSeite(index: number): number {
+    return 2 + (this.hatEmpfehlungen() ? 1 : 0) + index;
+  }
+
+  /** Berechnet die Seitennummer der Fragenseite. */
+  public fragenSeite(): number {
+    return 2 + (this.hatEmpfehlungen() ? 1 : 0) + this.druckWertSeiten().length;
+  }
+
+  /** Berechnet die Seitennummer einer Quellenseite. */
+  public quellenSeitennummer(index: number): number {
+    return this.fragenSeite() + (this.hatFragen() ? 1 : 0) + index;
+  }
+
+  /** Berechnet die Gesamtzahl aller Berichtswerte. */
+  public gesamtWerte(): number {
+    return this.bericht().gesamtWerte ?? this.bericht().werte.length;
+  }
+
   /** Lädt den Bericht passend zum aktiven Kontext. */
   private berichtLaden(befundId?: string, patientId?: string): void {
     if (!befundId && !patientId) {
       return;
     }
 
-    this.globiFlowApi.ladeBericht(befundId, patientId).subscribe((bericht: BerichtViewModel) => this.bericht.set(bericht));
+    this.globiFlowApi.ladeBericht(befundId, patientId).subscribe((bericht: BerichtViewModel) => {
+      this.bericht.set(bericht);
+      this.wissensbasisDetailsOffen.set(false);
+    });
+  }
+
+  /** Teilt ein Array in feste Seitengruppen. */
+  private chunk<T>(werte: T[], groesse: number, leereSeite = true): T[][] {
+    const seiten: T[][] = [];
+    for (let index = 0; index < werte.length; index += groesse) {
+      seiten.push(werte.slice(index, index + groesse));
+    }
+    return seiten.length ? seiten : leereSeite ? [[]] : [];
   }
 
   /** Begrenzt eine Zahl auf ein Minimum und Maximum. */

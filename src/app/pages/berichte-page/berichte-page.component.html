@@ -13,25 +13,23 @@
     </div>
 
     <div class="gf-berichte-route__headline-actions">
-      <button class="gf-button gf-button--secondary" type="button">
+      <button class="gf-button gf-button--secondary" type="button" (click)="vorschauAktualisieren()">
         <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
         Vorschau aktualisieren
       </button>
-      <button class="gf-button gf-button--primary" type="button" [disabled]="offenePruefwerte().length > 0"
-        (click)="drucken()">
+      <button class="gf-button gf-button--primary" type="button" [disabled]="!druckFreigegeben()" (click)="drucken()">
         <span class="material-symbols-outlined" aria-hidden="true">print</span>
         Drucken
       </button>
     </div>
   </header>
 
-  @if (offenePruefwerte().length > 0) {
+  @if (offeneReviewAnzahl() > 0) {
   <section class="gf-berichte-route__review-warning gf-neu-card" role="status">
     <span class="material-symbols-outlined" aria-hidden="true">lock</span>
     <div>
       <strong>Finaler Druck noch gesperrt</strong>
-      <p>{{ offenePruefwerte().length }} Wert(e) sind noch nicht freigegeben. Die Vorschau bleibt sichtbar, der finale
-        Druck wird blockiert.</p>
+      <p>{{ offeneReviewAnzahl() }} Reviewpunkt(e) sind noch nicht freigegeben. Die Vorschau bleibt sichtbar, der finale Druck wird blockiert.</p>
     </div>
   </section>
   }
@@ -52,21 +50,42 @@
       <strong>{{ daten.version }}</strong>
       <small>{{ daten.berichtsdatum }} · {{ daten.gesamtstatus }}</small>
     </article>
-    <section>
+    <section class="gf-berichte-route__check-panel">
       <h2>Freigabecheck</h2>
       <div class="gf-berichte-route__checks">
         @for (check of freigabeChecks(); track check.label) {
-        <span [class.is-ok]="check.ok">
+        <button class="gf-berichte-route__check" type="button" [class.is-ok]="check.ok" [class.is-actionable]="check.key === 'wissen' && !check.ok" [disabled]="check.key !== 'wissen' || check.ok" (click)="check.key === 'wissen' ? wissensbasisDetailsUmschalten() : null">
           <i class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error' }}</i>
           {{ check.label }}
-        </span>
+        </button>
         }
       </div>
+
+      @if (wissensbasisDetailsOffen() && fehlendeWissensbasisTexte().length > 0) {
+      <div class="gf-berichte-route__knowledge-popover" role="dialog" aria-label="Fehlende Wissensbasis-Texte">
+        <header>
+          <strong>Fehlende Patiententexte</strong>
+          <button type="button" aria-label="Details schließen" (click)="wissensbasisDetailsUmschalten()">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          </button>
+        </header>
+        <div>
+          @for (eintrag of fehlendeWissensbasisTexte(); track eintrag.id) {
+          <article>
+            <span>{{ eintrag.gruppe }}</span>
+            <strong>{{ eintrag.name }}</strong>
+            <small>{{ eintrag.hinweis }}</small>
+          </article>
+          }
+        </div>
+      </div>
+      }
     </section>
   </aside>
 
   <section class="gf-berichte-route__preview" aria-label="Druckvorschau">
     <article class="gf-berichte-route__page">
+      <span class="gf-berichte-route__page-counter">{{ seiteLabel(1) }}</span>
       <header class="gf-berichte-route__report-header">
         <div>
           <span>Patientenbericht</span>
@@ -109,11 +128,13 @@
           <p>{{ daten.gesamttext }}</p>
         </div>
         <aside>
+          <strong>{{ gesamtWerte() }}</strong>
+          <span>gesamt</span>
           <strong>{{ daten.normaleWerte }}</strong>
           <span>unauffällig</span>
           <strong>{{ daten.auffaelligeWerte }}</strong>
           <span>auffällig</span>
-          <strong>{{ daten.reviewWerte }}</strong>
+          <strong>{{ offeneReviewAnzahl() }}</strong>
           <span>zu prüfen</span>
         </aside>
       </section>
@@ -135,10 +156,11 @@
         </article>
         }
       </section>
-
     </article>
 
+    @if (hatEmpfehlungen()) {
     <article class="gf-berichte-route__page gf-berichte-route__page--recommendations">
+      <span class="gf-berichte-route__page-counter">{{ seiteLabel(2) }}</span>
       <header class="gf-berichte-route__page-title">
         <span>Empfehlungen</span>
         <h2>Hinweise für das Arztgespräch</h2>
@@ -155,8 +177,11 @@
         }
       </section>
     </article>
+    }
 
+    @for (wertSeite of druckWertSeiten(); track $index) {
     <article class="gf-berichte-route__page">
+      <span class="gf-berichte-route__page-counter">{{ seiteLabel(ergebnisSeite($index)) }}</span>
       <header class="gf-berichte-route__page-title">
         <span>Ergebnisse</span>
         <h2>Laborwerte in verständlicher Form</h2>
@@ -164,7 +189,7 @@
       </header>
 
       <section class="gf-berichte-route__value-list">
-        @for (wert of druckWerte(); track wert.key) {
+        @for (wert of wertSeite; track wert.key) {
         <article class="gf-berichte-route__value-card">
           <header>
             <div>
@@ -180,41 +205,28 @@
           </div>
 
           <div class="gf-berichte-route__range" aria-hidden="true">
-            <span class="gf-berichte-route__range-ref" [style.left.%]="referenzStart(wert)"
-              [style.width.%]="referenzBreite(wert)"></span>
+            <span class="gf-berichte-route__range-ref" [style.left.%]="referenzStart(wert)" [style.width.%]="referenzBreite(wert)"></span>
             <i [style.left.%]="markerPosition(wert)"></i>
           </div>
 
-          <p>{{ wert.erklaerung }}</p>
+          <p>{{ wert.erklaerung || 'Für diesen Wert ist noch kein Patiententext in der Wissensbasis hinterlegt.' }}</p>
           <small>{{ wert.hinweis }}</small>
         </article>
         }
       </section>
     </article>
+    }
 
-    <article class="gf-berichte-route__page">
+    @if (hatFragen()) {
+    <article class="gf-berichte-route__page gf-berichte-route__page--questions">
+      <span class="gf-berichte-route__page-counter">{{ seiteLabel(fragenSeite()) }}</span>
       <header class="gf-berichte-route__page-title">
-        <span>Verlauf und Gesprächsvorbereitung</span>
-        <h2>Trends, Fragen und Quellen</h2>
-        <p>Verlaufsgrafiken zeigen die Entwicklung in den hinterlegten Testbefunden.</p>
+        <span>Gesprächsvorbereitung</span>
+        <h2>Fragen für das Arztgespräch</h2>
+        <p>Die Fragen beziehen sich auf die auffälligen Werte des aktuell ausgewählten Befunds.</p>
       </header>
 
-      <section class="gf-berichte-route__trend-grid">
-        @for (wert of trendWerte(); track wert.key) {
-        <article>
-          <header>
-            <strong>{{ wert.name }}</strong>
-            <span>{{ wert.trend }}</span>
-          </header>
-          <svg viewBox="0 0 100 38" role="img" [attr.aria-label]="'Verlauf von ' + wert.name">
-            <polyline [attr.points]="sparklinePunkte(wert)"></polyline>
-          </svg>
-          <p>{{ wert.hinweis }}</p>
-        </article>
-        }
-      </section>
-
-      <section class="gf-berichte-route__questions">
+      <section class="gf-berichte-route__questions gf-berichte-route__questions--large">
         <h3>Fragen für das Arztgespräch</h3>
         <ol>
           @for (frage of daten.fragen; track frage) {
@@ -223,10 +235,28 @@
         </ol>
       </section>
 
+      @if (quellenSeiten().length === 0) {
+      <footer class="gf-berichte-route__disclaimer gf-berichte-route__disclaimer--bottom">
+        <strong>Wichtiger Hinweis</strong>
+        <p>{{ daten.disclaimer }}</p>
+      </footer>
+      }
+    </article>
+    }
+
+    @for (quellenTeilseite of quellenSeiten(); track $index) {
+    <article class="gf-berichte-route__page gf-berichte-route__page--sources">
+      <span class="gf-berichte-route__page-counter">{{ seiteLabel(quellenSeitennummer($index)) }}</span>
+      <header class="gf-berichte-route__page-title">
+        <span>Quellen und Wissensbasis</span>
+        <h2>Hinterlegte Wissensquellen</h2>
+        <p>Die Quellen zeigen, welche Wissensbasis-Texte für die patientenverständliche Erklärung verwendet wurden.</p>
+      </header>
+
       <section class="gf-berichte-route__sources">
         <h3>Quellen und Wissensbasis</h3>
         <div>
-          @for (quelle of daten.quellen; track quelle.id) {
+          @for (quelle of quellenTeilseite; track quelle.id) {
           <article>
             <span>{{ quelle.bereich }}</span>
             <strong>{{ quelle.titel }}</strong>
@@ -236,10 +266,29 @@
         </div>
       </section>
 
-      <footer class="gf-berichte-route__disclaimer">
+      @if ($last) {
+      <footer class="gf-berichte-route__disclaimer gf-berichte-route__disclaimer--bottom">
+        <strong>Wichtiger Hinweis</strong>
+        <p>{{ daten.disclaimer }}</p>
+      </footer>
+      }
+    </article>
+    }
+
+    @if (hatAbschlussFallback()) {
+    <article class="gf-berichte-route__page gf-berichte-route__page--closing">
+      <span class="gf-berichte-route__page-counter">{{ seiteLabel(gesamtSeiten()) }}</span>
+      <header class="gf-berichte-route__page-title">
+        <span>Abschluss</span>
+        <h2>Wichtiger Hinweis</h2>
+        <p>Für diesen Bericht sind keine zusätzlichen Fragen oder Quellen hinterlegt.</p>
+      </header>
+
+      <footer class="gf-berichte-route__disclaimer gf-berichte-route__disclaimer--bottom">
         <strong>Wichtiger Hinweis</strong>
         <p>{{ daten.disclaimer }}</p>
       </footer>
     </article>
+    }
   </section>
 </section>

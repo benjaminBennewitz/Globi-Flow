@@ -98,6 +98,22 @@ export interface BerichtQuelle {
   stand: string;
 }
 
+
+/** Kompakter Prüfpunkt für Bericht-Freigaben. */
+export interface BerichtPruefEintrag {
+  /** Eindeutige ID. */
+  id: string;
+
+  /** Anzeigename des betroffenen Werts. */
+  name: string;
+
+  /** Fachliche Gruppe. */
+  gruppe: string;
+
+  /** Erklärung des Prüfpunkts. */
+  hinweis: string;
+}
+
 /** Druckfertiger Patientenbericht. */
 export interface BerichtViewModel {
   /** Eindeutige Berichts-ID. */
@@ -114,6 +130,9 @@ export interface BerichtViewModel {
 
   /** Verständlicher Gesamttext ohne Diagnose. */
   gesamttext: string;
+
+  /** Anzahl aller Laborwerte im Bericht. */
+  gesamtWerte?: number;
 
   /** Anzahl geprüfter Werte. */
   gepruefteWerte: number;
@@ -144,4 +163,16 @@ export interface BerichtViewModel {
 
   /** Pflicht-Disclaimer. */
   disclaimer: string;
+
+  /** Gibt an, ob der Bericht ohne offene Reviews druckbar ist. */
+  istDruckbar?: boolean;
+
+  /** Gibt an, ob für alle Werte Patiententexte vorhanden sind. */
+  wissensbasisVollstaendig?: boolean;
+
+  /** Werte ohne Patiententext in der Wissensbasis. */
+  fehlendeWissensbasisTexte?: BerichtPruefEintrag[];
+
+  /** Noch offene Reviewpunkte aus dem Backend. */
+  offeneReviewEintraege?: BerichtPruefEintrag[];
 }
