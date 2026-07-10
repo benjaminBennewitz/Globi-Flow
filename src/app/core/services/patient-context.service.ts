@@ -46,26 +46,14 @@ const LEERER_PATIENT: Patient = {
 /** Zentraler Arbeitskontext für aktive Testperson und aktiven Befund. */
 @Injectable({ providedIn: 'root' })
 export class PatientContextService {
-  /** API-Service für Patientendaten. */
-  private readonly globiFlowApi = inject(GlobiFlowApiService);
+  private readonly globiFlowApi = inject(GlobiFlowApiService);                                                                                                                                     // API-Service für Patientendaten.
+  public readonly patienten: WritableSignal<Patient[]> = signal([LEERER_PATIENT]);                                                                                                                 // Alle verfügbaren Testpersonen.
+  public readonly aktiverPatientId: WritableSignal<string> = signal(this.gespeichertenWertLesen(AKTIVER_PATIENT_STORAGE_KEY));                                                                     // Aktive Testpersonen-ID.
+  public readonly aktiverBefundId: WritableSignal<string> = signal(this.gespeichertenWertLesen(AKTIVER_BEFUND_STORAGE_KEY));                                                                       // Aktive Befund-ID.
+  public readonly patientenSuche: WritableSignal<string> = signal('');                                                                                                                             // Suchbegriff der globalen Patientenauswahl.
+  public readonly patientenFilter: WritableSignal<PatientQuelle | 'alle' | 'review'> = signal('alle');                                                                                             // Aktiver Quellenfilter der globalen Patientenauswahl.
+  public readonly aktiverPatient: Signal<Patient> = computed(() => this.patienten().find((patient: Patient) => patient.id === this.aktiverPatientId()) ?? this.patienten()[0] ?? LEERER_PATIENT);  // Aktive Testperson.
 
-  /** Alle verfügbaren Testpersonen. */
-  public readonly patienten: WritableSignal<Patient[]> = signal([LEERER_PATIENT]);
-
-  /** Aktive Testpersonen-ID. */
-  public readonly aktiverPatientId: WritableSignal<string> = signal(this.gespeichertenWertLesen(AKTIVER_PATIENT_STORAGE_KEY));
-
-  /** Aktive Befund-ID. */
-  public readonly aktiverBefundId: WritableSignal<string> = signal(this.gespeichertenWertLesen(AKTIVER_BEFUND_STORAGE_KEY));
-
-  /** Suchbegriff der globalen Patientenauswahl. */
-  public readonly patientenSuche: WritableSignal<string> = signal('');
-
-  /** Aktiver Quellenfilter der globalen Patientenauswahl. */
-  public readonly patientenFilter: WritableSignal<PatientQuelle | 'alle' | 'review'> = signal('alle');
-
-  /** Aktive Testperson. */
-  public readonly aktiverPatient: Signal<Patient> = computed(() => this.patienten().find((patient: Patient) => patient.id === this.aktiverPatientId()) ?? this.patienten()[0] ?? LEERER_PATIENT);
 
   /** Aktiver Befund der aktiven Testperson. */
   public readonly aktiverBefund: Signal<PatientBefund | null> = computed(() => {

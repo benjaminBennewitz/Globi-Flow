@@ -17,6 +17,5 @@ import { ToastService } from '../../services/toast.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToastContainerComponent {
-  /** Toast-Service mit aktiven Nachrichten. */
-  public readonly toastService = inject(ToastService);
+  public readonly toastService = inject(ToastService);  // Toast-Service mit aktiven Nachrichten.
 }

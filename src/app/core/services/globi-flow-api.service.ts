@@ -24,88 +24,48 @@ import { Wissenseintrag } from '../models/wissenseintrag.model';
 
 /** Eingabe für die manuelle Laborwert-Erfassung. */
 export interface ManuellerImportInput {
-  /** Zugeordnete Testpersonen-ID. */
-  patientId: string;
-
-  /** Stabiler Laborwert-Key. */
-  key: string;
-
-  /** Anzeigename des Laborwerts. */
-  name: string;
-
-  /** Rohes Ergebnisfeld. */
-  ergebnis: string;
-
-  /** Einheit des Ergebnisses. */
-  einheit: string;
-
-  /** Referenzbereich als Text. */
-  referenz: string;
+  patientId: string;  // Zugeordnete Testpersonen-ID.
+  key: string;        // Stabiler Laborwert-Key.
+  name: string;       // Anzeigename des Laborwerts.
+  ergebnis: string;   // Rohes Ergebnisfeld.
+  einheit: string;    // Einheit des Ergebnisses.
+  referenz: string;   // Referenzbereich als Text.
 }
 
 /** Antwort der Befundfreigabe. */
 export interface BefundFreigabeAntwort {
-  /** Öffentliche Befund-ID. */
-  id: string;
-
-  /** Neuer Befundstatus. */
-  status: string;
-
-  /** ISO-Zeitpunkt der Freigabe. */
-  releasedAt: string;
+  id: string;          // Öffentliche Befund-ID.
+  status: string;      // Neuer Befundstatus.
+  releasedAt: string;  // ISO-Zeitpunkt der Freigabe.
 }
 
 
 /** Antwort nach dem Zurücksetzen der Wissensbasis. */
 export interface WissensbasisResetAntwort {
-  /** API-Status. */
-  status: string;
-
-  /** Sichtbare Rückmeldung. */
-  message: string;
-
-  /** Anzahl der zurückgesetzten Wissenseinträge. */
-  entries: number;
-
-  /** Anzahl der gepflegten Laborwertdefinitionen. */
-  analytes: number;
-
-  /** Anzahl der Quellen. */
-  sources: number;
-
-  /** Aktualisierte Wissenseinträge. */
-  items: Wissenseintrag[];
+  status: string;           // API-Status.
+  message: string;          // Sichtbare Rückmeldung.
+  entries: number;          // Anzahl der zurückgesetzten Wissenseinträge.
+  analytes: number;         // Anzahl der gepflegten Laborwertdefinitionen.
+  sources: number;          // Anzahl der Quellen.
+  items: Wissenseintrag[];  // Aktualisierte Wissenseinträge.
 }
 
 
 export interface DemoDatenResetAntwort {
-  /** API-Status. */
-  status: string;
-
-  /** Sichtbare Rückmeldung. */
-  message: string;
-
-  /** Anzahl der Testpersonen nach dem Reset. */
-  patients: number;
-
-  /** Anzahl der Befunde nach dem Reset. */
-  reports: number;
-
-  /** Anzahl der Laborwerte nach dem Reset. */
-  values: number;
-
-  /** Anzahl offener Review-Kandidaten nach dem Reset. */
-  reviews: number;
+  status: string;    // API-Status.
+  message: string;   // Sichtbare Rückmeldung.
+  patients: number;  // Anzahl der Testpersonen nach dem Reset.
+  reports: number;   // Anzahl der Befunde nach dem Reset.
+  values: number;    // Anzahl der Laborwerte nach dem Reset.
+  reviews: number;   // Anzahl offener Review-Kandidaten nach dem Reset.
 }
 
 /** API-Service für die lokale Globi-Flow-Django-API. */
 @Injectable({ providedIn: 'root' })
 export class GlobiFlowApiService {
-  /** Angular-HTTP-Client für REST-Aufrufe. */
-  private readonly http = inject(HttpClient);
+  private readonly http = inject(HttpClient);     // Angular-HTTP-Client für REST-Aufrufe.
+  private readonly apiEndpunkte = API_ENDPUNKTE;  // Zentrale API-Routen.
 
-  /** Zentrale API-Routen. */
-  private readonly apiEndpunkte = API_ENDPUNKTE;
 
   /** Liefert die komplette Datenansicht. */
   public ladeStartansicht(): Observable<DashboardViewModel> {

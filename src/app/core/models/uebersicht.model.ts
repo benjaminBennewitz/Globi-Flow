@@ -13,144 +13,66 @@ export type AktivitaetsFilter = 'heute' | 'gestern' | 'drei_tage' | 'sieben_tage
 
 /** Detailzeile für KPI-Overlays. */
 export interface UebersichtDetailEintrag {
-  /** Eindeutige Backend-ID. */
-  id: string;
-
-  /** Sichtbarer Titel. */
-  titel: string;
-
-  /** Kurzbeschreibung mit Patient, Befund oder Status. */
-  beschreibung: string;
-
-  /** Optionaler Patientenkontext. */
-  patientId?: string;
-
-  /** Sichtbarer Patientenname. */
-  patientName?: string;
-
-  /** Optionaler Befundkontext. */
-  befundId?: string;
-
-  /** Zielroute für Detailansicht. */
-  route?: string;
-
-  /** Anzeigepriorität. */
-  status: UebersichtAktionStatus;
-
-  /** ISO-Datum oder leerer Wert. */
-  datum?: string;
+  id: string;                      // Eindeutige Backend-ID.
+  titel: string;                   // Sichtbarer Titel.
+  beschreibung: string;            // Kurzbeschreibung mit Patient, Befund oder Status.
+  patientId?: string;              // Optionaler Patientenkontext.
+  patientName?: string;            // Sichtbarer Patientenname.
+  befundId?: string;               // Optionaler Befundkontext.
+  route?: string;                  // Zielroute für Detailansicht.
+  status: UebersichtAktionStatus;  // Anzeigepriorität.
+  datum?: string;                  // ISO-Datum oder leerer Wert.
 }
 
 /** Aggregierte Kennzahlen für die Praxisübersicht. */
 export interface UebersichtKennzahlen {
-  /** Anzahl aller Testpatienten. */
-  patientenGesamt: number;
-
-  /** Anzahl aller importierten Befunde. */
-  berichteGesamt: number;
-
-  /** Anzahl geprüfter Importjobs. */
-  importeGeprueft: number;
-
-  /** Anzahl ungeprüfter Importjobs. */
-  importeUngeprueft: number;
-
-  /** Anzahl freigegebener Patientenberichte. */
-  berichteFreigegeben: number;
-
-  /** Anzahl offener Review-Fälle. */
-  reviewOffen: number;
+  patientenGesamt: number;      // Anzahl aller Testpatienten.
+  berichteGesamt: number;       // Anzahl aller importierten Befunde.
+  importeGeprueft: number;      // Anzahl geprüfter Importjobs.
+  importeUngeprueft: number;    // Anzahl ungeprüfter Importjobs.
+  berichteFreigegeben: number;  // Anzahl freigegebener Patientenberichte.
+  reviewOffen: number;          // Anzahl offener Review-Fälle.
 }
 
 /** Verlaufspunkt für aggregierte Gesundheitsdaten. */
 export interface GesundheitsverlaufPunkt {
-  /** Jahr des Verlaufspunkts. */
-  jahr: number;
-
-  /** Monat des Verlaufspunkts als Zahl von 1 bis 12. */
-  monat: number;
-
-  /** Kurzlabel für die Zeitachse. */
-  label: string;
-
-  /** Anzahl unauffälliger Blutbilder. */
-  unauffaellig: number;
-
-  /** Anzahl Blutbilder mit auffälligen Werten. */
-  auffaellig: number;
+  jahr: number;          // Jahr des Verlaufspunkts.
+  monat: number;         // Monat des Verlaufspunkts als Zahl von 1 bis 12.
+  label: string;         // Kurzlabel für die Zeitachse.
+  unauffaellig: number;  // Anzahl unauffälliger Blutbilder.
+  auffaellig: number;    // Anzahl Blutbilder mit auffälligen Werten.
 }
 
 /** Dringender Hinweis für die Arztübersicht. */
 export interface DringenderHinweis {
-  /** Eindeutige Hinweis-ID. */
-  id: string;
-
-  /** Titel des Hinweises. */
-  titel: string;
-
-  /** Beschreibung des Problems. */
-  beschreibung: string;
-
-  /** Seit wann der Fall offen ist. */
-  seit: string;
-
-  /** Priorität für die Anzeige. */
-  status: UebersichtAktionStatus;
-
-  /** Zielroute für den Hinweis. */
-  route?: string;
-
-  /** Patientenkontext des Hinweises. */
-  patientId?: string;
-
-  /** Sichtbarer Patientenname. */
-  patientName?: string;
-
-  /** Befundkontext des Hinweises. */
-  befundId?: string;
-
-  /** Konkretes Zielelement. */
-  targetId?: string;
+  id: string;                      // Eindeutige Hinweis-ID.
+  titel: string;                   // Titel des Hinweises.
+  beschreibung: string;            // Beschreibung des Problems.
+  seit: string;                    // Seit wann der Fall offen ist.
+  status: UebersichtAktionStatus;  // Priorität für die Anzeige.
+  route?: string;                  // Zielroute für den Hinweis.
+  patientId?: string;              // Patientenkontext des Hinweises.
+  patientName?: string;            // Sichtbarer Patientenname.
+  befundId?: string;               // Befundkontext des Hinweises.
+  targetId?: string;               // Konkretes Zielelement.
 }
 
 /** Eintrag im Aktivitätsprotokoll. */
 export interface AktivitaetsEintrag {
-  /** Eindeutige Protokoll-ID. */
-  id: string;
-
-  /** Zeitpunkt der Aktivität. */
-  zeitpunkt: string;
-
-  /** Abstand in Tagen für lokale Filter. */
-  tagOffset: number;
-
-  /** Titel der Aktivität. */
-  titel: string;
-
-  /** Detailtext der Aktivität. */
-  beschreibung: string;
-
-  /** Status der Aktivität. */
-  status: UebersichtAktionStatus;
+  id: string;                      // Eindeutige Protokoll-ID.
+  zeitpunkt: string;               // Zeitpunkt der Aktivität.
+  tagOffset: number;               // Abstand in Tagen für lokale Filter.
+  titel: string;                   // Titel der Aktivität.
+  beschreibung: string;            // Detailtext der Aktivität.
+  status: UebersichtAktionStatus;  // Status der Aktivität.
 }
 
 /** Aggregiertes ViewModel für die Übersicht. */
 export interface UebersichtViewModel {
-  /** Kennzahlen für die obere Übersicht. */
-  kennzahlen: UebersichtKennzahlen;
-
-  /** Verlauf aller Testpatienten. */
-  gesundheitsverlauf: GesundheitsverlaufPunkt[];
-
-  /** Dringende Hinweise für alte oder riskante Fälle. */
-  dringendeHinweise: DringenderHinweis[];
-
-  /** Letzte Aktivitäten und Importereignisse. */
-  aktivitaeten: AktivitaetsEintrag[];
-
-  /** Liste ungeprüfter oder fehlerhafter Importe. */
-  ungepruefteImporte?: UebersichtDetailEintrag[];
-
-  /** Liste offener oder blockierender Reviewwerte. */
-  reviewOffenListe?: UebersichtDetailEintrag[];
+  kennzahlen: UebersichtKennzahlen;                // Kennzahlen für die obere Übersicht.
+  gesundheitsverlauf: GesundheitsverlaufPunkt[];   // Verlauf aller Testpatienten.
+  dringendeHinweise: DringenderHinweis[];          // Dringende Hinweise für alte oder riskante Fälle.
+  aktivitaeten: AktivitaetsEintrag[];              // Letzte Aktivitäten und Importereignisse.
+  ungepruefteImporte?: UebersichtDetailEintrag[];  // Liste ungeprüfter oder fehlerhafter Importe.
+  reviewOffenListe?: UebersichtDetailEintrag[];    // Liste offener oder blockierender Reviewwerte.
 }

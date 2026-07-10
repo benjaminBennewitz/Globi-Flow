@@ -29,8 +29,8 @@ export class SecureSearchComponent {
   /** Emitiert den normalisierten Suchwert. */
   @Output() public readonly valueChange = new EventEmitter<string>();
 
-  /** Rückmeldung bei entschärfter Eingabe. */
-  public readonly feedback: WritableSignal<string> = signal('');
+  public readonly feedback: WritableSignal<string> = signal('');  // Rückmeldung bei entschärfter Eingabe.
+
 
   /** Verarbeitet Eingaben mit zentraler Normalisierung. */
   public sucheAendern(event: Event): void {

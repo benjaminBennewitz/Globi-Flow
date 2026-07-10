@@ -9,13 +9,17 @@ import { ChangeDetectionStrategy, Component, WritableSignal, inject, signal } fr
 import { RouterLink } from '@angular/router';
 import { NeuerPatientInput, Patient, PatientGeschlecht, PatientQuelle, PatientStatus } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
-import { ToastService } from '../../shared/services/toast.service';
+import { bereinigeSichereEingabe } from '../../core/security/sichere-eingabe.util';
 import { IconActionComponent } from '../../shared/components/icon-action/icon-action.component';
 import { SecureSearchComponent } from '../../shared/components/secure-search/secure-search.component';
-import { bereinigeSichereEingabe } from '../../core/security/sichere-eingabe.util';
+import { ToastService } from '../../shared/services/toast.service';
+import {
+  PatientenSortierung, geburtsdatumFuerApiNormalisieren, patientenGeschlechtLabel, patientenSortieren, patientenStatusKlasse,
+  patientenStatusLabel, sichererEingabewert, zahlOderNullErmitteln
+} from './patienten-page-logik';
 
-/** Sortieroptionen der Patientenliste. */
-type PatientenSortierung = 'aktualisiert' | 'review' | 'name';
+/** Schlüssel und sichtbare Bezeichnung einer Auswahloption. */
+type Auswahloption<T> = { key: T; label: string };
 
 /** Route `/patienten` für Testpersonen, Befunde und globale Auswahl. */
 @Component({
@@ -26,73 +30,38 @@ type PatientenSortierung = 'aktualisiert' | 'review' | 'name';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientenPageComponent {
-  /** Globaler Patientenkontext. */
-  public readonly patientContext = inject(PatientContextService);
+  public readonly patientContext = inject(PatientContextService);  // Globaler Patientenkontext.
 
-  /** Toast-Service für API-Rückmeldungen. */
-  private readonly toastService = inject(ToastService);
+  private readonly toastService = inject(ToastService);            // Toast-Service für API-Rückmeldungen.
 
-  /** Gibt an, ob das Anlage- oder Bearbeitungsmodal geöffnet ist. */
-  public readonly modalOffen: WritableSignal<boolean> = signal(false);
+  public readonly modalOffen: WritableSignal<boolean> = signal(false);                       // Zustand des Anlage- oder Bearbeitungsmodals.
+  public readonly bearbeiteterPatient: WritableSignal<Patient | null> = signal(null);        // Aktuell bearbeitete Testperson.
+  public readonly patientZumLoeschen: WritableSignal<Patient | null> = signal(null);         // Testperson der Löschbestätigung.
+  public readonly sortierung: WritableSignal<PatientenSortierung> = signal('aktualisiert');  // Aktive Listensortierung.
+  public readonly neuerVorname: WritableSignal<string> = signal('');                         // Formulareingabe Vorname.
+  public readonly neuerNachname: WritableSignal<string> = signal('');                        // Formulareingabe Nachname.
+  public readonly neueNummer: WritableSignal<string> = signal('');                           // Formulareingabe Testpersonen-ID.
+  public readonly neuesGeburtsdatum: WritableSignal<string> = signal('');                    // Formulareingabe Geburtsdatum.
+  public readonly neuesGewicht: WritableSignal<string> = signal('');                         // Formulareingabe Gewicht.
+  public readonly neueGroesse: WritableSignal<string> = signal('');                          // Formulareingabe Körpergröße.
+  public readonly neuerLebensstil: WritableSignal<string> = signal('');                      // Formulareingabe Lebensstil.
+  public readonly neuesNichtrauchen: WritableSignal<boolean> = signal(false);                // Nichtraucherstatus des Formulars.
+  public readonly neuerAlkohol: WritableSignal<boolean> = signal(false);                     // Dokumentierter Alkoholkonsum.
+  public readonly neueDrogen: WritableSignal<boolean> = signal(false);                       // Dokumentierter Drogenkonsum.
+  public readonly neuesGeschlecht: WritableSignal<PatientGeschlecht> = signal('unbekannt');  // Formulareingabe Geschlecht.
+  public readonly geschlechtAuswahlOffen: WritableSignal<boolean> = signal(false);           // Zustand der Geschlechtsauswahl.
+  public readonly neueNotiz: WritableSignal<string> = signal('');                            // Formulareingabe Notiz.
 
-  /** Testperson, die aktuell bearbeitet wird. */
-  public readonly bearbeiteterPatient: WritableSignal<Patient | null> = signal(null);
-
-  /** Testperson, deren Löschung bestätigt werden muss. */
-  public readonly patientZumLoeschen: WritableSignal<Patient | null> = signal(null);
-
-  /** Aktive Sortierung. */
-  public readonly sortierung: WritableSignal<PatientenSortierung> = signal('aktualisiert');
-
-  /** Eingabe Vorname. */
-  public readonly neuerVorname: WritableSignal<string> = signal('');
-
-  /** Eingabe Nachname. */
-  public readonly neuerNachname: WritableSignal<string> = signal('');
-
-  /** Eingabe Testpersonen-ID. */
-  public readonly neueNummer: WritableSignal<string> = signal('');
-
-  /** Eingabe Geburtsdatum. */
-  public readonly neuesGeburtsdatum: WritableSignal<string> = signal('');
-
-  /** Eingabe Gewicht. */
-  public readonly neuesGewicht: WritableSignal<string> = signal('');
-
-  /** Eingabe Größe. */
-  public readonly neueGroesse: WritableSignal<string> = signal('');
-
-  /** Eingabe Lebensstil. */
-  public readonly neuerLebensstil: WritableSignal<string> = signal('');
-
-  /** Gibt an, ob die neue Testperson nicht raucht. */
-  public readonly neuesNichtrauchen: WritableSignal<boolean> = signal(false);
-
-  /** Gibt an, ob Alkoholkonsum dokumentiert ist. */
-  public readonly neuerAlkohol: WritableSignal<boolean> = signal(false);
-
-  /** Gibt an, ob Drogenkonsum dokumentiert ist. */
-  public readonly neueDrogen: WritableSignal<boolean> = signal(false);
-
-  /** Eingabe Geschlecht. */
-  public readonly neuesGeschlecht: WritableSignal<PatientGeschlecht> = signal('unbekannt');
-
-  /** Gibt an, ob die custom Geschlechtsauswahl geöffnet ist. */
-  public readonly geschlechtAuswahlOffen: WritableSignal<boolean> = signal(false);
-
-  /** Auswahloptionen für das Geschlechtsfeld. */
-  public readonly geschlechtOptionen: { key: PatientGeschlecht; label: string }[] = [
+  /** Auswahloptionen des Geschlechtsfelds. */
+  public readonly geschlechtOptionen: Auswahloption<PatientGeschlecht>[] = [
     { key: 'unbekannt', label: 'Unbekannt' },
     { key: 'weiblich', label: 'Weiblich' },
     { key: 'maennlich', label: 'Männlich' },
     { key: 'divers', label: 'Divers' }
   ];
 
-  /** Eingabe Notiz. */
-  public readonly neueNotiz: WritableSignal<string> = signal('');
-
   /** Filteroptionen der Patientensuche. */
-  public readonly filterOptionen: { key: PatientQuelle | 'alle' | 'review'; label: string }[] = [
+  public readonly filterOptionen: Auswahloption<PatientQuelle | 'alle' | 'review'>[] = [
     { key: 'alle', label: 'Alle' },
     { key: 'review', label: 'Review offen' },
     { key: 'demo', label: 'Demo' },
@@ -102,145 +71,170 @@ export class PatientenPageComponent {
   ];
 
   /** Sortieroptionen der Patientenliste. */
-  public readonly sortierOptionen: { key: PatientenSortierung; label: string }[] = [
+  public readonly sortierOptionen: Auswahloption<PatientenSortierung>[] = [
     { key: 'aktualisiert', label: 'zuletzt aktualisiert' },
     { key: 'review', label: 'offene Reviews' },
     { key: 'name', label: 'Name' }
   ];
 
-  /** Öffnet das Anlage-Modal. */
+  /** Öffnet das Modal zur Anlage einer neuen Testperson. */
   public modalOeffnen(): void {
     this.bearbeiteterPatient.set(null);
     this.formularLeeren();
     this.modalOffen.set(true);
   }
 
-  /** Öffnet das Bearbeitungsmodal und füllt das Formular. */
+  /**
+   * Öffnet das Bearbeitungsmodal und übernimmt bestehende Patientendaten.
+   *
+   * @param patient Zu bearbeitende Testperson.
+   */
   public patientBearbeiten(patient: Patient): void {
     this.bearbeiteterPatient.set(patient);
     this.formularMitPatientFuellen(patient);
     this.modalOffen.set(true);
   }
 
-  /** Schließt das Anlage- oder Bearbeitungsmodal. */
+  /** Schließt das aktive Formularmodal und verwirft den Bearbeitungskontext. */
   public modalSchliessen(): void {
     this.modalOffen.set(false);
     this.bearbeiteterPatient.set(null);
     this.geschlechtAuswahlOffen.set(false);
   }
 
-  /** Aktualisiert die globale Patientensuche. */
+  /**
+   * Aktualisiert die globale Patientensuche.
+   *
+   * @param wert Bereinigter Suchwert der Suchkomponente.
+   */
   public sucheSetzen(wert: string): void {
     this.patientContext.patientenSucheSetzen(wert);
   }
 
-  /** Setzt den Quellenfilter. */
+  /**
+   * Setzt den aktiven Quellen- oder Reviewfilter.
+   *
+   * @param filter Gewählter Filter der Patientenliste.
+   */
   public filterSetzen(filter: PatientQuelle | 'alle' | 'review'): void {
     this.patientContext.patientenFilterSetzen(filter);
   }
 
-  /** Setzt die Sortierung. */
+  /**
+   * Setzt das Sortierkriterium der sichtbaren Testpersonen.
+   *
+   * @param sortierung Gewünschtes Sortierkriterium.
+   */
   public sortierungSetzen(sortierung: PatientenSortierung): void {
     this.sortierung.set(sortierung);
   }
 
-  /** Liefert sortierte Testpersonen. */
+  /**
+   * Liefert die gefilterten Testpersonen in der aktuell gewählten Reihenfolge.
+   *
+   * @returns Neu sortierte Patientenliste.
+   */
   public sichtbarePatienten(): Patient[] {
-    const patienten = [...this.patientContext.gefiltertePatienten()];
-
-    if (this.sortierung() === 'review') {
-      return patienten.sort((a: Patient, b: Patient) => b.offeneReviews - a.offeneReviews);
-    }
-
-    if (this.sortierung() === 'name') {
-      return patienten.sort((a: Patient, b: Patient) => a.name.localeCompare(b.name));
-    }
-
-    return patienten.sort((a: Patient, b: Patient) => b.befunde - a.befunde);
+    return patientenSortieren(this.patientContext.gefiltertePatienten(), this.sortierung());
   }
 
-  /** Setzt einen Patienten als aktiven Arbeitskontext. */
+  /**
+   * Setzt eine Testperson als globalen Arbeitskontext.
+   *
+   * @param patient Ausgewählte Testperson.
+   */
   public patientAuswaehlen(patient: Patient): void {
     this.patientContext.patientSetzen(patient);
   }
 
-  /** Aktualisiert den Vornamen. */
+  /** @param event Eingabeereignis des Vornamenfelds. */
   public vornameAendern(event: Event): void {
-    this.neuerVorname.set(bereinigeSichereEingabe(this.eingabewert(event), 'name', 40));
+    this.neuerVorname.set(bereinigeSichereEingabe(sichererEingabewert(event), 'name', 40));
   }
 
-  /** Aktualisiert den Nachnamen. */
+  /** @param event Eingabeereignis des Nachnamenfelds. */
   public nachnameAendern(event: Event): void {
-    this.neuerNachname.set(bereinigeSichereEingabe(this.eingabewert(event), 'name', 40));
+    this.neuerNachname.set(bereinigeSichereEingabe(sichererEingabewert(event), 'name', 40));
   }
 
-  /** Aktualisiert die Testpersonen-ID. */
+  /** @param event Eingabeereignis des Nummernfelds. */
   public nummerAendern(event: Event): void {
-    this.neueNummer.set(bereinigeSichereEingabe(this.eingabewert(event), 'schluessel', 32));
+    this.neueNummer.set(bereinigeSichereEingabe(sichererEingabewert(event), 'schluessel', 32));
   }
 
-  /** Aktualisiert das Geburtsdatum. */
+  /** @param event Eingabeereignis des Geburtsdatums. */
   public geburtsdatumAendern(event: Event): void {
-    this.neuesGeburtsdatum.set(this.eingabewert(event).replace(/[^\d.-]/g, '').slice(0, 10));
+    this.neuesGeburtsdatum.set(sichererEingabewert(event).replace(/[^\d.-]/g, '').slice(0, 10));
   }
 
-  /** Aktualisiert das Gewicht. */
+  /** @param event Eingabeereignis des Gewichtsfelds. */
   public gewichtAendern(event: Event): void {
-    this.neuesGewicht.set(this.eingabewert(event).replace(/[^\d,.]/g, '').slice(0, 6));
+    this.neuesGewicht.set(sichererEingabewert(event).replace(/[^\d,.]/g, '').slice(0, 6));
   }
 
-  /** Aktualisiert die Größe. */
+  /** @param event Eingabeereignis des Größenfelds. */
   public groesseAendern(event: Event): void {
-    this.neueGroesse.set(this.eingabewert(event).replace(/\D/g, '').slice(0, 3));
+    this.neueGroesse.set(sichererEingabewert(event).replace(/\D/g, '').slice(0, 3));
   }
 
-  /** Aktualisiert den Lebensstil. */
+  /** @param event Eingabeereignis des Lebensstilfelds. */
   public lebensstilAendern(event: Event): void {
-    this.neuerLebensstil.set(bereinigeSichereEingabe(this.eingabewert(event), 'freitext', 140));
+    this.neuerLebensstil.set(bereinigeSichereEingabe(sichererEingabewert(event), 'freitext', 140));
   }
 
-  /** Schaltet Nichtraucherstatus für das Formular. */
+  /** Kehrt den Nichtraucherstatus des Formulars um. */
   public nichtrauchenUmschalten(): void {
     this.neuesNichtrauchen.update((wert: boolean) => !wert);
   }
 
-  /** Schaltet Alkoholstatus für das Formular. */
+  /** Kehrt den dokumentierten Alkoholstatus des Formulars um. */
   public alkoholUmschalten(): void {
     this.neuerAlkohol.update((wert: boolean) => !wert);
   }
 
-  /** Schaltet Drogenstatus für das Formular. */
+  /** Kehrt den dokumentierten Drogenstatus des Formulars um. */
   public drogenUmschalten(): void {
     this.neueDrogen.update((wert: boolean) => !wert);
   }
 
-  /** Öffnet oder schließt die custom Geschlechtsauswahl. */
+  /** Öffnet oder schließt die benutzerdefinierte Geschlechtsauswahl. */
   public geschlechtAuswahlUmschalten(): void {
     this.geschlechtAuswahlOffen.update((wert: boolean) => !wert);
   }
 
-  /** Setzt das Geschlecht über die custom Auswahl. */
+  /**
+   * Übernimmt ein Geschlecht und schließt die Auswahl.
+   *
+   * @param geschlecht Gewählter Geschlechtswert.
+   */
   public geschlechtSetzen(geschlecht: PatientGeschlecht): void {
     this.neuesGeschlecht.set(geschlecht);
     this.geschlechtAuswahlOffen.set(false);
   }
 
-  /** Gibt das sichtbare Label eines Geschlechtswerts zurück. */
+  /**
+   * Ermittelt die sichtbare Bezeichnung eines Geschlechtswerts.
+   *
+   * @param geschlecht Fachlicher Geschlechtswert.
+   * @returns Deutsche Geschlechtsbezeichnung.
+   */
   public geschlechtLabel(geschlecht: PatientGeschlecht): string {
-    return this.geschlechtOptionen.find((option) => option.key === geschlecht)?.label ?? 'Unbekannt';
+    return patientenGeschlechtLabel(geschlecht);
   }
 
-  /** Aktualisiert die Notiz. */
+  /** @param event Eingabeereignis des Notizfelds. */
   public notizAendern(event: Event): void {
-    this.neueNotiz.set(bereinigeSichereEingabe(this.eingabewert(event), 'freitext', 180));
+    this.neueNotiz.set(bereinigeSichereEingabe(sichererEingabewert(event), 'freitext', 180));
   }
 
-  /** Speichert eine neue oder bestehende Testperson über die API und setzt sie optional aktiv. */
+  /**
+   * Erstellt oder aktualisiert eine Testperson über die API.
+   *
+   * @param aktivSetzen Gibt an, ob die gespeicherte Testperson aktiviert werden soll.
+   */
   public patientSpeichern(aktivSetzen: boolean): void {
-    const patient = this.bearbeiteterPatient();
-    const request$ = patient
-      ? this.patientContext.patientAktualisieren(patient.id, this.neuerPatientInput())
-      : this.patientContext.patientAnlegen(this.neuerPatientInput());
+    const patient: Patient | null = this.bearbeiteterPatient(); // Bestehender Bearbeitungskontext.
+    const request$ = patient ? this.patientContext.patientAktualisieren(patient.id, this.neuerPatientInput()) : this.patientContext.patientAnlegen(this.neuerPatientInput()); // Passender API-Request.
 
     request$.subscribe({
       next: (gespeicherterPatient: Patient) => {
@@ -252,25 +246,23 @@ export class PatientenPageComponent {
         this.modalSchliessen();
         this.toastService.zeige(patient ? 'Testperson aktualisiert' : 'Testperson angelegt', `${gespeicherterPatient.name} wurde in der Datenbank gespeichert.`, 'success');
       },
-      error: () => {
-        this.toastService.zeige('Speichern fehlgeschlagen', 'Die Testperson konnte nicht in der API gespeichert werden.', 'danger');
-      }
+      error: () => this.toastService.zeige('Speichern fehlgeschlagen', 'Die Testperson konnte nicht in der API gespeichert werden.', 'danger')
     });
   }
 
-  /** Öffnet die Löschbestätigung für eine Testperson. */
+  /** @param patient Testperson, deren Löschung bestätigt werden soll. */
   public patientLoeschenAnfragen(patient: Patient): void {
     this.patientZumLoeschen.set(patient);
   }
 
-  /** Bricht die Löschbestätigung ab. */
+  /** Schließt die Löschbestätigung ohne Datenänderung. */
   public patientLoeschenAbbrechen(): void {
     this.patientZumLoeschen.set(null);
   }
 
-  /** Löscht eine Testperson nach Bestätigung aus der Datenbank. */
+  /** Löscht die ausgewählte Testperson nach Bestätigung über die API. */
   public patientLoeschen(): void {
-    const patient = this.patientZumLoeschen();
+    const patient: Patient | null = this.patientZumLoeschen(); // Testperson der aktiven Löschbestätigung.
 
     if (!patient) {
       return;
@@ -281,45 +273,35 @@ export class PatientenPageComponent {
         this.patientZumLoeschen.set(null);
         this.toastService.zeige('Testperson gelöscht', `${patient.name} wurde entfernt.`, 'success');
       },
-      error: () => {
-        this.toastService.zeige('Löschen fehlgeschlagen', 'Die Testperson konnte nicht gelöscht werden.', 'danger');
-      }
+      error: () => this.toastService.zeige('Löschen fehlgeschlagen', 'Die Testperson konnte nicht gelöscht werden.', 'danger')
     });
   }
 
-  /** Gibt an, ob das Formular eine bestehende Testperson bearbeitet. */
+  /** @returns `true`, wenn eine bestehende Testperson bearbeitet wird. */
   public istEditModus(): boolean {
-    return !!this.bearbeiteterPatient();
+    return this.bearbeiteterPatient() !== null;
   }
 
-  /** Gibt eine Statusklasse zurück. */
+  /** @param status Patientenstatus. @returns Zugehörige CSS-Modifikatorklasse. */
   public statusKlasse(status: PatientStatus): string {
-    return `is-${status}`;
+    return patientenStatusKlasse(status);
   }
 
-  /** Gibt ein Statuslabel zurück. */
+  /** @param status Patientenstatus. @returns Sichtbare deutsche Statusbezeichnung. */
   public statusLabel(status: PatientStatus): string {
-    const labels = {
-      aktiv: 'Aktiv',
-      review: 'Review offen',
-      import: 'Import läuft',
-      bericht: 'Bericht',
-      leer: 'Keine Befunde'
-    };
-
-    return labels[status];
+    return patientenStatusLabel(status);
   }
 
-  /** Erstellt die aktuelle Eingabestruktur. */
+  /** @returns Vollständige API-Eingabestruktur aus dem aktuellen Formularzustand. */
   private neuerPatientInput(): NeuerPatientInput {
     return {
       vorname: this.neuerVorname(),
       nachname: this.neuerNachname(),
       nummer: this.neueNummer(),
-      geburtsdatum: this.geburtsdatumFuerApi(this.neuesGeburtsdatum()),
+      geburtsdatum: geburtsdatumFuerApiNormalisieren(this.neuesGeburtsdatum()),
       geschlecht: this.neuesGeschlecht(),
-      gewichtKg: this.zahlOderNull(this.neuesGewicht()),
-      groesseCm: this.zahlOderNull(this.neueGroesse()),
+      gewichtKg: zahlOderNullErmitteln(this.neuesGewicht()),
+      groesseCm: zahlOderNullErmitteln(this.neueGroesse()),
       lebensstil: this.neuerLebensstil(),
       nichtrauchen: this.neuesNichtrauchen(),
       alkohol: this.neuerAlkohol(),
@@ -328,7 +310,7 @@ export class PatientenPageComponent {
     };
   }
 
-  /** Füllt das Formular mit bestehenden Patientendaten. */
+  /** @param patient Testperson, deren Werte in das Formular übernommen werden. */
   private formularMitPatientFuellen(patient: Patient): void {
     this.neuerVorname.set(patient.vorname);
     this.neuerNachname.set(patient.nachname);
@@ -345,7 +327,7 @@ export class PatientenPageComponent {
     this.neueNotiz.set(patient.notiz);
   }
 
-  /** Leert das Modalformular. */
+  /** Setzt sämtliche Felder des Patientenformulars auf ihre Ausgangswerte zurück. */
   private formularLeeren(): void {
     this.neuerVorname.set('');
     this.neuerNachname.set('');
@@ -360,29 +342,5 @@ export class PatientenPageComponent {
     this.neuesGeschlecht.set('unbekannt');
     this.geschlechtAuswahlOffen.set(false);
     this.neueNotiz.set('');
-  }
-
-  /** Normalisiert deutsche und ISO-Datumswerte für die Backend-API. */
-  private geburtsdatumFuerApi(wert: string): string {
-    const datum = wert.trim();
-    const deutscherTreffer = datum.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-
-    if (deutscherTreffer) {
-      return `${deutscherTreffer[3]}-${deutscherTreffer[2]}-${deutscherTreffer[1]}`;
-    }
-
-    return datum;
-  }
-
-  /** Wandelt Texteingaben in Zahlen oder null um. */
-  private zahlOderNull(wert: string): number | null {
-    const zahl = Number.parseFloat(wert.replace(',', '.'));
-    return Number.isFinite(zahl) ? zahl : null;
-  }
-
-  /** Liest einen sicheren Eingabewert. */
-  private eingabewert(event: Event): string {
-    const eingabe = event.target as HTMLInputElement | HTMLTextAreaElement;
-    return eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '');
   }
 }

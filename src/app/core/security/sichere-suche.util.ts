@@ -13,14 +13,9 @@ export const SICHERE_SUCHE_SONDERZEICHEN_MELDUNG = 'Sonderzeichen wie < > { } [ 
 
 /** Ergebnis der Suchfeld-Normalisierung. */
 export interface SichereSucheErgebnis {
-  /** Bereinigter Suchbegriff. */
-  wert: string;
-
-  /** Gibt an, ob der Wert für eine Suche genutzt werden darf. */
-  istGueltig: boolean;
-
-  /** Optionaler Hinweis für die Oberfläche. */
-  meldung: string;
+  wert: string;         // Bereinigter Suchbegriff.
+  istGueltig: boolean;  // Gibt an, ob der Wert für eine Suche genutzt werden darf.
+  meldung: string;      // Optionaler Hinweis für die Oberfläche.
 }
 
 /** Entfernt unsichtbare Steuerzeichen. */

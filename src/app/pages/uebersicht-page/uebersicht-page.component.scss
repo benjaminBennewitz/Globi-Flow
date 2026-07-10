@@ -1,3 +1,21 @@
+/*###############################
+###
+###     uebersicht-page.component.scss
+###     Globi Flow Frontend
+###     BASED ON: Angular 21.2, TypeScript 5.9, SCSS, Django REST Framework
+###     AUTHOR: B² Benjamin Bennewitz
+###
+###
+###       ██████╗  ▀█
+###       ██╔══██╗ █▄
+###       ██████╦╝
+###       ██╔══██╗
+###       ██████╦╝
+###       ╚═════╝
+###
+###
+#################################*/
+
 /* ==========================================================================
    INHALTSVERZEICHNIS
 
@@ -879,6 +897,7 @@
     grid-template-columns: 1fr;
   }
 }
+
 .gf-cursor-overlay__list button {
   display: grid;
   gap: var(--gf-space-1);
@@ -917,7 +936,7 @@
   padding: var(--gf-space-4);
 }
 
-.gf-overview__context-card > span {
+.gf-overview__context-card>span {
   display: grid;
   width: 48px;
   height: 48px;
@@ -958,7 +977,9 @@
 }
 
 @keyframes gf-overview-local-focus {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: var(--gf-shadow-raised);
   }
 

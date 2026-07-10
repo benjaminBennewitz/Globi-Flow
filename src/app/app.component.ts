@@ -19,29 +19,15 @@ import { ToastContainerComponent } from './shared/components/toast-container/toa
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnDestroy {
-  /** Gibt an, ob die Startanimation noch im DOM sichtbar ist. */
-  public readonly startanimationSichtbar: WritableSignal<boolean> = signal(true);
+  public readonly startanimationSichtbar: WritableSignal<boolean> = signal(true);    // Gibt an, ob die Startanimation noch im DOM sichtbar ist.
+  public readonly startanimationSchliesst: WritableSignal<boolean> = signal(false);  // Steuert den finalen Slide nach oben.
+  public readonly startFortschritt: WritableSignal<number> = signal(0);              // Fortschritt der Startanimation in Prozent.
+  private readonly startDauerMs = 3000;                                              // Gesamtdauer bis zum vollständigen Fortschritt.
+  private readonly abgangDauerMs = 620;                                              // Dauer des ausgehenden Slide-Reveals.
+  private animationsFrameId = 0;                                                     // Aktive Animation-Frame-ID für den Fortschritt.
+  private abgangTimerId: ReturnType<typeof setTimeout> | null = null;                // Timer für das Entfernen des Overlays nach dem Abgang.
+  private startZeitMs = 0;                                                           // Startzeit der Fortschrittsberechnung.
 
-  /** Steuert den finalen Slide nach oben. */
-  public readonly startanimationSchliesst: WritableSignal<boolean> = signal(false);
-
-  /** Fortschritt der Startanimation in Prozent. */
-  public readonly startFortschritt: WritableSignal<number> = signal(0);
-
-  /** Gesamtdauer bis zum vollständigen Fortschritt. */
-  private readonly startDauerMs = 3000;
-
-  /** Dauer des ausgehenden Slide-Reveals. */
-  private readonly abgangDauerMs = 620;
-
-  /** Aktive Animation-Frame-ID für den Fortschritt. */
-  private animationsFrameId = 0;
-
-  /** Timer für das Entfernen des Overlays nach dem Abgang. */
-  private abgangTimerId: ReturnType<typeof setTimeout> | null = null;
-
-  /** Startzeit der Fortschrittsberechnung. */
-  private startZeitMs = 0;
 
   /** Startet die Intro-Sequenz direkt beim App-Initialisieren. */
   public constructor() {

@@ -19,129 +19,52 @@ export type PatientBefundStatus = 'importiert' | 'review_offen' | 'freigegeben' 
 
 /** Hinterlegter Befund einer Testperson. */
 export interface PatientBefund {
-  /** Eindeutige Befund-ID. */
-  id: string;
-
-  /** Anzeigename oder Dateiname. */
-  name: string;
-
-  /** Befunddatum. */
-  datum: string;
-
-  /** Fachlicher Status des Befunds. */
-  status: PatientBefundStatus;
-
-  /** Anzahl erkannter Laborwerte. */
-  werte: number;
-
-  /** Anzahl offener Reviewwerte. */
-  offeneReviews: number;
+  id: string;                   // Eindeutige Befund-ID.
+  name: string;                 // Anzeigename oder Dateiname.
+  datum: string;                // Befunddatum.
+  status: PatientBefundStatus;  // Fachlicher Status des Befunds.
+  werte: number;                // Anzahl erkannter Laborwerte.
+  offeneReviews: number;        // Anzahl offener Reviewwerte.
 }
 
 /** Testperson oder später Patient im lokalen System. */
 export interface Patient {
-  /** Eindeutige Patient-ID. */
-  id: string;
-
-  /** Lesbare Testpersonen-ID. */
-  nummer: string;
-
-  /** Anzeigename für kompakte UI-Stellen. */
-  name: string;
-
-  /** Vorname der fiktiven Testperson. */
-  vorname: string;
-
-  /** Nachname der fiktiven Testperson. */
-  nachname: string;
-
-  /** Geburtsdatum der fiktiven Testperson. */
-  geburtsdatum: string;
-
-  /** Geschlechtsangabe für Referenzbereiche. */
-  geschlecht: PatientGeschlecht;
-
-  /** Körpergewicht in Kilogramm. */
-  gewichtKg: number | null;
-
-  /** Körpergröße in Zentimetern. */
-  groesseCm: number | null;
-
-  /** Kurzer Lebensstil-Hinweis für Anamnese-Kontext. */
-  lebensstil: string;
-
-  /** Gibt an, ob die Testperson nicht raucht. */
-  nichtrauchen: boolean;
-
-  /** Gibt an, ob Alkoholkonsum dokumentiert ist. */
-  alkohol: boolean;
-
-  /** Gibt an, ob Drogenkonsum dokumentiert ist. */
-  drogen: boolean;
-
-  /** Kurzer Kontext zur Datenquelle. */
-  kontext: string;
-
-  /** Quelle der Testperson. */
-  quelle: PatientQuelle;
-
-  /** Aktueller Arbeitsstatus. */
-  status: PatientStatus;
-
-  /** Anzahl hinterlegter Befunde. */
-  befunde: number;
-
-  /** Anzahl offener Reviewwerte. */
-  offeneReviews: number;
-
-  /** Letztes Befunddatum. */
-  letzterBefund: string;
-
-  /** Kurzer Berichtstatus. */
-  berichtStatus: string;
-
-  /** Interne Notiz zu Testdaten. */
-  notiz: string;
-
-  /** Hinterlegte Befunde der Testperson. */
-  befundListe: PatientBefund[];
+  id: string;                     // Eindeutige Patient-ID.
+  nummer: string;                 // Lesbare Testpersonen-ID.
+  name: string;                   // Anzeigename für kompakte UI-Stellen.
+  vorname: string;                // Vorname der fiktiven Testperson.
+  nachname: string;               // Nachname der fiktiven Testperson.
+  geburtsdatum: string;           // Geburtsdatum der fiktiven Testperson.
+  geschlecht: PatientGeschlecht;  // Geschlechtsangabe für Referenzbereiche.
+  gewichtKg: number | null;       // Körpergewicht in Kilogramm.
+  groesseCm: number | null;       // Körpergröße in Zentimetern.
+  lebensstil: string;             // Kurzer Lebensstil-Hinweis für Anamnese-Kontext.
+  nichtrauchen: boolean;          // Gibt an, ob die Testperson nicht raucht.
+  alkohol: boolean;               // Gibt an, ob Alkoholkonsum dokumentiert ist.
+  drogen: boolean;                // Gibt an, ob Drogenkonsum dokumentiert ist.
+  kontext: string;                // Kurzer Kontext zur Datenquelle.
+  quelle: PatientQuelle;          // Quelle der Testperson.
+  status: PatientStatus;          // Aktueller Arbeitsstatus.
+  befunde: number;                // Anzahl hinterlegter Befunde.
+  offeneReviews: number;          // Anzahl offener Reviewwerte.
+  letzterBefund: string;          // Letztes Befunddatum.
+  berichtStatus: string;          // Kurzer Berichtstatus.
+  notiz: string;                  // Interne Notiz zu Testdaten.
+  befundListe: PatientBefund[];   // Hinterlegte Befunde der Testperson.
 }
 
 /** Eingabe für eine neue Testperson. */
 export interface NeuerPatientInput {
-  /** Vorname der Testperson. */
-  vorname: string;
-
-  /** Nachname der Testperson. */
-  nachname: string;
-
-  /** Lesbare Testpersonen-ID. */
-  nummer: string;
-
-  /** Optionales Geburtsdatum. */
-  geburtsdatum: string;
-
-  /** Geschlechtsangabe. */
-  geschlecht: PatientGeschlecht;
-
-  /** Optionales Gewicht in Kilogramm. */
-  gewichtKg: number | null;
-
-  /** Optionale Größe in Zentimetern. */
-  groesseCm: number | null;
-
-  /** Lebensstil-Hinweis. */
-  lebensstil: string;
-
-  /** Gibt an, ob die Testperson nicht raucht. */
-  nichtrauchen: boolean;
-
-  /** Gibt an, ob Alkoholkonsum dokumentiert ist. */
-  alkohol: boolean;
-
-  /** Gibt an, ob Drogenkonsum dokumentiert ist. */
-  drogen: boolean;
-
-  /** Interne Notiz. */
-  notiz: string;
+  vorname: string;                // Vorname der Testperson.
+  nachname: string;               // Nachname der Testperson.
+  nummer: string;                 // Lesbare Testpersonen-ID.
+  geburtsdatum: string;           // Optionales Geburtsdatum.
+  geschlecht: PatientGeschlecht;  // Geschlechtsangabe.
+  gewichtKg: number | null;       // Optionales Gewicht in Kilogramm.
+  groesseCm: number | null;       // Optionale Größe in Zentimetern.
+  lebensstil: string;             // Lebensstil-Hinweis.
+  nichtrauchen: boolean;          // Gibt an, ob die Testperson nicht raucht.
+  alkohol: boolean;               // Gibt an, ob Alkoholkonsum dokumentiert ist.
+  drogen: boolean;                // Gibt an, ob Drogenkonsum dokumentiert ist.
+  notiz: string;                  // Interne Notiz.
 }

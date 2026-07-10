@@ -20,20 +20,12 @@ const AKTIVE_STATUS = new Set<ImportjobStatus>(['wartet', 'analysiert']);
 /** Routeunabhängiger Monitor für lokale Importjobs. */
 @Injectable({ providedIn: 'root' })
 export class ImportJobMonitorService implements OnDestroy {
-  /** API-Service für Importstatus. */
-  private readonly globiFlowApi = inject(GlobiFlowApiService);
+  private readonly globiFlowApi = inject(GlobiFlowApiService);            // API-Service für Importstatus.
+  private readonly toastService = inject(ToastService);                   // Toast-Service für Abschlussmeldungen.
+  private readonly patientContext = inject(PatientContextService);        // Patientenkontext wird nach fertigem Import neu geladen.
+  private readonly beobachteteJobs = new Map<string, ImportjobStatus>();  // Beobachtete Job-IDs mit zuletzt bekanntem Status.
+  private poller: number | null = null;                                   // Polling-Handle für laufende Importbeobachtung.
 
-  /** Toast-Service für Abschlussmeldungen. */
-  private readonly toastService = inject(ToastService);
-
-  /** Patientenkontext wird nach fertigem Import neu geladen. */
-  private readonly patientContext = inject(PatientContextService);
-
-  /** Beobachtete Job-IDs mit zuletzt bekanntem Status. */
-  private readonly beobachteteJobs = new Map<string, ImportjobStatus>();
-
-  /** Polling-Handle für laufende Importbeobachtung. */
-  private poller: number | null = null;
 
   /** Registriert einen Importjob für routeunabhängige Abschlussmeldungen. */
   public importJobBeobachten(job: Importjob): void {

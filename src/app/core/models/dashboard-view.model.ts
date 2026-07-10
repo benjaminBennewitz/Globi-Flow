@@ -13,45 +13,21 @@ import { Wissenseintrag } from './wissenseintrag.model';
 
 /** Kompakte Kennzahlen für Navigation und Startbereich. */
 export interface DashboardKennzahlen {
-  /** Anzahl hochgeladener oder vorbereiteter Befunde. */
-  befunde: number;
-
-  /** Anzahl erkannter Laborwerte. */
-  laborwerte: number;
-
-  /** Anzahl Review-Punkte. */
-  review: number;
-
-  /** Anzahl freigegebener Berichte. */
-  berichte: number;
-
-  /** Durchschnittliche Erkennungssicherheit. */
-  confidence: number;
+  befunde: number;     // Anzahl hochgeladener oder vorbereiteter Befunde.
+  laborwerte: number;  // Anzahl erkannter Laborwerte.
+  review: number;      // Anzahl Review-Punkte.
+  berichte: number;    // Anzahl freigegebener Berichte.
+  confidence: number;  // Durchschnittliche Erkennungssicherheit.
 }
 
 /** Zentrales ViewModel der Mock-Startansicht. */
 export interface DashboardViewModel {
-  /** Globale Kennzahlen. */
-  kennzahlen: DashboardKennzahlen;
-
-  /** Importjobs für Upload- und Statusbereich. */
-  importjobs: Importjob[];
-
-  /** Normalisierte Laborwerte für das Dashboard. */
-  laborwerte: Laborwert[];
-
-  /** Gruppierte Laborwert-Auswertung. */
-  gruppen: LaborwertGruppe[];
-
-  /** Trenddaten für große Grafiken. */
-  trends: DashboardTrend[];
-
-  /** Unsichere Werte für die Review-Oberfläche. */
-  reviewEintraege: ReviewEintrag[];
-
-  /** Wissensinhalte für Editor und Berichtsvorschau. */
-  wissenseintraege: Wissenseintrag[];
-
-  /** Vorschau eines freigegebenen Patientenberichts. */
-  patientenbericht: Patientenbericht;
+  kennzahlen: DashboardKennzahlen;     // Globale Kennzahlen.
+  importjobs: Importjob[];             // Importjobs für Upload- und Statusbereich.
+  laborwerte: Laborwert[];             // Normalisierte Laborwerte für das Dashboard.
+  gruppen: LaborwertGruppe[];          // Gruppierte Laborwert-Auswertung.
+  trends: DashboardTrend[];            // Trenddaten für große Grafiken.
+  reviewEintraege: ReviewEintrag[];    // Unsichere Werte für die Review-Oberfläche.
+  wissenseintraege: Wissenseintrag[];  // Wissensinhalte für Editor und Berichtsvorschau.
+  patientenbericht: Patientenbericht;  // Vorschau eines freigegebenen Patientenberichts.
 }

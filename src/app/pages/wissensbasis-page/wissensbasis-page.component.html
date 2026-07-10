@@ -90,7 +90,7 @@
 
           <div class="gf-wissensbasis-route__entry-actions">
             <gf-icon-action icon="edit" label="Eintrag bearbeiten" tone="primary"
-              (action)="eintragAuswaehlen(eintrag)"></gf-icon-action>
+              (action)="eintragBearbeiten(eintrag)"></gf-icon-action>
             <gf-icon-action icon="rule_settings" label="Zur Prüfung markieren" tone="warning"
               (action)="eintragStatusSetzen(eintrag.id, 'pruefung')"></gf-icon-action>
             <gf-icon-action icon="verified" label="Eintrag freigeben" tone="success"
@@ -115,12 +115,16 @@
         </div>
 
         <div class="gf-wissensbasis-route__editor-actions">
+          <button class="gf-button gf-button--secondary" type="button" (click)="bearbeitungsmodusUmschalten()">
+            <span class="material-symbols-outlined" aria-hidden="true">{{ bearbeitungsmodusAktiv() ? 'close' : 'edit' }}</span>
+            {{ bearbeitungsmodusAktiv() ? 'Bearbeitung abbrechen' : 'Bearbeiten' }}
+          </button>
           <button class="gf-button gf-button--danger" type="button" (click)="eintragLoeschen()">Löschen</button>
           <button class="gf-button gf-button--secondary" type="button"
             (click)="statusSetzenUndSpeichern('pruefung')">Zur Prüfung</button>
           <button class="gf-button gf-button--secondary" type="button"
             (click)="statusSetzenUndSpeichern('freigegeben')">Freigeben</button>
-          <button class="gf-button gf-button--primary" type="button" (click)="entwurfSpeichern()">Änderungen
+          <button class="gf-button gf-button--primary" type="button" [disabled]="!bearbeitungsmodusAktiv()" (click)="entwurfSpeichern()">Änderungen
             speichern</button>
         </div>
       </header>
@@ -129,24 +133,27 @@
         <form class="gf-wissensbasis-route__form">
           <label>
             <span>Laborwert-Key</span>
-            <input type="text" maxlength="160" autocomplete="off" [value]="form.laborwertKey" (input)="formularfeldSetzen('laborwertKey', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.laborwertKey"
+              (input)="formularfeldSetzen('laborwertKey', $event)">
           </label>
           <label>
             <span>Anzeigename</span>
-            <input type="text" maxlength="160" autocomplete="off" [value]="form.anzeigename" (input)="formularfeldSetzen('anzeigename', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.anzeigename"
+              (input)="formularfeldSetzen('anzeigename', $event)">
           </label>
           <label>
             <span>Kategorie</span>
-            <input type="text" maxlength="160" autocomplete="off" [value]="form.kategorie" (input)="formularfeldSetzen('kategorie', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.kategorie"
+              (input)="formularfeldSetzen('kategorie', $event)">
           </label>
           <label class="gf-wissensbasis-route__color-field">
             <span>Diagrammfarbe</span>
-            <input type="color" [value]="form.farbe" (input)="formularfeldSetzen('farbe', $event)">
+            <input type="color" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.farbe" (input)="formularfeldSetzen('farbe', $event)">
             <small>{{ form.farbe }}</small>
           </label>
           <label>
             <span>Status</span>
-            <select [value]="form.status" (change)="formularfeldSetzen('status', $event)">
+            <select [disabled]="!bearbeitungsmodusAktiv()" [value]="form.status" (change)="formularfeldSetzen('status', $event)">
               <option value="entwurf">Entwurf</option>
               <option value="pruefung">Prüfung</option>
               <option value="freigegeben">Freigegeben</option>
@@ -155,46 +162,48 @@
 
           <label class="is-wide">
             <span>Patientenerklärung kurz</span>
-            <textarea maxlength="4000" rows="3" [value]="form.patientKurztext"
+            <textarea maxlength="4000" rows="3" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.patientKurztext"
               (input)="formularfeldSetzen('patientKurztext', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Patientenerklärung ausführlich</span>
-            <textarea maxlength="4000" rows="5" [value]="form.patientLangtext"
+            <textarea maxlength="4000" rows="5" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.patientLangtext"
               (input)="formularfeldSetzen('patientLangtext', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Arztinformation</span>
-            <textarea maxlength="4000" rows="3" [value]="form.arztinformation"
+            <textarea maxlength="4000" rows="3" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.arztinformation"
               (input)="formularfeldSetzen('arztinformation', $event)"></textarea>
           </label>
           <label>
             <span>Ursachen niedrig</span>
-            <textarea maxlength="4000" rows="4" [value]="form.ursachenNiedrig"
+            <textarea maxlength="4000" rows="4" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.ursachenNiedrig"
               (input)="formularfeldSetzen('ursachenNiedrig', $event)"></textarea>
           </label>
           <label>
             <span>Ursachen hoch</span>
-            <textarea maxlength="4000" rows="4" [value]="form.ursachenHoch"
+            <textarea maxlength="4000" rows="4" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.ursachenHoch"
               (input)="formularfeldSetzen('ursachenHoch', $event)"></textarea>
           </label>
           <label>
             <span>Einflussfaktoren</span>
-            <textarea maxlength="4000" rows="4" [value]="form.einflussfaktoren"
+            <textarea maxlength="4000" rows="4" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.einflussfaktoren"
               (input)="formularfeldSetzen('einflussfaktoren', $event)"></textarea>
           </label>
           <label>
             <span>Hinweise</span>
-            <textarea maxlength="4000" rows="4" [value]="form.hinweise" (input)="formularfeldSetzen('hinweise', $event)"></textarea>
+            <textarea maxlength="4000" rows="4" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.hinweise"
+              (input)="formularfeldSetzen('hinweise', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Disclaimer</span>
-            <textarea maxlength="4000" rows="3" [value]="form.disclaimer" (input)="formularfeldSetzen('disclaimer', $event)"></textarea>
+            <textarea maxlength="4000" rows="3" [disabled]="!bearbeitungsmodusAktiv()" [value]="form.disclaimer"
+              (input)="formularfeldSetzen('disclaimer', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Änderungsnotiz</span>
-            <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Patiententext vereinfacht" [value]="form.aenderungsnotiz"
-              (input)="formularfeldSetzen('aenderungsnotiz', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" placeholder="z. B. Patiententext vereinfacht"
+              [value]="form.aenderungsnotiz" (input)="formularfeldSetzen('aenderungsnotiz', $event)">
           </label>
         </form>
 
@@ -225,8 +234,10 @@
               <span>{{ quelle.typ }}</span>
               <strong>{{ quelle.titel }}</strong>
               <small>{{ quelle.stand }} · {{ quelle.referenz }}</small>
+              @if (bearbeitungsmodusAktiv()) {
               <gf-icon-action icon="close" label="Quelle entfernen" tone="danger"
                 (action)="quelleEntfernen(quelle.id)"></gf-icon-action>
+              }
             </article>
             } @empty {
             <p>Noch keine Quelle zugeordnet.</p>
@@ -235,8 +246,9 @@
 
           <div class="gf-wissensbasis-route__source-form">
             <div class="gf-wissensbasis-route__source-title-field">
-              <input type="text" maxlength="160" autocomplete="off" placeholder="Quellentitel" [value]="quellenTitel()"
-                (focus)="quellenVorschlaegeOeffnen()" (input)="quellenFeldSetzen('titel', $event); quellenVorschlaegeOeffnen()">
+              <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" placeholder="Quellentitel" [value]="quellenTitel()"
+                (focus)="quellenVorschlaegeOeffnen()"
+                (input)="quellenFeldSetzen('titel', $event); quellenVorschlaegeOeffnen()">
 
               @if (quellenVorschlaegeOffen() && quellenVorschlaege().length) {
               <div class="gf-wissensbasis-route__source-suggestions" role="listbox" aria-label="Vorhandene Quellen">
@@ -252,7 +264,7 @@
             </div>
 
             <div class="gf-wissensbasis-route__source-type" [class.is-open]="quellenTypDropdownOffen()">
-              <button type="button" class="gf-wissensbasis-route__source-type-button"
+              <button type="button" class="gf-wissensbasis-route__source-type-button" [disabled]="!bearbeitungsmodusAktiv()"
                 (click)="quellenTypDropdownUmschalten()" aria-haspopup="listbox"
                 [attr.aria-expanded]="quellenTypDropdownOffen()">
                 <span>{{ quellenTypLabel() }}</span>
@@ -269,13 +281,14 @@
               }
             </div>
 
-            <input type="text" maxlength="160" autocomplete="off" placeholder="Stand, z. B. 06.2026" [value]="quellenStand()"
-              (input)="quellenFeldSetzen('stand', $event)" (blur)="quellenStandNormalisieren()">
-            <input type="text" maxlength="160" autocomplete="off" placeholder="Referenz oder URL" [value]="quellenReferenz()"
-              (input)="quellenFeldSetzen('referenz', $event)">
-            <input type="text" maxlength="160" autocomplete="off" placeholder="Interner Hinweis" [value]="quellenHinweis()"
-              (input)="quellenFeldSetzen('hinweis', $event)">
-            <button class="gf-button gf-button--source-add" type="button" (click)="quelleHinzufuegen()">
+            <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" placeholder="Stand, z. B. 06.2026"
+              [value]="quellenStand()" (input)="quellenFeldSetzen('stand', $event)"
+              (blur)="quellenStandNormalisieren()">
+            <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" placeholder="Referenz oder URL"
+              [value]="quellenReferenz()" (input)="quellenFeldSetzen('referenz', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [disabled]="!bearbeitungsmodusAktiv()" placeholder="Interner Hinweis"
+              [value]="quellenHinweis()" (input)="quellenFeldSetzen('hinweis', $event)">
+            <button class="gf-button gf-button--source-add" type="button" [disabled]="!bearbeitungsmodusAktiv()" (click)="quelleHinzufuegen()">
               <span class="material-symbols-outlined" aria-hidden="true">add_link</span>
               Quelle hinzufügen
             </button>
@@ -331,26 +344,27 @@
     <div class="gf-wissensbasis-route__create-form">
       <label>
         <span>Laborwert-Key</span>
-        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. ldl_cholesterin" [value]="neuerLaborwertKey()"
-          (input)="anlageFeldSetzen('laborwertKey', $event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. ldl_cholesterin"
+          [value]="neuerLaborwertKey()" (input)="anlageFeldSetzen('laborwertKey', $event)">
       </label>
       <label>
         <span>Anzeigename</span>
-        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. LDL-Cholesterin" [value]="neuerAnzeigename()"
-          (input)="anlageFeldSetzen('anzeigename', $event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. LDL-Cholesterin"
+          [value]="neuerAnzeigename()" (input)="anlageFeldSetzen('anzeigename', $event)">
       </label>
       <label class="gf-wissensbasis-route__create-category-field">
         <span>Kategorie</span>
-        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
-          (focus)="kategorieEingabeAktivSetzen(true)" (blur)="kategorieEingabeVerzoegertDeaktivieren()"
-          (input)="anlageFeldSetzen('kategorie', $event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Fettstoffwechsel"
+          [value]="neueKategorie()" (focus)="kategorieEingabeAktivSetzen(true)"
+          (blur)="kategorieEingabeVerzoegertDeaktivieren()" (input)="anlageFeldSetzen('kategorie', $event)">
       </label>
 
       <div class="gf-wissensbasis-route__category-pills" [class.is-active]="neueKategorieEingabeAktiv()"
         aria-label="Vorhandene Kategorien">
         @for (kategorie of verfuegbareKategorien(); track kategorie) {
-        <button type="button" [disabled]="!neueKategorieEingabeAktiv()" [class.is-selected]="neueKategorie() === kategorie"
-          (mousedown)="kategorieAuswaehlen(kategorie, $event)">{{ kategorie }}</button>
+        <button type="button" [disabled]="!neueKategorieEingabeAktiv()"
+          [class.is-selected]="neueKategorie() === kategorie" (mousedown)="kategorieAuswaehlen(kategorie, $event)">{{
+          kategorie }}</button>
         } @empty {
         <p>Noch keine Kategorien vorhanden.</p>
         }
@@ -373,7 +387,8 @@
     <header>
       <div>
         <h2 id="reset-wissen-title">Wissensbasis zurücksetzen?</h2>
-        <p>Alle aktuellen Wissenskarten werden durch den kontrollierten Mindestbestand für Blutbild, Stoffwechsel, Leber, Niere, Lipide, Entzündung und Schilddrüse ersetzt.</p>
+        <p>Alle aktuellen Wissenskarten werden durch den kontrollierten Mindestbestand für Blutbild, Stoffwechsel,
+          Leber, Niere, Lipide, Entzündung und Schilddrüse ersetzt.</p>
       </div>
       <gf-icon-action icon="close" label="Resetdialog schließen" tone="danger"
         (action)="resetDialogSchliessen()"></gf-icon-action>
@@ -381,7 +396,8 @@
 
     <footer>
       <button class="gf-button gf-button--secondary" type="button" (click)="resetDialogSchliessen()">Abbrechen</button>
-      <button class="gf-button gf-button--danger" type="button" [disabled]="resetLaeuft()" (click)="wissensbasisZuruecksetzen()">
+      <button class="gf-button gf-button--danger" type="button" [disabled]="resetLaeuft()"
+        (click)="wissensbasisZuruecksetzen()">
         {{ resetLaeuft() ? 'Setze zurück...' : 'Mindestbestand wiederherstellen' }}
       </button>
     </footer>

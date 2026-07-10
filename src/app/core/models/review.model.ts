@@ -16,105 +16,47 @@ export type ReviewQuelle = 'pdf_text' | 'ocr' | 'manuell' | 'demo';
 
 /** Plausibilitätscheck eines erkannten Kandidaten. */
 export interface ReviewCheck {
-  /** Eindeutige Check-ID. */
-  id: string;
-
-  /** Titel des Checks. */
-  titel: string;
-
-  /** Ergebnistext des Checks. */
-  beschreibung: string;
-
-  /** Status des Checks. */
-  status: ReviewCheckStatus;
+  id: string;                 // Eindeutige Check-ID.
+  titel: string;              // Titel des Checks.
+  beschreibung: string;       // Ergebnistext des Checks.
+  status: ReviewCheckStatus;  // Status des Checks.
 }
 
 /** Einzelner Review-Kandidat. */
 export interface ReviewKandidat {
-  /** Eindeutige Review-ID. */
-  id: string;
-
-  /** Zugehörige Patient-ID. */
-  patientId: string;
-
-  /** Zugehörige Befund-ID. */
-  befundId: string;
-
-  /** Fachlicher Laborwert-Key. */
-  laborwertKey: string;
-
-  /** Normalisierter Anzeigename. */
-  anzeigename: string;
-
-  /** Vom Parser erkannter Name. */
-  erkannterName: string;
-
-  /** Vom Parser erkannter Wert als Rohtext. */
-  erkannterWert: string;
-
-  /** Korrigierter numerischer Wert. */
-  korrigierterWert: number;
-
-  /** Vom Parser erkannte Einheit. */
-  erkannteEinheit: string;
-
-  /** Korrigierte Einheit. */
-  korrigierteEinheit: string;
-
-  /** Untere Referenzgrenze. */
-  referenzMin: number;
-
-  /** Obere Referenzgrenze. */
-  referenzMax: number;
-
-  /** Originalzeile oder OCR-Ausschnitt. */
-  originalText: string;
-
-  /** Zusatzlabel für die Quelle im Originaldokument. */
-  originalLabel: string;
-
-  /** Confidence in Prozent. */
-  confidence: number;
-
-  /** Reviewstatus. */
-  status: ReviewStatus;
-
-  /** Wertgruppe. */
-  gruppe: string;
-
-  /** Extraktionsquelle. */
-  quelle: ReviewQuelle;
-
-  /** Kommentar des Arztes oder Prüfers. */
-  kommentar: string;
-
-  /** Parserhinweise. */
-  parserHinweise: string[];
-
-  /** Plausibilitätschecks. */
-  checks: ReviewCheck[];
+  id: string;                  // Eindeutige Review-ID.
+  patientId: string;           // Zugehörige Patient-ID.
+  befundId: string;            // Zugehörige Befund-ID.
+  laborwertKey: string;        // Fachlicher Laborwert-Key.
+  anzeigename: string;         // Normalisierter Anzeigename.
+  erkannterName: string;       // Vom Parser erkannter Name.
+  erkannterWert: string;       // Vom Parser erkannter Wert als Rohtext.
+  korrigierterWert: number;    // Korrigierter numerischer Wert.
+  erkannteEinheit: string;     // Vom Parser erkannte Einheit.
+  korrigierteEinheit: string;  // Korrigierte Einheit.
+  referenzMin: number;         // Untere Referenzgrenze.
+  referenzMax: number;         // Obere Referenzgrenze.
+  originalText: string;        // Originalzeile oder OCR-Ausschnitt.
+  originalLabel: string;       // Zusatzlabel für die Quelle im Originaldokument.
+  confidence: number;          // Confidence in Prozent.
+  status: ReviewStatus;        // Reviewstatus.
+  gruppe: string;              // Wertgruppe.
+  quelle: ReviewQuelle;        // Extraktionsquelle.
+  kommentar: string;           // Kommentar des Arztes oder Prüfers.
+  parserHinweise: string[];    // Parserhinweise.
+  checks: ReviewCheck[];       // Plausibilitätschecks.
 }
 
 /** Kompakte Kennzahl der Reviewroute. */
 export interface ReviewKennzahl {
-  /** Anzeigename der Kennzahl. */
-  label: string;
-
-  /** Anzeigenwert. */
-  wert: string | number;
-
-  /** Kurzer Kontext. */
-  hinweis: string;
-
-  /** Material-Symbol. */
-  icon: string;
-
-  /** Optionale Statusklasse. */
-  status?: string;
+  label: string;          // Anzeigename der Kennzahl.
+  wert: string | number;  // Anzeigenwert.
+  hinweis: string;        // Kurzer Kontext.
+  icon: string;           // Material-Symbol.
+  status?: string;        // Optionale Statusklasse.
 }
 
 /** Vollständiges ViewModel der Reviewroute. */
 export interface ReviewViewModel {
-  /** Zu prüfende Kandidaten. */
-  kandidaten: ReviewKandidat[];
+  kandidaten: ReviewKandidat[];  // Zu prüfende Kandidaten.
 }

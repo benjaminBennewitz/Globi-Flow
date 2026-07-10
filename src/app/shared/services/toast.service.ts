@@ -12,24 +12,17 @@ export type ToastTyp = 'success' | 'warning' | 'danger' | 'info';
 
 /** Kurze UI-Nachricht. */
 export interface ToastNachricht {
-  /** Eindeutige Toast-ID. */
-  id: number;
-
-  /** Ton der Nachricht. */
-  typ: ToastTyp;
-
-  /** Titel der Nachricht. */
-  titel: string;
-
-  /** Optionaler Beschreibungstext. */
-  text: string;
+  id: number;     // Eindeutige Toast-ID.
+  typ: ToastTyp;  // Ton der Nachricht.
+  titel: string;  // Titel der Nachricht.
+  text: string;   // Optionaler Beschreibungstext.
 }
 
 /** Globaler Toast-Service für kurze Rückmeldungen. */
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  /** Aktive Toast-Nachrichten. */
-  public readonly nachrichten: WritableSignal<ToastNachricht[]> = signal([]);
+  public readonly nachrichten: WritableSignal<ToastNachricht[]> = signal([]);  // Aktive Toast-Nachrichten.
+
 
   /** Zeigt eine neue Nachricht an. */
   public zeige(titel: string, text = '', typ: ToastTyp = 'info'): void {

@@ -13,81 +13,36 @@ export type LaborwertPrioritaet = 'niedrig' | 'mittel' | 'hoch';
 
 /** Normalisierter Laborwert aus Befund oder Mockdaten. */
 export interface Laborwert {
-  /** Eindeutige Wert-ID. */
-  id: string;
-
-  /** Stabiler fachlicher Schlüssel für Wissensdatenbank und API. */
-  key: string;
-
-  /** Lesbarer Anzeigename. */
-  name: string;
-
-  /** Medizinische Gruppe im Dashboard. */
-  gruppe: string;
-
-  /** Normalisierter Zahlenwert. */
-  wert: number;
-
-  /** Einheit des Laborwerts. */
-  einheit: string;
-
-  /** Untere Grenze des Referenzbereichs. */
-  referenzMin: number;
-
-  /** Obere Grenze des Referenzbereichs. */
-  referenzMax: number;
-
-  /** Status im Verhältnis zum Referenzbereich. */
-  status: LaborwertStatus;
-
-  /** Priorität für Anzeige und Review. */
-  prioritaet: LaborwertPrioritaet;
-
-  /** Erkennungssicherheit in Prozent. */
-  confidence: number;
-
-  /** Verlaufspunkte für kompakte Liniengrafiken. */
-  trend: number[];
-
-  /** Kurzer automatischer Hinweis für die Oberfläche. */
-  hinweis: string;
+  id: string;                       // Eindeutige Wert-ID.
+  key: string;                      // Stabiler fachlicher Schlüssel für Wissensdatenbank und API.
+  name: string;                     // Lesbarer Anzeigename.
+  gruppe: string;                   // Medizinische Gruppe im Dashboard.
+  wert: number;                     // Normalisierter Zahlenwert.
+  einheit: string;                  // Einheit des Laborwerts.
+  referenzMin: number;              // Untere Grenze des Referenzbereichs.
+  referenzMax: number;              // Obere Grenze des Referenzbereichs.
+  status: LaborwertStatus;          // Status im Verhältnis zum Referenzbereich.
+  prioritaet: LaborwertPrioritaet;  // Priorität für Anzeige und Review.
+  confidence: number;               // Erkennungssicherheit in Prozent.
+  trend: number[];                  // Verlaufspunkte für kompakte Liniengrafiken.
+  hinweis: string;                  // Kurzer automatischer Hinweis für die Oberfläche.
 }
 
 /** Gruppierte Dashboard-Auswertung. */
 export interface LaborwertGruppe {
-  /** Eindeutiger Gruppenschlüssel. */
-  key: string;
-
-  /** Anzeigename der Gruppe. */
-  name: string;
-
-  /** Anzahl normaler Werte. */
-  normal: number;
-
-  /** Anzahl auffälliger Werte. */
-  auffaellig: number;
-
-  /** Anzahl Werte im Review. */
-  review: number;
+  key: string;         // Eindeutiger Gruppenschlüssel.
+  name: string;        // Anzeigename der Gruppe.
+  normal: number;      // Anzahl normaler Werte.
+  auffaellig: number;  // Anzahl auffälliger Werte.
+  review: number;      // Anzahl Werte im Review.
 }
 
 /** Trendserie für große Dashboard-Grafiken. */
 export interface DashboardTrend {
-  /** Eindeutiger Trend-Schlüssel. */
-  key: string;
-
-  /** Anzeigename der Serie. */
-  name: string;
-
-  /** Einheit der Serie. */
-  einheit: string;
-
-  /** Verlaufspunkte der Serie. */
-  werte: number[];
-
-  /** Untere Grenze des Referenzbereichs. */
-  referenzMin: number;
-
-  /** Obere Grenze des Referenzbereichs. */
-  referenzMax: number;
+  key: string;          // Eindeutiger Trend-Schlüssel.
+  name: string;         // Anzeigename der Serie.
+  einheit: string;      // Einheit der Serie.
+  werte: number[];      // Verlaufspunkte der Serie.
+  referenzMin: number;  // Untere Grenze des Referenzbereichs.
+  referenzMax: number;  // Obere Grenze des Referenzbereichs.
 }

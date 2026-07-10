@@ -1,9 +1,9 @@
 /*###############################
 ###
 ###     animations.scss
-###     Globi Flow
-###     BASED ON: Angular 21, SCSS
-###     AUTHOR: Benjamin Bennewitz
+###     Globi Flow Frontend
+###     BASED ON: Angular 21.2, TypeScript 5.9, SCSS, Django REST Framework
+###     AUTHOR: B² Benjamin Bennewitz
 ###
 ###
 ###       ██████╗  ▀█
@@ -100,6 +100,7 @@
 }
 
 @keyframes gf-soft-pulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -153,6 +154,7 @@
 }
 
 @keyframes gf-border-run-right {
+
   0%,
   24% {
     height: 0;
@@ -177,6 +179,7 @@
 }
 
 @keyframes gf-border-run-bottom {
+
   0%,
   49% {
     width: 0;
@@ -201,6 +204,7 @@
 }
 
 @keyframes gf-border-run-left {
+
   0%,
   74% {
     height: 0;

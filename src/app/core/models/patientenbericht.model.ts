@@ -7,48 +7,25 @@
 
 /** Abschnitt eines Patientenberichts. */
 export interface PatientenberichtAbschnitt {
-  /** Eindeutiger Abschnittsschlüssel. */
-  key: string;
-
-  /** Überschrift des Abschnitts. */
-  titel: string;
-
-  /** Verständlicher Abschnittstext. */
-  text: string;
+  key: string;    // Eindeutiger Abschnittsschlüssel.
+  titel: string;  // Überschrift des Abschnitts.
+  text: string;   // Verständlicher Abschnittstext.
 }
 
 /** Fragevorschlag für das Arztgespräch. */
 export interface Patientenfrage {
-  /** Eindeutige Frage-ID. */
-  id: string;
-
-  /** Text der Frage. */
-  frage: string;
-
-  /** Zugehöriger Themenbereich. */
-  bereich: string;
+  id: string;       // Eindeutige Frage-ID.
+  frage: string;    // Text der Frage.
+  bereich: string;  // Zugehöriger Themenbereich.
 }
 
 /** Patientenbericht aus freigegebenen Daten. */
 export interface Patientenbericht {
-  /** Eindeutige Berichts-ID. */
-  id: string;
-
-  /** Name der Testperson. */
-  testperson: string;
-
-  /** Datum des Berichts. */
-  berichtsdatum: string;
-
-  /** Kurze Zusammenfassung. */
-  zusammenfassung: string;
-
-  /** Verständliche Berichtsteile. */
-  abschnitte: PatientenberichtAbschnitt[];
-
-  /** Sinnvolle Fragen für das Arztgespräch. */
-  fragen: Patientenfrage[];
-
-  /** Pflicht-Disclaimer. */
-  disclaimer: string;
+  id: string;                               // Eindeutige Berichts-ID.
+  testperson: string;                       // Name der Testperson.
+  berichtsdatum: string;                    // Datum des Berichts.
+  zusammenfassung: string;                  // Kurze Zusammenfassung.
+  abschnitte: PatientenberichtAbschnitt[];  // Verständliche Berichtsteile.
+  fragen: Patientenfrage[];                 // Sinnvolle Fragen für das Arztgespräch.
+  disclaimer: string;                       // Pflicht-Disclaimer.
 }

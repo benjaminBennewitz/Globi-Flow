@@ -10,30 +10,13 @@ export type ReviewFeld = 'wert' | 'einheit' | 'referenzbereich' | 'zuordnung';
 
 /** Einzelner Review-Eintrag aus API oder Mockdaten. */
 export interface ReviewEintrag {
-  /** Eindeutige Review-ID. */
-  id: string;
-
-  /** Zugehöriger Laborwert-Key. */
-  laborwertKey: string;
-
-  /** Anzeigename des Laborwerts. */
-  laborwertName: string;
-
-  /** Confidence Score in Prozent. */
-  confidence: number;
-
-  /** Zu prüfendes Feld. */
-  feld: ReviewFeld;
-
-  /** Erkannter Originaltext aus dem Befund. */
-  originalText: string;
-
-  /** Erkannter Wert nach Parser. */
-  erkannterWert: string;
-
-  /** Vorschlag für korrigierte Ausgabe. */
-  vorschlag: string;
-
-  /** Begründung für Review-Markierung. */
-  grund: string;
+  id: string;             // Eindeutige Review-ID.
+  laborwertKey: string;   // Zugehöriger Laborwert-Key.
+  laborwertName: string;  // Anzeigename des Laborwerts.
+  confidence: number;     // Confidence Score in Prozent.
+  feld: ReviewFeld;       // Zu prüfendes Feld.
+  originalText: string;   // Erkannter Originaltext aus dem Befund.
+  erkannterWert: string;  // Erkannter Wert nach Parser.
+  vorschlag: string;      // Vorschlag für korrigierte Ausgabe.
+  grund: string;          // Begründung für Review-Markierung.
 }

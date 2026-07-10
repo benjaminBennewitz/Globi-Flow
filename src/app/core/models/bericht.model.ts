@@ -16,117 +16,59 @@ export type BerichtEmpfehlungPrioritaet = 'normal' | 'beachten' | 'wichtig';
 
 /** Laborwert im druckfertigen Patientenbericht. */
 export interface BerichtLaborwert {
-  /** Stabiler Laborwert-Key. */
-  key: string;
-
-  /** Anzeigename. */
-  name: string;
-
-  /** Fachliche Gruppe. */
-  gruppe: string;
-
-  /** Messwert. */
-  wert: number;
-
-  /** Einheit. */
-  einheit: string;
-
-  /** Untere Referenzgrenze. */
-  referenzMin: number;
-
-  /** Obere Referenzgrenze. */
-  referenzMax: number;
-
-  /** Status im Verhältnis zum Referenzbereich. */
-  status: BerichtWertStatus;
-
-  /** Trendrichtung. */
-  trend: BerichtTrend;
-
-  /** Verständliche Erklärung aus der Wissensbasis. */
-  erklaerung: string;
-
-  /** Patiententauglicher Hinweis. */
-  hinweis: string;
-
-  /** Verlaufspunkte für die Mini-Grafik. */
-  verlauf: number[];
+  key: string;                // Stabiler Laborwert-Key.
+  name: string;               // Anzeigename.
+  gruppe: string;             // Fachliche Gruppe.
+  wert: number;               // Messwert.
+  einheit: string;            // Einheit.
+  referenzMin: number;        // Untere Referenzgrenze.
+  referenzMax: number;        // Obere Referenzgrenze.
+  status: BerichtWertStatus;  // Status im Verhältnis zum Referenzbereich.
+  trend: BerichtTrend;        // Trendrichtung.
+  erklaerung: string;         // Verständliche Erklärung aus der Wissensbasis.
+  hinweis: string;            // Patiententauglicher Hinweis.
+  verlauf: number[];          // Verlaufspunkte für die Mini-Grafik.
 }
 
 /** Zusammenfassung einer Wertgruppe. */
 export interface BerichtKategorie {
-  /** Name der Wertgruppe. */
-  name: string;
-
-  /** Anzahl unauffälliger Werte. */
-  normal: number;
-
-  /** Anzahl auffälliger Werte. */
-  auffaellig: number;
-
-  /** Anzahl prüfpflichtiger Werte. */
-  review: number;
+  name: string;        // Name der Wertgruppe.
+  normal: number;      // Anzahl unauffälliger Werte.
+  auffaellig: number;  // Anzahl auffälliger Werte.
+  review: number;      // Anzahl prüfpflichtiger Werte.
 }
 
 /** Empfehlung oder Hinweis im Patientenbericht. */
 export interface BerichtEmpfehlung {
-  /** Eindeutige ID. */
-  id: string;
-
-  /** Titel der Empfehlung. */
-  titel: string;
-
-  /** Text der Empfehlung. */
-  text: string;
-
-  /** Priorität der Empfehlung. */
-  prioritaet: BerichtEmpfehlungPrioritaet;
+  id: string;                               // Eindeutige ID.
+  titel: string;                            // Titel der Empfehlung.
+  text: string;                             // Text der Empfehlung.
+  prioritaet: BerichtEmpfehlungPrioritaet;  // Priorität der Empfehlung.
 }
 
 /** Quelle des Patientenberichts. */
 export interface BerichtQuelle {
-  /** Eindeutige Quellen-ID. */
-  id: string;
-
-  /** Zugeordneter Bereich. */
-  bereich: string;
-
-  /** Titel der Quelle. */
-  titel: string;
-
-  /** Stand oder Version. */
-  stand: string;
+  id: string;       // Eindeutige Quellen-ID.
+  bereich: string;  // Zugeordneter Bereich.
+  titel: string;    // Titel der Quelle.
+  stand: string;    // Stand oder Version.
 }
 
 
 /** Kompakter Prüfpunkt für Bericht-Freigaben. */
 export interface BerichtPruefEintrag {
-  /** Eindeutige ID. */
-  id: string;
-
-  /** Anzeigename des betroffenen Werts. */
-  name: string;
-
-  /** Fachliche Gruppe. */
-  gruppe: string;
-
-  /** Erklärung des Prüfpunkts. */
-  hinweis: string;
+  id: string;       // Eindeutige ID.
+  name: string;     // Anzeigename des betroffenen Werts.
+  gruppe: string;   // Fachliche Gruppe.
+  hinweis: string;  // Erklärung des Prüfpunkts.
 }
 
 /** Metadaten einer lokalen maschinellen Übersetzung. */
 export interface BerichtUebersetzung {
-  /** Quellsprache. */
-  quelle: string;
-
-  /** Zielsprache. */
-  ziel: string;
-
-  /** Verwendete lokale Engine. */
-  engine: string;
-
-  /** Kennzeichnung einer nicht manuell geprüften Übersetzung. */
-  maschinell: boolean;
+  quelle: string;       // Quellsprache.
+  ziel: string;         // Zielsprache.
+  engine: string;       // Verwendete lokale Engine.
+  maschinell: boolean;  // Kennzeichnung einer nicht manuell geprüften Übersetzung.
 }
 
 /** Sichtbare Texte der ärztlichen Berichtseite. */
@@ -141,99 +83,42 @@ export interface BerichtDruckTexte {
 
 /** Verfügbare Zielsprache der lokalen Übersetzung. */
 export interface BerichtZielsprache {
-  /** ISO-Sprachcode. */
-  code: string;
-
-  /** Sichtbares Sprachlabel. */
-  label: string;
+  code: string;   // ISO-Sprachcode.
+  label: string;  // Sichtbares Sprachlabel.
 }
 
 /** Vollständige, backendseitig gepflegte Berichtsvorlage. */
 export interface BerichtTemplate {
-  /** Aktuelle Sprache der Vorlage. */
-  sprache: string;
-
-  /** Unterstützte Zielsprachen. */
-  zielsprachen: BerichtZielsprache[];
-
-  /** Texte für Steuerung, Freigabe und Übersetzung. */
-  oberflaeche: BerichtOberflaecheTexte;
-
-  /** Texte innerhalb der Druckseiten. */
-  bericht: BerichtDruckTexte;
-
-  /** Sichtbare Statusbezeichnungen. */
-  statusLabels: Record<BerichtWertStatus, string>;
-
-  /** Sichtbare Prioritätsbezeichnungen. */
-  prioritaetLabels: Record<BerichtEmpfehlungPrioritaet, string>;
+  sprache: string;                                                // Aktuelle Sprache der Vorlage.
+  zielsprachen: BerichtZielsprache[];                             // Unterstützte Zielsprachen.
+  oberflaeche: BerichtOberflaecheTexte;                           // Texte für Steuerung, Freigabe und Übersetzung.
+  bericht: BerichtDruckTexte;                                     // Texte innerhalb der Druckseiten.
+  statusLabels: Record<BerichtWertStatus, string>;                // Sichtbare Statusbezeichnungen.
+  prioritaetLabels: Record<BerichtEmpfehlungPrioritaet, string>;  // Sichtbare Prioritätsbezeichnungen.
 }
 
 /** Druckfertiger Patientenbericht. */
 export interface BerichtViewModel {
-  /** Vollständige backendseitige Textvorlage. */
-  template: BerichtTemplate;
-
-  /** Eindeutige Berichts-ID. */
-  id: string;
-
-  /** Berichtsdatum. */
-  berichtsdatum: string;
-
-  /** Berichtsversion. */
-  version: string;
-
-  /** Gesamtstatus als Kurzlabel. */
-  gesamtstatus: string;
-
-  /** Verständlicher Gesamttext ohne Diagnose. */
-  gesamttext: string;
-
-  /** Anzahl aller Laborwerte im Bericht. */
-  gesamtWerte?: number;
-
-  /** Anzahl geprüfter Werte. */
-  gepruefteWerte: number;
-
-  /** Anzahl unauffälliger Werte. */
-  normaleWerte: number;
-
-  /** Anzahl auffälliger Werte. */
-  auffaelligeWerte: number;
-
-  /** Anzahl prüfpflichtiger Werte. */
-  reviewWerte: number;
-
-  /** Laborwerte für Ergebnisdarstellung. */
-  werte: BerichtLaborwert[];
-
-  /** Wertgruppen-Zusammenfassung. */
-  kategorien: BerichtKategorie[];
-
-  /** Patiententaugliche Empfehlungen. */
-  empfehlungen: BerichtEmpfehlung[];
-
-  /** Fragen für das Arztgespräch. */
-  fragen: string[];
-
-  /** Quellen des Berichts. */
-  quellen: BerichtQuelle[];
-
-  /** Pflicht-Disclaimer. */
-  disclaimer: string;
-
-  /** Gibt an, ob der Bericht ohne offene Reviews druckbar ist. */
-  istDruckbar?: boolean;
-
-  /** Gibt an, ob für alle Werte Patiententexte vorhanden sind. */
-  wissensbasisVollstaendig?: boolean;
-
-  /** Werte ohne Patiententext in der Wissensbasis. */
-  fehlendeWissensbasisTexte?: BerichtPruefEintrag[];
-
-  /** Noch offene Reviewpunkte aus dem Backend. */
-  offeneReviewEintraege?: BerichtPruefEintrag[];
-
-  /** Optionale Metadaten der Live-Übersetzung. */
-  uebersetzung?: BerichtUebersetzung;
+  template: BerichtTemplate;                          // Vollständige backendseitige Textvorlage.
+  id: string;                                         // Eindeutige Berichts-ID.
+  berichtsdatum: string;                              // Berichtsdatum.
+  version: string;                                    // Berichtsversion.
+  gesamtstatus: string;                               // Gesamtstatus als Kurzlabel.
+  gesamttext: string;                                 // Verständlicher Gesamttext ohne Diagnose.
+  gesamtWerte?: number;                               // Anzahl aller Laborwerte im Bericht.
+  gepruefteWerte: number;                             // Anzahl geprüfter Werte.
+  normaleWerte: number;                               // Anzahl unauffälliger Werte.
+  auffaelligeWerte: number;                           // Anzahl auffälliger Werte.
+  reviewWerte: number;                                // Anzahl prüfpflichtiger Werte.
+  werte: BerichtLaborwert[];                          // Laborwerte für Ergebnisdarstellung.
+  kategorien: BerichtKategorie[];                     // Wertgruppen-Zusammenfassung.
+  empfehlungen: BerichtEmpfehlung[];                  // Patiententaugliche Empfehlungen.
+  fragen: string[];                                   // Fragen für das Arztgespräch.
+  quellen: BerichtQuelle[];                           // Quellen des Berichts.
+  disclaimer: string;                                 // Pflicht-Disclaimer.
+  istDruckbar?: boolean;                              // Gibt an, ob der Bericht ohne offene Reviews druckbar ist.
+  wissensbasisVollstaendig?: boolean;                 // Gibt an, ob für alle Werte Patiententexte vorhanden sind.
+  fehlendeWissensbasisTexte?: BerichtPruefEintrag[];  // Werte ohne Patiententext in der Wissensbasis.
+  offeneReviewEintraege?: BerichtPruefEintrag[];      // Noch offene Reviewpunkte aus dem Backend.
+  uebersetzung?: BerichtUebersetzung;                 // Optionale Metadaten der Live-Übersetzung.
 }

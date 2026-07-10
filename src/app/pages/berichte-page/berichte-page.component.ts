@@ -11,6 +11,7 @@ import { Patient, PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { ToastService } from '../../shared/services/toast.service';
+import * as berichtLogik from './berichte-page-logik';
 
 /** Leere Vorlage bis zum ersten API-Ergebnis. */
 const LEERES_BERICHT_TEMPLATE: BerichtTemplate = {
@@ -71,16 +72,22 @@ export class BerichtePageComponent {
   /** Aktiver Befund. */
   public readonly befund = computed(() => this.patientContext.aktiverBefund());
 
-  /** Lädt die Berichtsdaten aus der API. */
+  /**
+   * Initialisiert das reaktive Nachladen bei Änderungen des Patientenkontexts.
+   */
   public constructor() {
     effect(() => {
-      const patientId = this.patient().id;
-      const befundId = this.befund()?.id;
+      const patientId = this.patient().id;  // Kennung des aktiven Patienten.
+      const befundId = this.befund()?.id;   // Kennung des aktiven Befunds.
       this.berichtLaden(befundId, patientId);
     });
   }
 
-  /** Lädt die Berichtsvorschau für den aktiven Patientenkontext neu. */
+  /**
+   * Lädt die Berichtsvorschau für den aktiven Patientenkontext neu.
+   *
+   * @returns Kein Rückgabewert.
+   */
   public vorschauAktualisieren(): void {
     this.berichtLaden(this.befund()?.id, this.patient().id);
   }
@@ -99,7 +106,7 @@ export class BerichtePageComponent {
 
   /** Fehlende Wissensbasis-Texte aus Backend oder Fallback aus Werteliste. */
   public readonly fehlendeWissensbasisTexte = computed<BerichtPruefEintrag[]>(() => {
-    const backendEintraege = this.bericht().fehlendeWissensbasisTexte ?? [];
+    const backendEintraege = this.bericht().fehlendeWissensbasisTexte ?? [];  // Vom Backend erkannte Wissenslücken.
     if (backendEintraege.length) {
       return backendEintraege;
     }
@@ -125,7 +132,7 @@ export class BerichtePageComponent {
   public readonly hatEmpfehlungen = computed(() => this.bericht().empfehlungen.length > 0);
 
   /** Druckwert-Seiten, damit keine Wertkarten abgeschnitten werden. */
-  public readonly druckWertSeiten = computed(() => this.chunk(this.druckWerte(), 10));
+  public readonly druckWertSeiten = computed(() => berichtLogik.seitengruppen(this.druckWerte(), 10));
 
   /** Gibt an, ob der Bericht gedruckt werden darf. */
   public readonly druckFreigegeben = computed(() => !!this.patient() && !!this.befund() && !!this.bericht().disclaimer && this.offeneReviewAnzahl() === 0 && this.bericht().istDruckbar !== false);
@@ -134,7 +141,7 @@ export class BerichtePageComponent {
   public readonly hatFragen = computed(() => this.bericht().fragen.length > 0);
 
   /** Quellenseiten, damit Quellen nicht abgeschnitten werden. */
-  public readonly quellenSeiten = computed(() => this.chunk(this.bericht().quellen, 10, false));
+  public readonly quellenSeiten = computed(() => berichtLogik.seitengruppen(this.bericht().quellen, 10, false));
 
   /** Gibt an, ob eine Fallback-Abschlussseite benötigt wird. */
   public readonly hatAbschlussFallback = computed(() => !this.hatFragen() && this.quellenSeiten().length === 0);
@@ -151,7 +158,11 @@ export class BerichtePageComponent {
     { key: 'disclaimer', label: this.oberflaechenBericht().template.oberflaeche['checkDisclaimer'] ?? '', ok: !!this.bericht().disclaimer, details: [] as BerichtPruefEintrag[] }
   ]);
 
-  /** Öffnet oder schließt die Liste fehlender Wissensbasis-Texte. */
+  /**
+   * Öffnet oder schließt die Liste fehlender Wissensbasis-Texte.
+   *
+   * @returns Kein Rückgabewert.
+   */
   public wissensbasisDetailsUmschalten(): void {
     if (!this.fehlendeWissensbasisTexte().length) {
       return;
@@ -160,12 +171,21 @@ export class BerichtePageComponent {
     this.wissensbasisDetailsOffen.update((wert: boolean) => !wert);
   }
 
-  /** Setzt die gewünschte Zielsprache. */
+  /**
+   * Setzt die gewünschte Zielsprache.
+   *
+   * @param code Sprachcode der gewählten Zielsprache.
+   * @returns Kein Rückgabewert.
+   */
   public zielSpracheSetzen(code: string): void {
     this.zielSprache.set(code);
   }
 
-  /** Übersetzt die freigegebene Vorschau lokal und zeigt sie direkt an. */
+  /**
+   * Übersetzt die freigegebene Vorschau lokal und zeigt sie direkt an.
+   *
+   * @returns Kein Rückgabewert.
+   */
   public uebersetzungStarten(): void {
     if (!this.druckFreigegeben() || this.uebersetzungLaeuft()) {
       return;
@@ -176,148 +196,155 @@ export class BerichtePageComponent {
       next: (bericht: BerichtViewModel) => {
         this.bericht.set(bericht);
         this.uebersetzungLaeuft.set(false);
-        const texte = this.oberflaechenBericht().template.oberflaeche;
+        const texte = this.oberflaechenBericht().template.oberflaeche;  // Deutsche Toast-Texte.
         this.toastService.zeige(texte['toastUebersetztTitel'] ?? '', texte['toastUebersetztText'] ?? '', 'success');
       },
       error: (fehler: { error?: { detail?: string } }) => {
         this.uebersetzungLaeuft.set(false);
-        const texte = this.originalBericht()?.template.oberflaeche ?? this.bericht().template.oberflaeche;
+        const texte = this.originalBericht()?.template.oberflaeche ?? this.bericht().template.oberflaeche;  // Verfügbare Fehlermeldungen.
         this.toastService.zeige(texte['toastUebersetzungFehlerTitel'] ?? '', fehler.error?.detail ?? texte['toastUebersetzungFehlerText'] ?? '', 'warning');
       }
     });
   }
 
-  /** Stellt die unveränderte deutsche Berichtsvorschau wieder her. */
+  /**
+   * Stellt die unveränderte deutsche Berichtsvorschau wieder her.
+   *
+   * @returns Kein Rückgabewert.
+   */
   public uebersetzungZuruecksetzen(): void {
-    const original = this.originalBericht();
+    const original = this.originalBericht();  // Unveränderte deutsche Berichtsversion.
     if (original) {
       this.bericht.set(original);
     }
   }
 
-  /** Öffnet den nativen Druckdialog, wenn der Bericht druckfähig ist. */
+  /**
+   * Öffnet den nativen Druckdialog, wenn der Bericht druckfähig ist.
+   *
+   * @returns Kein Rückgabewert.
+   */
   public drucken(): void {
     if (this.offeneReviewAnzahl() > 0 || this.bericht().istDruckbar === false) {
-      const texte = this.bericht().template.oberflaeche;
+      const texte = this.bericht().template.oberflaeche;  // Lokalisierte Druckhinweise.
       this.toastService.zeige(texte['toastDruckBlockiertTitel'] ?? '', texte['toastDruckBlockiertText'] ?? '', 'warning');
       return;
     }
 
     if (this.fehlendeWissensbasisTexte().length > 0) {
-      const texte = this.bericht().template.oberflaeche;
+      const texte = this.bericht().template.oberflaeche;  // Lokalisierte Druckhinweise.
       this.toastService.zeige(texte['toastWissenTitel'] ?? '', `${this.fehlendeWissensbasisTexte().length} ${texte['toastWissenText'] ?? ''}`, 'warning');
     }
 
     window.print();
   }
 
-  /** Berechnet das Alter am Berichtstag. */
-  public alter(patient: Patient): number {
-    const geburtsdatum = new Date(patient.geburtsdatum);
-    const referenzdatum = new Date('2026-06-12');
-    const alter = referenzdatum.getFullYear() - geburtsdatum.getFullYear();
-    const hatteGeburtstag = referenzdatum.getMonth() > geburtsdatum.getMonth() || (referenzdatum.getMonth() === geburtsdatum.getMonth() && referenzdatum.getDate() >= geburtsdatum.getDate());
-    return hatteGeburtstag ? alter : alter - 1;
-  }
 
-  /** Berechnet den BMI ohne medizinische Einordnung. */
-  public bmi(patient: Patient): string {
-    if (!patient.gewichtKg || !patient.groesseCm) {
-      return this.oberflaechenBericht().template.oberflaeche['nichtAngegeben'] ?? '–';
-    }
-
-    const groesseMeter = patient.groesseCm / 100;
-    return (patient.gewichtKg / (groesseMeter * groesseMeter)).toFixed(1).replace('.', ',');
-  }
-
-  /** Gibt das vom Backend gelieferte Statuslabel zurück. */
+  /**
+   * Gibt das vom Backend gelieferte Statuslabel zurück.
+   *
+   * @param status Fachlicher Status des Laborwerts.
+   * @returns Lokalisiertes Statuslabel oder technischer Statuswert.
+   */
   public statusLabel(status: BerichtWertStatus): string {
     return this.bericht().template.statusLabels[status] ?? status;
   }
 
-  /** Gibt eine Statusklasse zurück. */
+  /**
+   * Erzeugt die CSS-Klasse für einen Laborwertstatus.
+   *
+   * @param status Fachlicher Status des Laborwerts.
+   * @returns Statusbezogene CSS-Klasse.
+   */
   public statusKlasse(status: BerichtWertStatus): string {
     return `is-${status}`;
   }
 
-  /** Berechnet die Markerposition im Referenzbalken. */
-  public markerPosition(wert: BerichtLaborwert): number {
-    const min = Math.min(wert.referenzMin, wert.wert);
-    const max = Math.max(wert.referenzMax, wert.wert);
-    const spannweite = Math.max(max - min, 1);
-    return this.begrenzen(((wert.wert - min) / spannweite) * 100, 4, 96);
+  /** Reine Berechnungs- und Diagrammfunktionen der Berichtsvorschau. */
+  public readonly alter = berichtLogik.alter;                        // Berechnet das Alter am Berichtstag.
+  public readonly markerPosition = berichtLogik.markerPosition;      // Berechnet die Markerposition im Referenzbalken.
+  public readonly referenzStart = berichtLogik.referenzStart;        // Berechnet den Start des Referenzbereichs.
+  public readonly referenzBreite = berichtLogik.referenzBreite;      // Berechnet die Breite des Referenzbereichs.
+  public readonly sparklinePunkte = berichtLogik.sparklinePunkte;    // Erzeugt SVG-Punkte für kompakte Verlaufslinien.
+  public readonly kategorieGesamt = berichtLogik.kategorieGesamt;    // Summiert die Statuswerte einer Kategorie.
+  public readonly kategorieAnteil = berichtLogik.kategorieAnteil;    // Berechnet einen prozentualen Kategorieanteil.
+
+  /**
+   * Berechnet den BMI ohne medizinische Einordnung.
+   *
+   * @param patient Person mit optionalen Größen- und Gewichtsdaten.
+   * @returns Formatierter BMI oder lokalisierter Fallbacktext.
+   */
+  public bmi(patient: Patient): string {
+    const nichtAngegeben = this.oberflaechenBericht().template.oberflaeche['nichtAngegeben'] ?? '–';  // Fallback bei fehlenden Stammdaten.
+    return berichtLogik.bmi(patient, nichtAngegeben);
   }
 
-  /** Berechnet die Position des Referenzstarts. */
-  public referenzStart(wert: BerichtLaborwert): number {
-    const min = Math.min(wert.referenzMin, wert.wert);
-    const max = Math.max(wert.referenzMax, wert.wert);
-    const spannweite = Math.max(max - min, 1);
-    return this.begrenzen(((wert.referenzMin - min) / spannweite) * 100, 0, 100);
-  }
-
-  /** Berechnet die Breite des Referenzbereichs. */
-  public referenzBreite(wert: BerichtLaborwert): number {
-    const min = Math.min(wert.referenzMin, wert.wert);
-    const max = Math.max(wert.referenzMax, wert.wert);
-    const spannweite = Math.max(max - min, 1);
-    return this.begrenzen(((wert.referenzMax - wert.referenzMin) / spannweite) * 100, 8, 100);
-  }
-
-  /** Baut SVG-Punkte für eine Verlaufslinie. */
-  public sparklinePunkte(wert: BerichtLaborwert): string {
-    const werte = wert.verlauf.length ? wert.verlauf : [wert.wert];
-    const min = Math.min(...werte);
-    const max = Math.max(...werte);
-    const spannweite = Math.max(max - min, 1);
-    return werte.map((punkt: number, index: number) => {
-      const x = werte.length === 1 ? 50 : (index / Math.max(werte.length - 1, 1)) * 100;
-      const y = 34 - ((punkt - min) / spannweite) * 28;
-      return `${x.toFixed(1)},${this.begrenzen(y, 4, 34).toFixed(1)}`;
-    }).join(' ');
-  }
-
-  /** Berechnet die Gesamtzahl einer Kategorie. */
-  public kategorieGesamt(kategorie: { normal: number; auffaellig: number; review: number }): number {
-    return kategorie.normal + kategorie.auffaellig + kategorie.review;
-  }
-
-  /** Berechnet den Prozentanteil einer Kategorie. */
-  public kategorieAnteil(teil: number, gesamt: number): number {
-    return gesamt > 0 ? (teil / gesamt) * 100 : 0;
-  }
-
-  /** Liefert einen fallback-sicheren Befundnamen. */
+  /**
+   * Liefert einen fallback-sicheren Befundnamen.
+   *
+   * @param befund Aktiver Befund oder null bei fehlendem Kontext.
+   * @returns Befundname oder lokalisierter Fallbacktext.
+   */
   public befundName(befund: PatientBefund | null): string {
     return befund?.name ?? this.oberflaechenBericht().template.oberflaeche['keinBefund'] ?? '–';
   }
 
-  /** Liefert einen lesbaren Seitenzähler. */
+  /**
+   * Liefert einen lesbaren Seitenzähler.
+   *
+   * @param index Aktuelle Seitennummer.
+   * @returns Lokalisiertes Seitenlabel.
+   */
   public seiteLabel(index: number): string {
     return `${this.bericht().template.bericht['seitenlabel'] ?? ''} ${index} / ${this.gesamtSeiten()}`.trim();
   }
 
-  /** Berechnet die Seitennummer der Ergebnisseite. */
+  /**
+   * Berechnet die Seitennummer einer Ergebnisseite.
+   *
+   * @param index Nullbasierter Index der Ergebnisseite.
+   * @returns Einsbasierte Seitennummer im Druckbericht.
+   */
   public ergebnisSeite(index: number): number {
     return 2 + (this.hatEmpfehlungen() ? 1 : 0) + index;
   }
 
-  /** Berechnet die Seitennummer der Fragenseite. */
+  /**
+   * Berechnet die Seitennummer der Fragenseite.
+   *
+   * @returns Einsbasierte Seitennummer der Fragenseite.
+   */
   public fragenSeite(): number {
     return 2 + (this.hatEmpfehlungen() ? 1 : 0) + this.druckWertSeiten().length;
   }
 
-  /** Berechnet die Seitennummer einer Quellenseite. */
+  /**
+   * Berechnet die Seitennummer einer Quellenseite.
+   *
+   * @param index Nullbasierter Index der Quellenseite.
+   * @returns Einsbasierte Seitennummer im Druckbericht.
+   */
   public quellenSeitennummer(index: number): number {
     return this.fragenSeite() + (this.hatFragen() ? 1 : 0) + index;
   }
 
-  /** Berechnet die Gesamtzahl aller Berichtswerte. */
+  /**
+   * Berechnet die Gesamtzahl aller Berichtswerte.
+   *
+   * @returns Vom Backend gelieferte oder lokal ermittelte Gesamtzahl.
+   */
   public gesamtWerte(): number {
     return this.bericht().gesamtWerte ?? this.bericht().werte.length;
   }
 
-  /** Lädt den Bericht passend zum aktiven Kontext. */
+  /**
+   * Lädt den Bericht passend zum aktiven Patientenkontext.
+   *
+   * @param befundId Optionale Kennung des aktiven Befunds.
+   * @param patientId Optionale Kennung des aktiven Patienten.
+   * @returns Kein Rückgabewert.
+   */
   private berichtLaden(befundId?: string, patientId?: string): void {
     if (!befundId && !patientId) {
       return;
@@ -328,19 +355,5 @@ export class BerichtePageComponent {
       this.bericht.set(bericht);
       this.wissensbasisDetailsOffen.set(false);
     });
-  }
-
-  /** Teilt ein Array in feste Seitengruppen. */
-  private chunk<T>(werte: T[], groesse: number, leereSeite = true): T[][] {
-    const seiten: T[][] = [];
-    for (let index = 0; index < werte.length; index += groesse) {
-      seiten.push(werte.slice(index, index + groesse));
-    }
-    return seiten.length ? seiten : leereSeite ? [[]] : [];
-  }
-
-  /** Begrenzt eine Zahl auf ein Minimum und Maximum. */
-  private begrenzen(wert: number, min: number, max: number): number {
-    return Math.min(max, Math.max(min, wert));
   }
 }

@@ -22,111 +22,49 @@ export type ImportjobDatasetStatus = 'normal' | 'review' | 'fehler';
 
 /** Einzelner Verarbeitungsschritt innerhalb eines Importjobs. */
 export interface ImportjobSchritt {
-  /** Eindeutiger technischer Schlüssel des Schritts. */
-  key: string;
-
-  /** Lesbarer Name für die Oberfläche. */
-  name: string;
-
-  /** Kurzer Hinweis zum aktuellen Schritt. */
-  beschreibung: string;
-
-  /** Status des Pipeline-Schritts. */
-  status: ImportjobSchrittStatus;
-
-  /** Gibt an, ob der Schritt bereits abgeschlossen ist. */
-  abgeschlossen: boolean;
+  key: string;                     // Eindeutiger technischer Schlüssel des Schritts.
+  name: string;                    // Lesbarer Name für die Oberfläche.
+  beschreibung: string;            // Kurzer Hinweis zum aktuellen Schritt.
+  status: ImportjobSchrittStatus;  // Status des Pipeline-Schritts.
+  abgeschlossen: boolean;          // Gibt an, ob der Schritt bereits abgeschlossen ist.
 }
 
 /** Log-Eintrag eines Importjobs. */
 export interface ImportjobLogEintrag {
-  /** Eindeutige Log-ID. */
-  id: string;
-
-  /** Lesbarer Zeitpunkt. */
-  zeitpunkt: string;
-
-  /** Kurzer Log-Titel. */
-  titel: string;
-
-  /** Beschreibung des Ereignisses. */
-  beschreibung: string;
-
-  /** Status des Ereignisses. */
-  status: ImportjobStatus | 'info';
+  id: string;                        // Eindeutige Log-ID.
+  zeitpunkt: string;                 // Lesbarer Zeitpunkt.
+  titel: string;                     // Kurzer Log-Titel.
+  beschreibung: string;              // Beschreibung des Ereignisses.
+  status: ImportjobStatus | 'info';  // Status des Ereignisses.
 }
 
 /** Erkannte Datengruppe innerhalb eines Importjobs. */
 export interface ImportjobDataset {
-  /** Eindeutige Dataset-ID. */
-  id: string;
-
-  /** Anzeigename der Datengruppe. */
-  name: string;
-
-  /** Anzahl erkannter Werte. */
-  werte: number;
-
-  /** Anzahl prüfpflichtiger Werte. */
-  review: number;
-
-  /** Durchschnittliche Confidence der Gruppe. */
-  confidence: number;
-
-  /** Status der Gruppe. */
-  status: ImportjobDatasetStatus;
+  id: string;                      // Eindeutige Dataset-ID.
+  name: string;                    // Anzeigename der Datengruppe.
+  werte: number;                   // Anzahl erkannter Werte.
+  review: number;                  // Anzahl prüfpflichtiger Werte.
+  confidence: number;              // Durchschnittliche Confidence der Gruppe.
+  status: ImportjobDatasetStatus;  // Status der Gruppe.
 }
 
 /** Importjob aus API oder Mockdaten. */
 export interface Importjob {
-  /** Eindeutige Job-ID. */
-  id: string;
-
-  /** Anzeigename der Quelldatei. */
-  dateiname: string;
-
-  /** Optionale Testperson oder Patientenzuordnung. */
-  testperson: string;
-
-  /** Art der lokalen Analyse. */
-  analyseArt: ImportjobAnalyseArt;
-
-  /** Aktueller Importstatus. */
-  status: ImportjobStatus;
-
-  /** Fortschritt in Prozent. */
-  fortschritt: number;
-
-  /** Aktueller Pipeline-Schritt. */
-  pipelineSchritt: string;
-
-  /** OCR-Status. */
-  ocrStatus: ImportjobOcrStatus;
-
-  /** Anzahl erkannter Laborwerte. */
-  erkannteWerte: number;
-
-  /** Anzahl unsicherer Laborwerte. */
-  unsichereWerte: number;
-
-  /** Durchschnittliche Erkennungssicherheit. */
-  confidence: number;
-
-  /** Zeitpunkt der Erstellung. */
-  erstelltAm: string;
-
-  /** Zeitpunkt der letzten Aktualisierung. */
-  aktualisiertAm: string;
-
-  /** Optionale Fehlermeldung für blockierte Jobs. */
-  fehlermeldung?: string;
-
-  /** Verarbeitungsschritte für Statusanzeigen. */
-  schritte: ImportjobSchritt[];
-
-  /** Erkannte Dataset-Gruppen des Imports. */
-  datasets: ImportjobDataset[];
-
-  /** Auditierbare Log-Ereignisse des Imports. */
-  logEintraege: ImportjobLogEintrag[];
+  id: string;                           // Eindeutige Job-ID.
+  dateiname: string;                    // Anzeigename der Quelldatei.
+  testperson: string;                   // Optionale Testperson oder Patientenzuordnung.
+  analyseArt: ImportjobAnalyseArt;      // Art der lokalen Analyse.
+  status: ImportjobStatus;              // Aktueller Importstatus.
+  fortschritt: number;                  // Fortschritt in Prozent.
+  pipelineSchritt: string;              // Aktueller Pipeline-Schritt.
+  ocrStatus: ImportjobOcrStatus;        // OCR-Status.
+  erkannteWerte: number;                // Anzahl erkannter Laborwerte.
+  unsichereWerte: number;               // Anzahl unsicherer Laborwerte.
+  confidence: number;                   // Durchschnittliche Erkennungssicherheit.
+  erstelltAm: string;                   // Zeitpunkt der Erstellung.
+  aktualisiertAm: string;               // Zeitpunkt der letzten Aktualisierung.
+  fehlermeldung?: string;               // Optionale Fehlermeldung für blockierte Jobs.
+  schritte: ImportjobSchritt[];         // Verarbeitungsschritte für Statusanzeigen.
+  datasets: ImportjobDataset[];         // Erkannte Dataset-Gruppen des Imports.
+  logEintraege: ImportjobLogEintrag[];  // Auditierbare Log-Ereignisse des Imports.
 }

@@ -16,17 +16,10 @@ const PDF_MAGIC_BYTES = '%PDF-';
 
 /** Ergebnis der Dateiprüfung. */
 export interface SichereDateiErgebnis {
-  /** Gibt an, ob die Datei frontendseitig akzeptiert wird. */
-  istGueltig: boolean;
-
-  /** Bereinigter Dateiname für die UI. */
-  dateiname: string;
-
-  /** Lesbare Dateigröße für die UI. */
-  groesse: string;
-
-  /** Optionaler Hinweis für die Oberfläche. */
-  meldung: string;
+  istGueltig: boolean;  // Gibt an, ob die Datei frontendseitig akzeptiert wird.
+  dateiname: string;    // Bereinigter Dateiname für die UI.
+  groesse: string;      // Lesbare Dateigröße für die UI.
+  meldung: string;      // Optionaler Hinweis für die Oberfläche.
 }
 
 /** Entfernt unsichtbare Steuerzeichen aus Dateinamen. */

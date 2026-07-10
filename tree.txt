@@ -73,37 +73,51 @@ Globi-Flow/
 │   │   │   ├── analyse-page/
 │   │   │   │   ├── analyse-page.component.html
 │   │   │   │   ├── analyse-page.component.scss
-│   │   │   │   └── analyse-page.component.ts
+│   │   │   │   ├── analyse-page.component.ts
+│   │   │   │   ├── analyse-page-diagramm.ts
+│   │   │   │   └── analyse-page-logik.ts
 │   │   │   ├── berichte-page/
 │   │   │   │   ├── berichte-page.component.html
 │   │   │   │   ├── berichte-page.component.scss
-│   │   │   │   └── berichte-page.component.ts
+│   │   │   │   ├── berichte-page.component.ts
+│   │   │   │   └── berichte-page-logik.ts
 │   │   │   ├── importe-page/
 │   │   │   │   ├── importe-page.component.html
 │   │   │   │   ├── importe-page.component.scss
-│   │   │   │   └── importe-page.component.ts
+│   │   │   │   ├── importe-page.component.ts
+│   │   │   │   ├── importe-page-logik.ts
+│   │   │   │   └── importe-page-polling.ts
 │   │   │   ├── patienten-page/
 │   │   │   │   ├── patienten-page.component.html
 │   │   │   │   ├── patienten-page.component.scss
-│   │   │   │   └── patienten-page.component.ts
+│   │   │   │   ├── patienten-page.component.ts
+│   │   │   │   └── patienten-page-logik.ts
 │   │   │   ├── review-page/
 │   │   │   │   ├── review-page.component.html
 │   │   │   │   ├── review-page.component.scss
-│   │   │   │   └── review-page.component.ts
+│   │   │   │   ├── review-page.component.ts
+│   │   │   │   └── review-page-logik.ts
 │   │   │   ├── uebersicht-page/
 │   │   │   │   ├── uebersicht-page.component.html
 │   │   │   │   ├── uebersicht-page.component.scss
-│   │   │   │   └── uebersicht-page.component.ts
+│   │   │   │   ├── uebersicht-page.component.ts
+│   │   │   │   └── uebersicht-page-logik.ts
 │   │   │   └── wissensbasis-page/
 │   │   │       ├── wissensbasis-page.component.html
 │   │   │       ├── wissensbasis-page.component.scss
-│   │   │       └── wissensbasis-page.component.ts
+│   │   │       ├── wissensbasis-page.component.ts
+│   │   │       ├── wissensbasis-page-controller.ts
+│   │   │       ├── wissensbasis-page-eintraege.ts
+│   │   │       ├── wissensbasis-page-logik.ts
+│   │   │       ├── wissensbasis-page-quellen.ts
+│   │   │       └── wissensbasis-page-zustand.ts
 │   │   ├── shared/
 │   │   │   ├── components/
 │   │   │   │   ├── app-navigation/
 │   │   │   │   │   ├── app-navigation.component.html
 │   │   │   │   │   ├── app-navigation.component.scss
-│   │   │   │   │   └── app-navigation.component.ts
+│   │   │   │   │   ├── app-navigation.component.ts
+│   │   │   │   │   └── app-navigation-suchfokus.ts
 │   │   │   │   ├── icon-action/
 │   │   │   │   │   ├── icon-action.component.html
 │   │   │   │   │   ├── icon-action.component.scss
@@ -151,6 +165,7 @@ Globi-Flow/
 ├── angular.json
 ├── DESIGNSYSTEM.md
 ├── Featureliste_Globi-Flow.docx
+├── LICENSE.md
 ├── make-tree.ps1
 ├── package.json
 ├── package-lock.json

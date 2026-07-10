@@ -85,7 +85,8 @@
 
         <div>
           @for (ergebnis of gruppe.items; track suchergebnisTrackKey(ergebnis)) {
-          <a class="gf-topbar__search-result" [attr.href]="ergebnis.route" (click)="suchergebnisOeffnen(ergebnis, $event)">
+          <a class="gf-topbar__search-result" [attr.href]="ergebnis.route"
+            (click)="suchergebnisOeffnen(ergebnis, $event)">
             <span class="material-symbols-outlined" aria-hidden="true">{{ ergebnis.icon }}</span>
             <span>
               <strong>{{ ergebnis.title }}</strong>
@@ -118,7 +119,8 @@
     <button class="gf-topbar__icon" type="button" aria-label="Einstellungen öffnen" (click)="modalOeffnen('settings')">
       <span class="material-symbols-outlined" aria-hidden="true">settings</span>
     </button>
-    <button class="gf-topbar__icon gf-topbar__reset" type="button" aria-label="Demo-Daten zurücksetzen" title="Demo-Daten zurücksetzen" (click)="demoResetDialogOeffnen()">
+    <button class="gf-topbar__icon gf-topbar__reset" type="button" aria-label="Demo-Daten zurücksetzen"
+      title="Demo-Daten zurücksetzen" (click)="demoResetDialogOeffnen()">
       <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
     </button>
     <a class="gf-button gf-button--primary" routerLink="/importe" [queryParams]="{ fokus: 'upload' }">
@@ -135,7 +137,8 @@
       <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
       <div>
         <h2 id="demo-reset-title">Demo-Daten zurücksetzen?</h2>
-        <p>Die sechs fiktiven Testpersonen werden neu aufgebaut. Patientendaten, Befunde, Laborwerte, Reviews, Importe und Patientenberichte werden ersetzt. Die Wissensbasis bleibt erhalten.</p>
+        <p>Die sechs fiktiven Testpersonen werden neu aufgebaut. Patientendaten, Befunde, Laborwerte, Reviews, Importe
+          und Patientenberichte werden ersetzt. Die Wissensbasis bleibt erhalten.</p>
       </div>
     </header>
     <article>
@@ -146,9 +149,12 @@
     <p class="gf-demo-reset__error">{{ demoResetFehler() }}</p>
     }
     <footer>
-      <button class="gf-button gf-button--secondary" type="button" [disabled]="demoResetLaedt()" (click)="demoResetAbbrechen()">Abbrechen</button>
-      <button class="gf-button gf-button--primary" type="button" [disabled]="demoResetLaedt()" (click)="demoDatenZuruecksetzen()">
-        <span class="material-symbols-outlined" aria-hidden="true">{{ demoResetLaedt() ? 'hourglass_top' : 'restart_alt' }}</span>
+      <button class="gf-button gf-button--secondary" type="button" [disabled]="demoResetLaedt()"
+        (click)="demoResetAbbrechen()">Abbrechen</button>
+      <button class="gf-button gf-button--primary" type="button" [disabled]="demoResetLaedt()"
+        (click)="demoDatenZuruecksetzen()">
+        <span class="material-symbols-outlined" aria-hidden="true">{{ demoResetLaedt() ? 'hourglass_top' : 'restart_alt'
+          }}</span>
         {{ demoResetLaedt() ? 'Wird zurückgesetzt ...' : 'Demo-Daten zurücksetzen' }}
       </button>
     </footer>
@@ -163,7 +169,8 @@
       <span class="material-symbols-outlined" aria-hidden="true">swap_horiz</span>
       <div>
         <h2 id="search-switch-title">Patientenkontext wechseln?</h2>
-        <p>Der Treffer gehört zu {{ wechselTreffer.patientName || 'einer anderen Testperson' }}. Aktuell geladen ist {{ aktuellerPatientName() }}.</p>
+        <p>Der Treffer gehört zu {{ wechselTreffer.patientName || 'einer anderen Testperson' }}. Aktuell geladen ist {{
+          aktuellerPatientName() }}.</p>
       </div>
     </header>
     <article>
@@ -171,8 +178,10 @@
       <small>{{ wechselTreffer.subtitle }}</small>
     </article>
     <footer>
-      <button class="gf-button gf-button--secondary" type="button" (click)="patientenwechselAbbrechen()">Abbrechen</button>
-      <button class="gf-button gf-button--primary" type="button" (click)="patientenwechselBestaetigen()">Patient wechseln und öffnen</button>
+      <button class="gf-button gf-button--secondary" type="button"
+        (click)="patientenwechselAbbrechen()">Abbrechen</button>
+      <button class="gf-button gf-button--primary" type="button" (click)="patientenwechselBestaetigen()">Patient
+        wechseln und öffnen</button>
     </footer>
   </div>
 </section>

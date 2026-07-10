@@ -26,8 +26,8 @@ export class AnalyseDashboardComponent {
   /** Trendserien für große SVG-Grafiken. */
   @Input({ required: true }) public trends: DashboardTrend[] = [];
 
-  /** Steuert, ob Datensätze vollständig ausgeklappt sind. */
-  public alleDatensaetzeSichtbar = false;
+  public alleDatensaetzeSichtbar = false;  // Steuert, ob Datensätze vollständig ausgeklappt sind.
+
 
   /** Gibt den ersten Laborwert als aktiven Fokuswert zurück. */
   public get aktiverLaborwert(): Laborwert | null {

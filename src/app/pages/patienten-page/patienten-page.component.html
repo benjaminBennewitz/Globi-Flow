@@ -79,8 +79,10 @@
       </dl>
 
       <section class="gf-patienten-route__state-pills" aria-label="Lebensstil-Status">
-        <span [class.is-positive]="patient.nichtrauchen">{{ patient.nichtrauchen ? 'Nichtraucher' : 'Rauchen unklar' }}</span>
-        <span [class.is-warning]="patient.alkohol">{{ patient.alkohol ? 'Alkohol dokumentiert' : 'kein Alkohol' }}</span>
+        <span [class.is-positive]="patient.nichtrauchen">{{ patient.nichtrauchen ? 'Nichtraucher' : 'Rauchen unklar'
+          }}</span>
+        <span [class.is-warning]="patient.alkohol">{{ patient.alkohol ? 'Alkohol dokumentiert' : 'kein Alkohol'
+          }}</span>
         <span [class.is-danger]="patient.drogen">{{ patient.drogen ? 'Drogen dokumentiert' : 'keine Drogen' }}</span>
       </section>
 
@@ -101,22 +103,27 @@
 
       <footer class="gf-patienten-route__actions">
         <div class="gf-patienten-route__action-group" aria-label="Patient bearbeiten oder löschen">
-          <button class="gf-patienten-route__icon-action" type="button" title="Testperson bearbeiten" aria-label="Testperson bearbeiten" (click)="patientBearbeiten(patient)">
+          <button class="gf-patienten-route__icon-action" type="button" title="Testperson bearbeiten"
+            aria-label="Testperson bearbeiten" (click)="patientBearbeiten(patient)">
             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
           </button>
-          <button class="gf-patienten-route__icon-action is-danger" type="button" title="Testperson löschen" aria-label="Testperson löschen" (click)="patientLoeschenAnfragen(patient)">
+          <button class="gf-patienten-route__icon-action is-danger" type="button" title="Testperson löschen"
+            aria-label="Testperson löschen" (click)="patientLoeschenAnfragen(patient)">
             <span class="material-symbols-outlined" aria-hidden="true">delete</span>
           </button>
         </div>
 
         <div class="gf-patienten-route__action-group is-system" aria-label="Patientenaktionen">
-          <button class="gf-patienten-route__icon-action" type="button" title="Als aktiven Patienten auswählen" aria-label="Als aktiven Patienten auswählen" (click)="patientAuswaehlen(patient)">
+          <button class="gf-patienten-route__icon-action" type="button" title="Als aktiven Patienten auswählen"
+            aria-label="Als aktiven Patienten auswählen" (click)="patientAuswaehlen(patient)">
             <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
           </button>
-          <a class="gf-patienten-route__icon-action" routerLink="/review" title="Review öffnen" aria-label="Review öffnen" (click)="patientAuswaehlen(patient)">
+          <a class="gf-patienten-route__icon-action" routerLink="/review" title="Review öffnen"
+            aria-label="Review öffnen" (click)="patientAuswaehlen(patient)">
             <span class="material-symbols-outlined" aria-hidden="true">fact_check</span>
           </a>
-          <a class="gf-patienten-route__icon-action is-primary" routerLink="/auswertung" title="Auswertung öffnen" aria-label="Auswertung öffnen" (click)="patientAuswaehlen(patient)">
+          <a class="gf-patienten-route__icon-action is-primary" routerLink="/auswertung" title="Auswertung öffnen"
+            aria-label="Auswertung öffnen" (click)="patientAuswaehlen(patient)">
             <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
           </a>
         </div>
@@ -132,7 +139,8 @@
     <header>
       <div>
         <h2 id="patient-modal-title">{{ istEditModus() ? 'Testperson bearbeiten' : 'Testperson anlegen' }}</h2>
-        <p>{{ istEditModus() ? 'Stammdaten und Anamnese-Status der Testperson aktualisieren.' : 'Neue lokale Testperson für Import, Review und Auswertung vorbereiten.' }}</p>
+        <p>{{ istEditModus() ? 'Stammdaten und Anamnese-Status der Testperson aktualisieren.' : 'Neue lokale Testperson
+          für Import, Review und Auswertung vorbereiten.' }}</p>
       </div>
       <gf-icon-action icon="close" label="Modal schließen" tone="danger" (action)="modalSchliessen()"></gf-icon-action>
     </header>
@@ -140,21 +148,23 @@
     <div class="gf-patienten-route__form">
       <label>
         <span>Anzeigename</span>
-        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Mara" [value]="neuerVorname()" (input)="vornameAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Mara" [value]="neuerVorname()"
+          (input)="vornameAendern($event)">
       </label>
       <label>
         <span>Nachname</span>
-        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Hoffmann" [value]="neuerNachname()" (input)="nachnameAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Hoffmann" [value]="neuerNachname()"
+          (input)="nachnameAendern($event)">
       </label>
       <label>
         <span>Testpersonen-ID</span>
-        <input type="text" maxlength="160" autocomplete="off" placeholder="wird sonst automatisch vergeben" [value]="neueNummer()"
-          (input)="nummerAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="wird sonst automatisch vergeben"
+          [value]="neueNummer()" (input)="nummerAendern($event)">
       </label>
       <label>
         <span>Geburtsdatum</span>
-        <input type="text" maxlength="160" autocomplete="off" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()"
-          (input)="geburtsdatumAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" inputmode="numeric" placeholder="1984-04-18"
+          [value]="neuesGeburtsdatum()" (input)="geburtsdatumAendern($event)">
       </label>
       <div class="gf-patienten-route__field gf-patienten-route__select-field">
         <span>Geschlecht</span>
@@ -177,13 +187,13 @@
       </div>
       <label>
         <span>Gewicht kg</span>
-        <input type="text" maxlength="160" autocomplete="off" inputmode="decimal" placeholder="72" [value]="neuesGewicht()"
-          (input)="gewichtAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" inputmode="decimal" placeholder="72"
+          [value]="neuesGewicht()" (input)="gewichtAendern($event)">
       </label>
       <label>
         <span>Größe cm</span>
-        <input type="text" maxlength="160" autocomplete="off" inputmode="numeric" placeholder="168" [value]="neueGroesse()"
-          (input)="groesseAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" inputmode="numeric" placeholder="168"
+          [value]="neueGroesse()" (input)="groesseAendern($event)">
       </label>
       <label class="is-wide">
         <span>Lebensstil</span>
@@ -222,7 +232,8 @@
 }
 
 @if (patientZumLoeschen(); as patient) {
-<section class="gf-patienten-route__delete-modal" role="dialog" aria-modal="true" aria-labelledby="patient-delete-title">
+<section class="gf-patienten-route__delete-modal" role="dialog" aria-modal="true"
+  aria-labelledby="patient-delete-title">
   <div class="gf-patienten-route__delete-card">
     <header>
       <span class="material-symbols-outlined" aria-hidden="true">warning</span>
@@ -232,8 +243,10 @@
       </div>
     </header>
     <footer>
-      <button class="gf-button gf-button--secondary" type="button" (click)="patientLoeschenAbbrechen()">Abbrechen</button>
-      <button class="gf-button gf-button--primary is-danger" type="button" (click)="patientLoeschen()">Endgültig löschen</button>
+      <button class="gf-button gf-button--secondary" type="button"
+        (click)="patientLoeschenAbbrechen()">Abbrechen</button>
+      <button class="gf-button gf-button--primary is-danger" type="button" (click)="patientLoeschen()">Endgültig
+        löschen</button>
     </footer>
   </div>
 </section>

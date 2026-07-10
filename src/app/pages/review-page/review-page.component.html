@@ -177,7 +177,8 @@
 
       <label class="gf-review-route__comment">
         <span>Kommentar</span>
-        <textarea maxlength="4000" rows="3" [value]="kandidat.kommentar" placeholder="Ärztlichen Review-Kommentar ergänzen"
+        <textarea maxlength="4000" rows="3" [value]="kandidat.kommentar"
+          placeholder="Ärztlichen Review-Kommentar ergänzen"
           (input)="textfeldSetzen(kandidat.id, 'kommentar', $event)"></textarea>
       </label>
 

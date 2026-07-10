@@ -7,34 +7,15 @@
 
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild, WritableSignal, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Importjob, ImportjobAnalyseArt, ImportjobDataset, ImportjobOcrStatus, ImportjobSchrittStatus, ImportjobStatus } from '../../core/models/importjob.model';
+import { Importjob } from '../../core/models/importjob.model';
 import { pruefeSicherePdfDatei, SICHERE_DATEI_MAX_LABEL } from '../../core/security/sichere-datei.util';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { ImportJobMonitorService } from '../../core/services/import-job-monitor.service';
 import { PatientContextService } from '../../core/services/patient-context.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { bereinigeSichereEingabe } from '../../core/security/sichere-eingabe.util';
-
-/** Importlistenfilter für Statusgruppen. */
-type ImportFilter = 'alle' | 'aktiv' | 'review' | 'ocr' | 'fehler' | 'abgeschlossen';
-
-/** Kompakte Kennzahl der Importseite. */
-interface ImportKennzahl {
-  /** Anzeigename der Kennzahl. */
-  label: string;
-
-  /** Anzeigenwert der Kennzahl. */
-  wert: string | number;
-
-  /** Zusätzlicher Kurztext. */
-  hinweis: string;
-
-  /** Material-Symbol der Kennzahl. */
-  icon: string;
-
-  /** Optionale Statusklasse. */
-  status?: string;
-}
+import * as logik from './importe-page-logik';
+import { ImportPollingController } from './importe-page-polling';
 
 /** Route `/importe` für Upload, Pipeline-Status und Importhistorie. */
 @Component({
@@ -45,89 +26,35 @@ interface ImportKennzahl {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportePageComponent implements OnDestroy {
-  /** Aktuelle Route mit optionalem Upload-Fokus. */
-  private readonly route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);                         // Route mit optionalem Upload-Fokus.
+  private readonly toastService = inject(ToastService);                    // Toast-Service für UI-Rückmeldungen.
+  private readonly globiFlowApi = inject(GlobiFlowApiService);             // API-Service für Importdaten.
+  private readonly patientContext = inject(PatientContextService);         // Globaler Patientenkontext.
+  private readonly importJobMonitor = inject(ImportJobMonitorService);     // Monitor für laufende Importjobs.
+  private uploadBereich?: ElementRef<HTMLElement>;                         // Referenz auf den Uploadbereich.
+  private uploadScrollAusgeführt = false;                                  // Verhindert mehrfaches Fokus-Scrollen.
+  private ausgewaehlteDatei: File | null = null;                           // Lokal geprüfte PDF-Datei.
+  private readonly polling = new ImportPollingController(() => this.importjobsLaden(true));  // Polling-Steuerung aktiver Jobs.
 
-  /** Toast-Service für UI-Rückmeldungen. */
-  private readonly toastService = inject(ToastService);
-
-  /** API-Service für Importdaten. */
-  private readonly globiFlowApi = inject(GlobiFlowApiService);
-
-  /** Globaler Patientenkontext für Importzuordnung. */
-  private readonly patientContext = inject(PatientContextService);
-
-  /** Routeunabhängiger Monitor für laufende Importjobs. */
-  private readonly importJobMonitor = inject(ImportJobMonitorService);
-
-  /** Uploadbereich für automatisches Scrollen. */
-  private uploadBereich?: ElementRef<HTMLElement>;
-
-  /** Verhindert mehrfaches Scrollen innerhalb eines Fokuszyklus. */
-  private uploadScrollAusgeführt = false;
-
-  /** Lokal geprüfte PDF-Datei für den API-Upload. */
-  private ausgewaehlteDatei: File | null = null;
-
-  /** Regelmäßige Aktualisierung für laufende Background-Importe. */
-  private importPoller: number | null = null;
-
-  /** Importjobs aus der Backend-API. */
-  public readonly importjobs: WritableSignal<Importjob[]> = signal([]);
-
-  /** Aktiver Importfilter. */
-  public readonly aktiverFilter: WritableSignal<ImportFilter> = signal('alle');
-
-  /** Aktuell ausgewählter Importjob. */
-  public readonly ausgewaehlterJobId: WritableSignal<string> = signal('');
-
-  /** Gibt an, ob alle Dataset-Karten geöffnet sind. */
-  public readonly datasetsOffen: WritableSignal<boolean> = signal(false);
-
-  /** Gibt an, ob die Upload-Zone aktiv gezogen wird. */
-  public readonly dragAktiv: WritableSignal<boolean> = signal(false);
-
-  /** Aktuell ausgewählte Datei für den späteren Upload. */
-  public readonly dateiName: WritableSignal<string> = signal('');
-
-  /** Lesbare Größe der ausgewählten Datei. */
-  public readonly dateiGroesse: WritableSignal<string> = signal('');
-
-  /** Aktuelle Upload-Fehlermeldung. */
-  public readonly uploadFehler: WritableSignal<string> = signal('');
-
-  /** Gibt an, ob eine Datei aktuell geprüft wird. */
-  public readonly dateiPruefungAktiv: WritableSignal<boolean> = signal(false);
-
-  /** Gibt an, ob ein Upload-Request aktuell läuft. */
-  public readonly uploadAktiv: WritableSignal<boolean> = signal(false);
-
-  /** Merkt den zuletzt gestarteten Importjob. */
-  public readonly gestarteterJobId: WritableSignal<string> = signal('');
-
-  /** Aktiviert den animierten Hinweisrahmen für die Upload-Zone. */
-  public readonly uploadHinweisAktiv: WritableSignal<boolean> = signal(false);
-
-  /** Sichtbarkeit des manuellen Eingabe-Dialogs. */
-  public readonly manuelleEingabeOffen: WritableSignal<boolean> = signal(false);
-
-  /** Laborwert-Key der manuellen Eingabe. */
-  public readonly manuellLaborwertKey: WritableSignal<string> = signal('crp');
-
-  /** Anzeigename der manuellen Eingabe. */
-  public readonly manuellAnzeigename: WritableSignal<string> = signal('CRP');
-
-  /** Ergebnis der manuellen Eingabe. */
-  public readonly manuellErgebnis: WritableSignal<string> = signal('8,6');
-
-  /** Einheit der manuellen Eingabe. */
-  public readonly manuellEinheit: WritableSignal<string> = signal('mg/l');
-
-  /** Referenzbereich der manuellen Eingabe. */
-  public readonly manuellReferenz: WritableSignal<string> = signal('< 5,0');
-
-  /** Lesbares Uploadlimit für die UI. */
-  public readonly dateiLimit = SICHERE_DATEI_MAX_LABEL;
+  public readonly importjobs: WritableSignal<Importjob[]> = signal([]);                    // Importjobs aus der Backend-API.
+  public readonly aktiverFilter: WritableSignal<logik.ImportFilter> = signal('alle');      // Aktiver Historienfilter.
+  public readonly ausgewaehlterJobId: WritableSignal<string> = signal('');                 // ID des ausgewählten Importjobs.
+  public readonly datasetsOffen: WritableSignal<boolean> = signal(false);                  // Öffnungsstatus aller Dataset-Karten.
+  public readonly dragAktiv: WritableSignal<boolean> = signal(false);                      // Aktiver Drag-and-drop-Zustand.
+  public readonly dateiName: WritableSignal<string> = signal('');                          // Name der ausgewählten PDF-Datei.
+  public readonly dateiGroesse: WritableSignal<string> = signal('');                       // Lesbare Größe der ausgewählten Datei.
+  public readonly uploadFehler: WritableSignal<string> = signal('');                       // Aktuelle Upload-Fehlermeldung.
+  public readonly dateiPruefungAktiv: WritableSignal<boolean> = signal(false);             // Laufende lokale Dateiprüfung.
+  public readonly uploadAktiv: WritableSignal<boolean> = signal(false);                    // Laufender Upload-Request.
+  public readonly gestarteterJobId: WritableSignal<string> = signal('');                   // Zuletzt gestarteter Importjob.
+  public readonly uploadHinweisAktiv: WritableSignal<boolean> = signal(false);             // Animierter Hinweisrahmen der Upload-Zone.
+  public readonly manuelleEingabeOffen: WritableSignal<boolean> = signal(false);           // Sichtbarkeit des manuellen Dialogs.
+  public readonly manuellLaborwertKey: WritableSignal<string> = signal('crp');             // Laborwert-Key der manuellen Eingabe.
+  public readonly manuellAnzeigename: WritableSignal<string> = signal('CRP');              // Anzeigename der manuellen Eingabe.
+  public readonly manuellErgebnis: WritableSignal<string> = signal('8,6');                 // Ergebnis der manuellen Eingabe.
+  public readonly manuellEinheit: WritableSignal<string> = signal('mg/l');                 // Einheit der manuellen Eingabe.
+  public readonly manuellReferenz: WritableSignal<string> = signal('< 5,0');               // Referenzbereich der manuellen Eingabe.
+  public readonly dateiLimit = SICHERE_DATEI_MAX_LABEL;                                    // Lesbares Uploadlimit für die UI.
 
   /** Registriert den Uploadbereich, sobald er gerendert wurde. */
   @ViewChild('uploadBereich')
@@ -153,7 +80,7 @@ export class ImportePageComponent implements OnDestroy {
       const bisherAktiv = this.ausgewaehlterJobId();
       const gestarteterJob = jobs.find((job: Importjob) => job.id === this.gestarteterJobId());
       this.importjobs.set(jobs);
-      this.pollingNachStatusAktualisieren(jobs);
+      this.polling.nachStatusAktualisieren(jobs);
 
       if (gestarteterJob && this.importLaeuft(gestarteterJob)) {
         this.ausgewaehlterJobId.set(gestarteterJob.id);
@@ -168,161 +95,53 @@ export class ImportePageComponent implements OnDestroy {
 
   /** Räumt den Import-Poller beim Verlassen der Route auf. */
   public ngOnDestroy(): void {
-    this.pollingStoppen();
+    this.polling.stoppen();
   }
 
-  /** Startet schnelles Polling nur bei aktiven Importen. */
-  private pollingStarten(): void {
-    if (this.importPoller !== null) {
-      return;
-    }
+  /** Beschriftete Filteroptionen der Importhistorie. */
+  public readonly filterOptionen = logik.FILTER_OPTIONEN;
 
-    this.importPoller = window.setInterval(() => this.importjobsLaden(true), 2500);
-  }
+  /** Reine Anzeige-, Filter- und Statusfunktionen der Importseite. */
+  public readonly kennzahlen = logik.kennzahlen;                    // Berechnet die Importkennzahlen.
+  public readonly statusKlasse = logik.statusKlasse;                // Erzeugt die Jobstatusklasse.
+  public readonly schrittKlasse = logik.schrittKlasse;              // Erzeugt die Schrittstatusklasse.
+  public readonly datasetKlasse = logik.datasetKlasse;              // Erzeugt die Dataset-Statusklasse.
+  public readonly analyseLabel = logik.analyseLabel;                // Übersetzt die Analyseart.
+  public readonly ocrLabel = logik.ocrLabel;                        // Übersetzt den OCR-Status.
+  public readonly importLaeuft = logik.importLaeuft;                // Prüft den Verarbeitungsstatus.
+  public readonly laufenderJobHinweis = logik.laufenderJobHinweis;  // Beschreibt die Hintergrundverarbeitung.
 
-  /** Stoppt das Importseiten-Polling. */
-  private pollingStoppen(): void {
-    if (this.importPoller === null) {
-      return;
-    }
-
-    window.clearInterval(this.importPoller);
-    this.importPoller = null;
-  }
-
-  /** Aktiviert Polling nur, solange Jobs wirklich laufen. */
-  private pollingNachStatusAktualisieren(jobs: Importjob[]): void {
-    if (jobs.some((job: Importjob) => this.importLaeuft(job))) {
-      this.pollingStarten();
-      return;
-    }
-
-    this.pollingStoppen();
-  }
-
-  /** Importfilter für die Historie. */
-  public readonly filterOptionen: { key: ImportFilter; label: string }[] = [
-    { key: 'alle', label: 'Alle' },
-    { key: 'aktiv', label: 'Aktiv' },
-    { key: 'review', label: 'Review' },
-    { key: 'ocr', label: 'OCR' },
-    { key: 'fehler', label: 'Fehler' },
-    { key: 'abgeschlossen', label: 'Freigegeben' }
-  ];
-
-  /** Erzeugt die Kennzahlen der Importseite. */
-  public kennzahlen(importjobs: Importjob[]): ImportKennzahl[] {
-    const aktiveJobs = importjobs.filter((job: Importjob) => job.status === 'wartet' || job.status === 'analysiert').length;
-    const reviewJobs = importjobs.filter((job: Importjob) => job.status === 'review').length;
-    const ocrJobs = importjobs.filter((job: Importjob) => job.ocrStatus !== 'nicht_erforderlich').length;
-    const fehlerJobs = importjobs.filter((job: Importjob) => job.status === 'fehler').length;
-    const confidence = aktiveJobs ? 0 : this.durchschnitt(importjobs.filter((job: Importjob) => job.confidence > 0).map((job: Importjob) => job.confidence));
-
-    return [
-      { label: 'Aktive Jobs', wert: aktiveJobs, hinweis: aktiveJobs ? 'OCR läuft lokal' : 'keine Warteschlange', icon: aktiveJobs ? 'progress_activity' : 'sync', status: 'info' },
-      { label: 'Warten auf Review', wert: reviewJobs, hinweis: 'ärztlich prüfen', icon: 'fact_check', status: 'warning' },
-      { label: 'OCR erforderlich', wert: ocrJobs, hinweis: 'lokale OCR-Pipeline', icon: 'document_scanner', status: 'info' },
-      { label: 'Fehlerhafte Importe', wert: fehlerJobs, hinweis: 'Retry oder manuell', icon: 'error', status: 'danger' },
-      { label: 'Ø Confidence', wert: `${confidence}%`, hinweis: aktiveJobs ? 'wartet auf Ergebnis' : 'erkannte Werte', icon: 'verified', status: 'success' }
-    ];
-  }
-
-  /** Filtert Importjobs anhand des aktiven Statusfilters. */
+  /**
+   * Filtert die Importhistorie anhand des aktiven Filters.
+   *
+   * @param importjobs Vollständige Liste geladener Importjobs.
+   * @returns Gefilterte Importhistorie.
+   */
   public gefilterteJobs(importjobs: Importjob[]): Importjob[] {
-    const filter = this.aktiverFilter();
-
-    if (filter === 'aktiv') {
-      return importjobs.filter((job: Importjob) => job.status === 'wartet' || job.status === 'analysiert');
-    }
-
-    if (filter === 'ocr') {
-      return importjobs.filter((job: Importjob) => job.ocrStatus !== 'nicht_erforderlich');
-    }
-
-    if (filter === 'alle') {
-      return importjobs;
-    }
-
-    return importjobs.filter((job: Importjob) => job.status === filter);
+    return logik.gefilterteJobs(importjobs, this.aktiverFilter());
   }
 
-  /** Gibt den aktuell ausgewählten oder ersten Importjob zurück. */
+  /**
+   * Ermittelt den aktuell ausgewählten Importjob.
+   *
+   * @param importjobs Aktuell geladene Importjobs.
+   * @returns Ausgewählter Job, erster Eintrag oder null.
+   */
   public ausgewaehlterJob(importjobs: Importjob[]): Importjob | null {
-    return importjobs.find((job: Importjob) => job.id === this.ausgewaehlterJobId()) ?? importjobs[0] ?? null;
+    return logik.ausgewaehlterJob(importjobs, this.ausgewaehlterJobId());
   }
 
   /** Setzt den aktiven Historienfilter. */
-  public filterSetzen(filter: ImportFilter): void {
-    this.aktiverFilter.set(filter);
-  }
+  public filterSetzen(filter: logik.ImportFilter): void { this.aktiverFilter.set(filter); }
 
   /** Setzt den aktiven Detailjob. */
-  public jobAuswaehlen(job: Importjob): void {
-    this.ausgewaehlterJobId.set(job.id);
-  }
+  public jobAuswaehlen(job: Importjob): void { this.ausgewaehlterJobId.set(job.id); }
 
   /** Öffnet oder schließt alle Dataset-Karten. */
-  public datasetsUmschalten(): void {
-    this.datasetsOffen.update((wert: boolean) => !wert);
-  }
+  public datasetsUmschalten(): void { this.datasetsOffen.update((wert: boolean) => !wert); }
 
   /** Prüft, ob ein Job ausgewählt ist. */
-  public istAusgewaehlt(job: Importjob): boolean {
-    return this.ausgewaehlterJobId() === job.id;
-  }
-
-  /** Gibt eine CSS-Klasse für den Jobstatus zurück. */
-  public statusKlasse(status: ImportjobStatus): string {
-    return `is-${status}`;
-  }
-
-  /** Gibt eine CSS-Klasse für Pipeline-Schritte zurück. */
-  public schrittKlasse(status: ImportjobSchrittStatus): string {
-    return `is-${status}`;
-  }
-
-  /** Gibt eine CSS-Klasse für Dataset-Karten zurück. */
-  public datasetKlasse(dataset: ImportjobDataset): string {
-    return `is-${dataset.status}`;
-  }
-
-  /** Gibt ein lesbares Analyse-Label zurück. */
-  public analyseLabel(job: Importjob): string {
-    const labels: Record<ImportjobAnalyseArt, string> = {
-      textschicht: 'Textschicht',
-      ocr: 'Lokale OCR',
-      demo: 'Demo'
-    };
-
-    return labels[job.analyseArt];
-  }
-
-  /** Gibt ein lesbares OCR-Label zurück. */
-  public ocrLabel(status: ImportjobOcrStatus): string {
-    const labels: Record<ImportjobOcrStatus, string> = {
-      nicht_erforderlich: 'Nicht erforderlich',
-      erforderlich: 'Erforderlich',
-      aktiv: 'Aktiv',
-      abgeschlossen: 'Abgeschlossen',
-      fehler: 'Fehler'
-    };
-
-    return labels[status];
-  }
-
-  /** Prüft, ob ein Importjob noch aktiv verarbeitet wird. */
-  public importLaeuft(job: Importjob): boolean {
-    return job.status === 'wartet' || job.status === 'analysiert';
-  }
-
-  /** Liefert einen kurzen Laufzeit-Hinweis für aktive Jobs. */
-  public laufenderJobHinweis(job: Importjob): string {
-    if (job.ocrStatus === 'aktiv' || job.analyseArt === 'ocr') {
-      return 'OCR verarbeitet die gescannten PDF-Seiten lokal. Du kannst die Route wechseln; der Job läuft weiter.';
-    }
-
-    return 'Die Datei wird lokal analysiert. Du kannst währenddessen in anderen Bereichen weiterarbeiten.';
-  }
+  public istAusgewaehlt(job: Importjob): boolean { return this.ausgewaehlterJobId() === job.id; }
 
   /** Lädt die optimierte Testdaten-PDF aus den lokalen Assets herunter. */
   public testdatenPdfHerunterladen(): void {
@@ -340,7 +159,7 @@ export class ImportePageComponent implements OnDestroy {
       this.ausgewaehlterJobId.set(job.id);
       this.aktiverFilter.set('alle');
       this.importJobMonitor.importJobBeobachten(job);
-      this.pollingNachStatusAktualisieren([job]);
+      this.polling.nachStatusAktualisieren([job]);
       this.toastService.zeige('Demo-Analyse gestartet', 'Der Importjob wurde aus der Backend-API geladen.', 'success');
     });
   }
@@ -364,7 +183,7 @@ export class ImportePageComponent implements OnDestroy {
         this.dateiEntfernen();
         this.uploadAktiv.set(false);
         this.importJobMonitor.importJobBeobachten(job);
-        this.pollingStarten();
+        this.polling.starten();
         this.importjobsLaden(true);
         this.toastService.zeige('Importjob läuft', `Die PDF wurde ${aktiverPatient.name} zugeordnet. OCR läuft im Hintergrund weiter.`, 'success');
       },
@@ -376,14 +195,10 @@ export class ImportePageComponent implements OnDestroy {
   }
 
   /** Öffnet die manuelle Fallback-Eingabe. */
-  public manuelleEingabeOeffnen(): void {
-    this.manuelleEingabeOffen.set(true);
-  }
+  public manuelleEingabeOeffnen(): void { this.manuelleEingabeOffen.set(true); }
 
   /** Schließt die manuelle Fallback-Eingabe. */
-  public manuelleEingabeSchliessen(): void {
-    this.manuelleEingabeOffen.set(false);
-  }
+  public manuelleEingabeSchliessen(): void { this.manuelleEingabeOffen.set(false); }
 
   /** Aktualisiert ein manuelles Eingabefeld sicher. */
   public manuellesFeldSetzen(feld: 'key' | 'name' | 'ergebnis' | 'einheit' | 'referenz', event: Event): void {
@@ -430,9 +245,7 @@ export class ImportePageComponent implements OnDestroy {
   }
 
   /** Deaktiviert den Upload-Hinweis nach erster bewusster Interaktion. */
-  public uploadHinweisDeaktivieren(): void {
-    this.uploadHinweisAktiv.set(false);
-  }
+  public uploadHinweisDeaktivieren(): void { this.uploadHinweisAktiv.set(false); }
 
   /** Verhindert Browsernavigation beim Drag-over. */
   public dateiDragOver(event: DragEvent): void {
@@ -445,9 +258,7 @@ export class ImportePageComponent implements OnDestroy {
   }
 
   /** Setzt den Dragstatus zurück. */
-  public dateiDragLeave(): void {
-    this.dragAktiv.set(false);
-  }
+  public dateiDragLeave(): void { this.dragAktiv.set(false); }
 
   /** Übernimmt eine per Drag-and-drop abgelegte Datei. */
   public async dateiDrop(event: DragEvent): Promise<void> {
@@ -532,56 +343,5 @@ export class ImportePageComponent implements OnDestroy {
     this.dateiPruefungAktiv.set(false);
     this.uploadFehler.set(meldung);
     this.toastService.zeige('Upload blockiert', meldung, 'danger');
-  }
-
-  /** Erstellt einen lokalen Importjob für die manuelle Fallback-Eingabe. */
-  private fallbackJobErstellen(dateiname: string, testperson: string, analyseArt: ImportjobAnalyseArt, status: ImportjobStatus, fortschritt: number, confidence: number): Importjob {
-    const zeit = this.zeitLabel();
-    return {
-      id: `import-fallback-${Date.now()}`,
-      dateiname,
-      testperson,
-      analyseArt,
-      status,
-      fortschritt,
-      pipelineSchritt: status === 'review' ? 'Review vorbereitet' : 'Tabellenstruktur erkennen',
-      ocrStatus: 'nicht_erforderlich',
-      erkannteWerte: status === 'review' ? 42 : 18,
-      unsichereWerte: status === 'review' ? 5 : 3,
-      confidence,
-      erstelltAm: `12.06.2026 · ${zeit}`,
-      aktualisiertAm: `12.06.2026 · ${zeit}`,
-      schritte: [
-        { key: 'upload', name: 'Upload geprüft', beschreibung: 'Datei wurde im Frontend validiert und lokal simuliert.', status: 'erledigt', abgeschlossen: true },
-        { key: 'text', name: 'Textschicht geprüft', beschreibung: 'Demo-Textschicht für die UI-Simulation vorbereitet.', status: 'erledigt', abgeschlossen: true },
-        { key: 'ocr', name: 'OCR-Fallback geprüft', beschreibung: 'OCR ist in diesem Mockjob nicht erforderlich.', status: 'uebersprungen', abgeschlossen: true },
-        { key: 'table', name: 'Tabellen erkannt', beschreibung: 'Tabellenstruktur wird als Demo-Ergebnis angezeigt.', status: status === 'review' ? 'erledigt' : 'aktiv', abgeschlossen: status === 'review' },
-        { key: 'values', name: 'Werte extrahiert', beschreibung: 'Laborwerte und Referenzbereiche wurden im Mock erzeugt.', status: status === 'review' ? 'erledigt' : 'wartet', abgeschlossen: status === 'review' },
-        { key: 'confidence', name: 'Confidence berechnet', beschreibung: 'Unsichere Werte werden für den Review markiert.', status: status === 'review' ? 'erledigt' : 'wartet', abgeschlossen: status === 'review' }
-      ],
-      datasets: [
-        { id: `dataset-local-blut-${Date.now()}`, name: 'Blutbild', werte: 10, review: 1, confidence: 93, status: 'review' },
-        { id: `dataset-local-fett-${Date.now()}`, name: 'Fettstoffwechsel', werte: 8, review: 2, confidence: 84, status: 'review' },
-        { id: `dataset-local-zucker-${Date.now()}`, name: 'Zuckerstoffwechsel', werte: 6, review: 0, confidence: 95, status: 'normal' }
-      ],
-      logEintraege: [
-        { id: `log-local-${Date.now()}-1`, zeitpunkt: zeit, titel: 'Fallback angelegt', beschreibung: 'Die manuelle Eingabe wurde lokal für den Review vorbereitet.', status: 'info' },
-        { id: `log-local-${Date.now()}-2`, zeitpunkt: zeit, titel: 'Reviewbedarf markiert', beschreibung: 'Die Eingabe wird an die Review-Route übergeben.', status: 'review' }
-      ]
-    };
-  }
-
-  /** Gibt eine kompakte Uhrzeit für Mock-Ereignisse zurück. */
-  private zeitLabel(): string {
-    return new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit' }).format(new Date());
-  }
-
-  /** Berechnet einen gerundeten Durchschnitt. */
-  private durchschnitt(werte: number[]): number {
-    if (!werte.length) {
-      return 0;
-    }
-
-    return Math.round(werte.reduce((summe: number, wert: number) => summe + wert, 0) / werte.length);
   }
 }

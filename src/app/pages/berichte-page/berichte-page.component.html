@@ -25,7 +25,8 @@
     </div>
   </header>
 
-  <section class="gf-berichte-route__translation gf-neu-card" [attr.aria-label]="oberflaeche.template.oberflaeche['uebersetzungAria']">
+  <section class="gf-berichte-route__translation gf-neu-card"
+    [attr.aria-label]="oberflaeche.template.oberflaeche['uebersetzungAria']">
     <div>
       <span class="material-symbols-outlined" aria-hidden="true">translate</span>
       <div>
@@ -34,9 +35,11 @@
       </div>
     </div>
 
-    <div class="gf-berichte-route__language-list" role="group" [attr.aria-label]="oberflaeche.template.oberflaeche['zielspracheAria']">
+    <div class="gf-berichte-route__language-list" role="group"
+      [attr.aria-label]="oberflaeche.template.oberflaeche['zielspracheAria']">
       @for (sprache of sprachen(); track sprache.code) {
-      <button type="button" [class.is-active]="zielSprache() === sprache.code" [attr.aria-pressed]="zielSprache() === sprache.code" (click)="zielSpracheSetzen(sprache.code)">
+      <button type="button" [class.is-active]="zielSprache() === sprache.code"
+        [attr.aria-pressed]="zielSprache() === sprache.code" (click)="zielSpracheSetzen(sprache.code)">
         {{ sprache.label }}
       </button>
       }
@@ -44,17 +47,21 @@
 
     <div class="gf-berichte-route__translation-actions">
       @if (istUebersetzt()) {
-      <button class="gf-button gf-button--secondary" type="button" (click)="uebersetzungZuruecksetzen()">{{ oberflaeche.template.oberflaeche['deutschAnzeigen'] }}</button>
+      <button class="gf-button gf-button--secondary" type="button" (click)="uebersetzungZuruecksetzen()">{{
+        oberflaeche.template.oberflaeche['deutschAnzeigen'] }}</button>
       }
-      <button class="gf-button gf-button--primary" type="button" [disabled]="!druckFreigegeben() || uebersetzungLaeuft()" (click)="uebersetzungStarten()">
+      <button class="gf-button gf-button--primary" type="button"
+        [disabled]="!druckFreigegeben() || uebersetzungLaeuft()" (click)="uebersetzungStarten()">
         <span class="material-symbols-outlined" aria-hidden="true">translate</span>
-        {{ uebersetzungLaeuft() ? oberflaeche.template.oberflaeche['uebersetzungLaeuft'] : oberflaeche.template.oberflaeche['uebersetzen'] }}
+        {{ uebersetzungLaeuft() ? oberflaeche.template.oberflaeche['uebersetzungLaeuft'] :
+        oberflaeche.template.oberflaeche['uebersetzen'] }}
       </button>
     </div>
   </section>
 
   @if (bericht().uebersetzung) {
-  <p class="gf-berichte-route__machine-note" role="status">{{ oberflaeche.template.oberflaeche['maschinenHinweis'] }} · {{ bericht().uebersetzung?.engine }} · {{ oberflaeche.template.oberflaeche['maschinenPruefung'] }}</p>
+  <p class="gf-berichte-route__machine-note" role="status">{{ oberflaeche.template.oberflaeche['maschinenHinweis'] }} ·
+    {{ bericht().uebersetzung?.engine }} · {{ oberflaeche.template.oberflaeche['maschinenPruefung'] }}</p>
   }
 
   @if (offeneReviewAnzahl() > 0) {
@@ -67,7 +74,8 @@
   </section>
   }
 
-  <aside class="gf-berichte-route__controls gf-neu-card" [attr.aria-label]="oberflaeche.template.oberflaeche['steuerungAria']">
+  <aside class="gf-berichte-route__controls gf-neu-card"
+    [attr.aria-label]="oberflaeche.template.oberflaeche['steuerungAria']">
     <article>
       <span>{{ oberflaeche.template.oberflaeche['patient'] }}</span>
       <strong>{{ aktiverPatient.name }}</strong>
@@ -87,7 +95,9 @@
       <h2>{{ oberflaeche.template.oberflaeche['freigabecheck'] }}</h2>
       <div class="gf-berichte-route__checks">
         @for (check of freigabeChecks(); track check.label) {
-        <button class="gf-berichte-route__check" type="button" [class.is-ok]="check.ok" [class.is-actionable]="check.key === 'wissen' && !check.ok" [disabled]="check.key !== 'wissen' || check.ok" (click)="check.key === 'wissen' ? wissensbasisDetailsUmschalten() : null">
+        <button class="gf-berichte-route__check" type="button" [class.is-ok]="check.ok"
+          [class.is-actionable]="check.key === 'wissen' && !check.ok" [disabled]="check.key !== 'wissen' || check.ok"
+          (click)="check.key === 'wissen' ? wissensbasisDetailsUmschalten() : null">
           <i class="material-symbols-outlined" aria-hidden="true">{{ check.ok ? 'check_circle' : 'error' }}</i>
           {{ check.label }}
         </button>
@@ -95,10 +105,12 @@
       </div>
 
       @if (wissensbasisDetailsOffen() && fehlendeWissensbasisTexte().length > 0) {
-      <div class="gf-berichte-route__knowledge-popover" role="dialog" [attr.aria-label]="oberflaeche.template.oberflaeche['fehlendeWissensbasisAria']">
+      <div class="gf-berichte-route__knowledge-popover" role="dialog"
+        [attr.aria-label]="oberflaeche.template.oberflaeche['fehlendeWissensbasisAria']">
         <header>
           <strong>{{ oberflaeche.template.oberflaeche['fehlendePatiententexte'] }}</strong>
-          <button type="button" [attr.aria-label]="oberflaeche.template.oberflaeche['detailsSchliessen']" (click)="wissensbasisDetailsUmschalten()">
+          <button type="button" [attr.aria-label]="oberflaeche.template.oberflaeche['detailsSchliessen']"
+            (click)="wissensbasisDetailsUmschalten()">
             <span class="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
         </header>
@@ -123,7 +135,8 @@
         <div>
           <span>{{ daten.template.bericht['berichtstyp'] }}</span>
           <h2>{{ daten.template.bericht['haupttitel'] }}</h2>
-          <p>{{ daten.template.bericht['berichtLabel'] }} {{ daten.version }} · {{ daten.template.bericht['erstelltAm'] }} {{ daten.berichtsdatum }}</p>
+          <p>{{ daten.template.bericht['berichtLabel'] }} {{ daten.version }} · {{ daten.template.bericht['erstelltAm']
+            }} {{ daten.berichtsdatum }}</p>
         </div>
         <figure class="gf-berichte-route__report-brand" [attr.aria-label]="daten.template.bericht['marke']">
           <img src="assets/img/globiflow-logo.webp" width="42" height="42" alt="" decoding="async">
@@ -234,11 +247,13 @@
 
           <div class="gf-berichte-route__value-main">
             <strong>{{ wert.wert }} {{ wert.einheit }}</strong>
-            <small>{{ daten.template.bericht['referenz'] }}: {{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
+            <small>{{ daten.template.bericht['referenz'] }}: {{ wert.referenzMin }} – {{ wert.referenzMax }} {{
+              wert.einheit }}</small>
           </div>
 
           <div class="gf-berichte-route__range" aria-hidden="true">
-            <span class="gf-berichte-route__range-ref" [style.left.%]="referenzStart(wert)" [style.width.%]="referenzBreite(wert)"></span>
+            <span class="gf-berichte-route__range-ref" [style.left.%]="referenzStart(wert)"
+              [style.width.%]="referenzBreite(wert)"></span>
             <i [style.left.%]="markerPosition(wert)"></i>
           </div>
 

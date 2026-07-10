@@ -88,8 +88,9 @@
       <div class="gf-import-route__upload-actions">
         <button class="gf-button gf-button--secondary" type="button" (click)="dateiInput.click()">Datei
           auswählen</button>
-        <button class="gf-button gf-button--primary" type="button" [disabled]="!dateiName() || dateiPruefungAktiv() || uploadAktiv()"
-          (click)="importStarten()">{{ uploadAktiv() ? 'Upload läuft' : 'Import starten' }}</button>
+        <button class="gf-button gf-button--primary" type="button"
+          [disabled]="!dateiName() || dateiPruefungAktiv() || uploadAktiv()" (click)="importStarten()">{{ uploadAktiv()
+          ? 'Upload läuft' : 'Import starten' }}</button>
       </div>
 
       <ul class="gf-import-route__rules" aria-label="Upload-Regeln">
@@ -305,23 +306,28 @@
     <div class="gf-import-route__manual-form">
       <label>
         <span>Laborwert-Key</span>
-        <input type="text" maxlength="160" autocomplete="off" [value]="manuellLaborwertKey()" (input)="manuellesFeldSetzen('key', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellLaborwertKey()"
+          (input)="manuellesFeldSetzen('key', $event)">
       </label>
       <label>
         <span>Anzeigename</span>
-        <input type="text" maxlength="160" autocomplete="off" [value]="manuellAnzeigename()" (input)="manuellesFeldSetzen('name', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellAnzeigename()"
+          (input)="manuellesFeldSetzen('name', $event)">
       </label>
       <label>
         <span>Ergebnis</span>
-        <input type="text" maxlength="160" autocomplete="off" [value]="manuellErgebnis()" (input)="manuellesFeldSetzen('ergebnis', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellErgebnis()"
+          (input)="manuellesFeldSetzen('ergebnis', $event)">
       </label>
       <label>
         <span>Einheit</span>
-        <input type="text" maxlength="160" autocomplete="off" [value]="manuellEinheit()" (input)="manuellesFeldSetzen('einheit', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellEinheit()"
+          (input)="manuellesFeldSetzen('einheit', $event)">
       </label>
       <label>
         <span>Referenzbereich</span>
-        <input type="text" maxlength="160" autocomplete="off" [value]="manuellReferenz()" (input)="manuellesFeldSetzen('referenz', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellReferenz()"
+          (input)="manuellesFeldSetzen('referenz', $event)">
       </label>
     </div>
 

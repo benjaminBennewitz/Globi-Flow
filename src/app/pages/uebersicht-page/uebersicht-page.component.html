@@ -62,7 +62,8 @@
       <strong>{{ uebersicht.kennzahlen.importeUngeprueft }}</strong>
       <small>Warten auf Review</small>
       <i class="material-symbols-outlined" aria-hidden="true">pending_actions</i>
-      <button class="gf-overview__kpi-action" type="button" aria-label="Ungeprüfte Importe anzeigen" (click)="kpiOverlayOeffnen($event, 'importe')">
+      <button class="gf-overview__kpi-action" type="button" aria-label="Ungeprüfte Importe anzeigen"
+        (click)="kpiOverlayOeffnen($event, 'importe')">
         <span class="material-symbols-outlined" aria-hidden="true">list_alt</span>
       </button>
     </article>
@@ -71,7 +72,8 @@
       <strong>{{ uebersicht.kennzahlen.reviewOffen }}</strong>
       <small>Priorisierte Prüfungen</small>
       <i class="material-symbols-outlined" aria-hidden="true">emergency_home</i>
-      <button class="gf-overview__kpi-action" type="button" aria-label="Offene Reviewwerte anzeigen" (click)="kpiOverlayOeffnen($event, 'review')">
+      <button class="gf-overview__kpi-action" type="button" aria-label="Offene Reviewwerte anzeigen"
+        (click)="kpiOverlayOeffnen($event, 'review')">
         <span class="material-symbols-outlined" aria-hidden="true">rule</span>
       </button>
     </article>
@@ -243,9 +245,9 @@
 
     <div class="gf-cursor-overlay__list">
       @for (hinweis of uebersicht.dringendeHinweise; track hinweis.id) {
-      <button class="{{ statusKlasse(hinweis.status) }}" type="button" [class.is-selected]="aktiverHinweisId === hinweis.id"
-        [attr.data-gf-search-id]="hinweis.id" [attr.data-gf-search-target]="hinweis.targetId || hinweis.id"
-        (click)="hinweisEintragOeffnen(hinweis)">
+      <button class="{{ statusKlasse(hinweis.status) }}" type="button"
+        [class.is-selected]="aktiverHinweisId === hinweis.id" [attr.data-gf-search-id]="hinweis.id"
+        [attr.data-gf-search-target]="hinweis.targetId || hinweis.id" (click)="hinweisEintragOeffnen(hinweis)">
         <strong>{{ hinweis.titel }}</strong>
         <p>{{ hinweis.beschreibung }}</p>
         <small>Offen seit: {{ hinweis.seit }}</small>
@@ -268,8 +270,8 @@
 
     <div class="gf-cursor-overlay__list">
       @for (eintrag of kpiDetails(uebersicht, overlayTyp === 'importe' ? 'importe' : 'review'); track eintrag.id) {
-      <button class="{{ statusKlasse(eintrag.status) }}" type="button"
-        [attr.data-gf-search-id]="eintrag.id" [attr.data-gf-search-target]="eintrag.id"
+      <button class="{{ statusKlasse(eintrag.status) }}" type="button" [attr.data-gf-search-id]="eintrag.id"
+        [attr.data-gf-search-target]="eintrag.id"
         (click)="detailEintragOeffnen(eintrag, overlayTyp === 'importe' ? '/importe' : '/review')">
         <strong>{{ eintrag.titel }}</strong>
         <p>{{ eintrag.beschreibung }}</p>
@@ -327,11 +329,14 @@
       <span class="material-symbols-outlined" aria-hidden="true">swap_horiz</span>
       <div>
         <h2 id="overview-context-title">Patient wechseln?</h2>
-        <p>Der ausgewählte Hinweis gehört zu <strong>{{ zielPatientName(wechselZiel) }}</strong>. Aktuell ist <strong>{{ aktuellerPatientName() }}</strong> geladen.</p>
+        <p>Der ausgewählte Hinweis gehört zu <strong>{{ zielPatientName(wechselZiel) }}</strong>. Aktuell ist <strong>{{
+            aktuellerPatientName() }}</strong> geladen.</p>
       </div>
       <footer>
-        <button class="gf-button gf-button--secondary" type="button" (click)="patientenwechselAbbrechen()">Abbrechen</button>
-        <button class="gf-button gf-button--primary" type="button" (click)="patientenwechselBestaetigen()">Patient wechseln</button>
+        <button class="gf-button gf-button--secondary" type="button"
+          (click)="patientenwechselAbbrechen()">Abbrechen</button>
+        <button class="gf-button gf-button--primary" type="button" (click)="patientenwechselBestaetigen()">Patient
+          wechseln</button>
       </footer>
     </div>
   </section>
