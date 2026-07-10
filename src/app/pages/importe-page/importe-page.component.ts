@@ -13,6 +13,7 @@ import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service'
 import { ImportJobMonitorService } from '../../core/services/import-job-monitor.service';
 import { PatientContextService } from '../../core/services/patient-context.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { bereinigeSichereEingabe } from '../../core/security/sichere-eingabe.util';
 
 /** Importlistenfilter für Statusgruppen. */
 type ImportFilter = 'alle' | 'aktiv' | 'review' | 'ocr' | 'fehler' | 'abgeschlossen';
@@ -387,7 +388,8 @@ export class ImportePageComponent implements OnDestroy {
   /** Aktualisiert ein manuelles Eingabefeld sicher. */
   public manuellesFeldSetzen(feld: 'key' | 'name' | 'ergebnis' | 'einheit' | 'referenz', event: Event): void {
     const eingabe = event.target as HTMLInputElement;
-    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '').slice(0, 80);
+    const typ = feld === 'key' ? 'schluessel' : feld === 'name' ? 'name' : feld === 'einheit' ? 'einheit' : feld === 'referenz' ? 'referenz' : 'freitext';
+    const wert = bereinigeSichereEingabe(eingabe.value, typ, 80);
 
     if (feld === 'key') {
       this.manuellLaborwertKey.set(wert);

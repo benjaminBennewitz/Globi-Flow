@@ -237,6 +237,21 @@ export class GlobiFlowApiService {
     return this.http.get<BerichtViewModel>(this.apiEndpunkte.bericht, { params });
   }
 
+  /** Übersetzt einen druckfähigen Patientenbericht lokal in die Zielsprache. */
+  public berichtUebersetzen(targetLanguage: string, befundId?: string, patientId?: string): Observable<BerichtViewModel> {
+    let params = new HttpParams();
+
+    if (befundId) {
+      params = params.set('reportId', befundId);
+    }
+
+    if (patientId) {
+      params = params.set('patientId', patientId);
+    }
+
+    return this.http.post<BerichtViewModel>(this.apiEndpunkte.berichtUebersetzen, { targetLanguage }, { params });
+  }
+
   /** Gibt einen Befund für Bericht und Verlauf frei. */
   public befundFreigeben(befundId: string): Observable<BefundFreigabeAntwort> {
     return this.http.post<BefundFreigabeAntwort>(this.apiEndpunkte.freigabe, { befundId });

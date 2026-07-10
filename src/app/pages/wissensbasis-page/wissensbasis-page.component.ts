@@ -11,6 +11,7 @@ import { IconActionComponent } from '../../shared/components/icon-action/icon-ac
 import { SecureSearchComponent } from '../../shared/components/secure-search/secure-search.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
+import { bereinigeSichereEingabe } from '../../core/security/sichere-eingabe.util';
 
 /** Filteroption für Wissenseinträge. */
 type WissensStatusFilter = WissenseintragStatus | 'alle';
@@ -626,7 +627,8 @@ export class WissensbasisPageComponent implements OnDestroy {
   /** Aktualisiert ein Anlagefeld. */
   public anlageFeldSetzen(feld: 'laborwertKey' | 'anzeigename' | 'kategorie', event: Event): void {
     const eingabe = event.target as HTMLInputElement;
-    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '').slice(0, 80);
+    const typ = feld === 'laborwertKey' ? 'schluessel' : 'name';
+    const wert = bereinigeSichereEingabe(eingabe.value, typ, 80);
 
     if (feld === 'laborwertKey') {
       this.neuerLaborwertKey.set(wert);
@@ -650,7 +652,9 @@ export class WissensbasisPageComponent implements OnDestroy {
   /** Aktualisiert ein Formularfeld. */
   public formularfeldSetzen(feld: keyof Wissensformular, event: Event): void {
     const eingabe = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '');
+    const maxLaenge = feld === 'patientKurztext' ? 500 : feld === 'laborwertKey' || feld === 'anzeigename' || feld === 'kategorie' ? 100 : 4000;
+    const typ = feld === 'laborwertKey' ? 'schluessel' : feld === 'anzeigename' || feld === 'kategorie' ? 'name' : 'freitext';
+    const wert = feld === 'farbe' ? eingabe.value : bereinigeSichereEingabe(eingabe.value, typ, maxLaenge);
     const formularwert = feld === 'farbe' ? this.normalisiereFarbeingabe(wert) : wert;
 
     this.formular.update((formular: Wissensformular) => ({ ...formular, [feld]: formularwert }));
@@ -665,7 +669,8 @@ export class WissensbasisPageComponent implements OnDestroy {
   /** Aktualisiert ein Quellenfeld. */
   public quellenFeldSetzen(feld: 'titel' | 'stand' | 'referenz' | 'hinweis', event: Event): void {
     const eingabe = event.target as HTMLInputElement;
-    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '').slice(0, 160);
+    const maxLaenge = feld === 'hinweis' ? 500 : 300;
+    const wert = bereinigeSichereEingabe(eingabe.value, 'quelle', maxLaenge);
 
     if (feld === 'titel') {
       this.quellenTitel.set(wert);

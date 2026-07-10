@@ -27,6 +27,7 @@ export const API_ENDPUNKTE = {
   berichte: `${API_BASIS_URL}/reports/`,
   bericht: `${API_BASIS_URL}/reports/preview/`,
   patientenbericht: `${API_BASIS_URL}/reports/patient-preview/`,
+  berichtUebersetzen: `${API_BASIS_URL}/reports/translate/`,
   globaleSuche: `${API_BASIS_URL}/search/`,
   demoDatenReset: `${API_BASIS_URL}/demo-data/reset/`
 } as const;

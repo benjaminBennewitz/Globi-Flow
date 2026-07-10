@@ -145,39 +145,39 @@
       <div class="gf-review-route__form-grid">
         <label>
           <span>Laborwert-Key</span>
-          <input type="text" [value]="kandidat.laborwertKey"
+          <input type="text" maxlength="160" autocomplete="off" [value]="kandidat.laborwertKey"
             (input)="textfeldSetzen(kandidat.id, 'laborwertKey', $event)">
         </label>
         <label>
           <span>Anzeigename</span>
-          <input type="text" [value]="kandidat.anzeigename"
+          <input type="text" maxlength="160" autocomplete="off" [value]="kandidat.anzeigename"
             (input)="textfeldSetzen(kandidat.id, 'anzeigename', $event)">
         </label>
         <label>
           <span>Ergebnis</span>
-          <input type="text" [value]="kandidat.korrigierterWert"
+          <input type="text" maxlength="160" autocomplete="off" [value]="kandidat.korrigierterWert"
             (input)="zahlenfeldSetzen(kandidat.id, 'korrigierterWert', $event)">
         </label>
         <label>
           <span>Einheit</span>
-          <input type="text" [value]="kandidat.korrigierteEinheit"
+          <input type="text" maxlength="160" autocomplete="off" [value]="kandidat.korrigierteEinheit"
             (input)="textfeldSetzen(kandidat.id, 'korrigierteEinheit', $event)">
         </label>
         <label>
           <span>Referenz min</span>
-          <input type="text" [value]="kandidat.referenzMin"
+          <input type="text" maxlength="160" autocomplete="off" [value]="kandidat.referenzMin"
             (input)="zahlenfeldSetzen(kandidat.id, 'referenzMin', $event)">
         </label>
         <label>
           <span>Referenz max</span>
-          <input type="text" [value]="kandidat.referenzMax"
+          <input type="text" maxlength="160" autocomplete="off" [value]="kandidat.referenzMax"
             (input)="zahlenfeldSetzen(kandidat.id, 'referenzMax', $event)">
         </label>
       </div>
 
       <label class="gf-review-route__comment">
         <span>Kommentar</span>
-        <textarea rows="3" [value]="kandidat.kommentar" placeholder="Ärztlichen Review-Kommentar ergänzen"
+        <textarea maxlength="4000" rows="3" [value]="kandidat.kommentar" placeholder="Ärztlichen Review-Kommentar ergänzen"
           (input)="textfeldSetzen(kandidat.id, 'kommentar', $event)"></textarea>
       </label>
 

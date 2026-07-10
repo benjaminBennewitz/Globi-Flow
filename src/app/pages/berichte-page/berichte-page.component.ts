@@ -6,11 +6,21 @@
  */
 
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, effect, inject, signal } from '@angular/core';
-import { BerichtLaborwert, BerichtPruefEintrag, BerichtViewModel, BerichtWertStatus } from '../../core/models/bericht.model';
+import { BerichtLaborwert, BerichtPruefEintrag, BerichtTemplate, BerichtViewModel, BerichtWertStatus } from '../../core/models/bericht.model';
 import { Patient, PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { ToastService } from '../../shared/services/toast.service';
+
+/** Leere Vorlage bis zum ersten API-Ergebnis. */
+const LEERES_BERICHT_TEMPLATE: BerichtTemplate = {
+  sprache: 'de',
+  zielsprachen: [],
+  oberflaeche: {},
+  bericht: {},
+  statusLabels: { normal: '', niedrig: '', hoch: '', review: '' },
+  prioritaetLabels: { normal: '', beachten: '', wichtig: '' }
+};
 
 /** Route `/berichte` für Berichtsvorschau und Printansicht. */
 @Component({
@@ -32,10 +42,28 @@ export class BerichtePageComponent {
   private readonly globiFlowApi = inject(GlobiFlowApiService);
 
   /** Druckfertige Berichtsdaten aus der API. */
-  public readonly bericht = signal<BerichtViewModel>({ id: '', berichtsdatum: '', version: '1.0', gesamtstatus: '', gesamttext: '', gesamtWerte: 0, gepruefteWerte: 0, normaleWerte: 0, auffaelligeWerte: 0, reviewWerte: 0, werte: [], kategorien: [], empfehlungen: [], fragen: [], quellen: [], disclaimer: '', istDruckbar: false, wissensbasisVollstaendig: true, fehlendeWissensbasisTexte: [], offeneReviewEintraege: [] });
+  public readonly bericht = signal<BerichtViewModel>({ template: LEERES_BERICHT_TEMPLATE, id: '', berichtsdatum: '', version: '1.0', gesamtstatus: '', gesamttext: '', gesamtWerte: 0, gepruefteWerte: 0, normaleWerte: 0, auffaelligeWerte: 0, reviewWerte: 0, werte: [], kategorien: [], empfehlungen: [], fragen: [], quellen: [], disclaimer: '', istDruckbar: false, wissensbasisVollstaendig: true, fehlendeWissensbasisTexte: [], offeneReviewEintraege: [] });
 
   /** Sichtbarkeit der Wissensbasis-Detailbox. */
   public readonly wissensbasisDetailsOffen = signal(false);
+
+  /** Unveränderte deutsche Berichtsvorschau als Rücksetzpunkt. */
+  private readonly originalBericht = signal<BerichtViewModel | null>(null);
+
+  /** Deutsche Oberflächendaten außerhalb der eigentlichen Druckvorschau. */
+  public readonly oberflaechenBericht = computed(() => this.originalBericht() ?? this.bericht());
+
+  /** Unterstützte Zielsprachen aus der deutschen Backend-Oberfläche. */
+  public readonly sprachen = computed(() => this.oberflaechenBericht().template.zielsprachen);
+
+  /** Aktuell gewählte Zielsprache. */
+  public readonly zielSprache = signal('en');
+
+  /** Laufstatus der lokalen Übersetzung. */
+  public readonly uebersetzungLaeuft = signal(false);
+
+  /** Gibt an, ob gerade eine maschinelle Übersetzung sichtbar ist. */
+  public readonly istUebersetzt = computed(() => !!this.bericht().uebersetzung);
 
   /** Aktiver Patient. */
   public readonly patient = computed(() => this.patientContext.aktiverPatient());
@@ -78,7 +106,7 @@ export class BerichtePageComponent {
 
     return this.bericht().werte
       .filter((wert: BerichtLaborwert) => !wert.erklaerung)
-      .map((wert: BerichtLaborwert) => ({ id: wert.key, name: wert.name, gruppe: wert.gruppe, hinweis: 'Patientenkurztext in der Wissensbasis fehlt.' }));
+      .map((wert: BerichtLaborwert) => ({ id: wert.key, name: wert.name, gruppe: wert.gruppe, hinweis: this.oberflaechenBericht().template.oberflaeche['fehlenderPatiententext'] ?? '' }));
   });
 
   /** Druckfähige Werte ohne offene Reviewwerte. */
@@ -116,11 +144,11 @@ export class BerichtePageComponent {
 
   /** Prüfpunkte vor Druck oder Export. */
   public readonly freigabeChecks = computed(() => [
-    { key: 'patient', label: 'Patient gewählt', ok: !!this.patient(), details: [] as BerichtPruefEintrag[] },
-    { key: 'befund', label: 'Befund gewählt', ok: !!this.befund(), details: [] as BerichtPruefEintrag[] },
-    { key: 'review', label: 'Keine offenen Reviewwerte im Druck', ok: this.offeneReviewAnzahl() === 0, details: this.offeneReviewEintraege() },
-    { key: 'wissen', label: 'Wissensbasis-Texte vorhanden', ok: this.fehlendeWissensbasisTexte().length === 0, details: this.fehlendeWissensbasisTexte() },
-    { key: 'disclaimer', label: 'Disclaimer vorhanden', ok: !!this.bericht().disclaimer, details: [] as BerichtPruefEintrag[] }
+    { key: 'patient', label: this.oberflaechenBericht().template.oberflaeche['checkPatient'] ?? '', ok: !!this.patient(), details: [] as BerichtPruefEintrag[] },
+    { key: 'befund', label: this.oberflaechenBericht().template.oberflaeche['checkBefund'] ?? '', ok: !!this.befund(), details: [] as BerichtPruefEintrag[] },
+    { key: 'review', label: this.oberflaechenBericht().template.oberflaeche['checkReview'] ?? '', ok: this.offeneReviewAnzahl() === 0, details: this.offeneReviewEintraege() },
+    { key: 'wissen', label: this.oberflaechenBericht().template.oberflaeche['checkWissen'] ?? '', ok: this.fehlendeWissensbasisTexte().length === 0, details: this.fehlendeWissensbasisTexte() },
+    { key: 'disclaimer', label: this.oberflaechenBericht().template.oberflaeche['checkDisclaimer'] ?? '', ok: !!this.bericht().disclaimer, details: [] as BerichtPruefEintrag[] }
   ]);
 
   /** Öffnet oder schließt die Liste fehlender Wissensbasis-Texte. */
@@ -132,15 +160,52 @@ export class BerichtePageComponent {
     this.wissensbasisDetailsOffen.update((wert: boolean) => !wert);
   }
 
+  /** Setzt die gewünschte Zielsprache. */
+  public zielSpracheSetzen(code: string): void {
+    this.zielSprache.set(code);
+  }
+
+  /** Übersetzt die freigegebene Vorschau lokal und zeigt sie direkt an. */
+  public uebersetzungStarten(): void {
+    if (!this.druckFreigegeben() || this.uebersetzungLaeuft()) {
+      return;
+    }
+
+    this.uebersetzungLaeuft.set(true);
+    this.globiFlowApi.berichtUebersetzen(this.zielSprache(), this.befund()?.id, this.patient().id).subscribe({
+      next: (bericht: BerichtViewModel) => {
+        this.bericht.set(bericht);
+        this.uebersetzungLaeuft.set(false);
+        const texte = this.oberflaechenBericht().template.oberflaeche;
+        this.toastService.zeige(texte['toastUebersetztTitel'] ?? '', texte['toastUebersetztText'] ?? '', 'success');
+      },
+      error: (fehler: { error?: { detail?: string } }) => {
+        this.uebersetzungLaeuft.set(false);
+        const texte = this.originalBericht()?.template.oberflaeche ?? this.bericht().template.oberflaeche;
+        this.toastService.zeige(texte['toastUebersetzungFehlerTitel'] ?? '', fehler.error?.detail ?? texte['toastUebersetzungFehlerText'] ?? '', 'warning');
+      }
+    });
+  }
+
+  /** Stellt die unveränderte deutsche Berichtsvorschau wieder her. */
+  public uebersetzungZuruecksetzen(): void {
+    const original = this.originalBericht();
+    if (original) {
+      this.bericht.set(original);
+    }
+  }
+
   /** Öffnet den nativen Druckdialog, wenn der Bericht druckfähig ist. */
   public drucken(): void {
     if (this.offeneReviewAnzahl() > 0 || this.bericht().istDruckbar === false) {
-      this.toastService.zeige('Druck blockiert', 'Offene Reviewwerte müssen vor dem finalen Patientenbericht freigegeben oder entfernt werden.', 'warning');
+      const texte = this.bericht().template.oberflaeche;
+      this.toastService.zeige(texte['toastDruckBlockiertTitel'] ?? '', texte['toastDruckBlockiertText'] ?? '', 'warning');
       return;
     }
 
     if (this.fehlendeWissensbasisTexte().length > 0) {
-      this.toastService.zeige('Wissensbasis unvollständig', `${this.fehlendeWissensbasisTexte().length} Patiententexte fehlen noch.`, 'warning');
+      const texte = this.bericht().template.oberflaeche;
+      this.toastService.zeige(texte['toastWissenTitel'] ?? '', `${this.fehlendeWissensbasisTexte().length} ${texte['toastWissenText'] ?? ''}`, 'warning');
     }
 
     window.print();
@@ -158,23 +223,16 @@ export class BerichtePageComponent {
   /** Berechnet den BMI ohne medizinische Einordnung. */
   public bmi(patient: Patient): string {
     if (!patient.gewichtKg || !patient.groesseCm) {
-      return 'nicht angegeben';
+      return this.oberflaechenBericht().template.oberflaeche['nichtAngegeben'] ?? '–';
     }
 
     const groesseMeter = patient.groesseCm / 100;
     return (patient.gewichtKg / (groesseMeter * groesseMeter)).toFixed(1).replace('.', ',');
   }
 
-  /** Gibt ein lesbares Statuslabel zurück. */
+  /** Gibt das vom Backend gelieferte Statuslabel zurück. */
   public statusLabel(status: BerichtWertStatus): string {
-    const labels: Record<BerichtWertStatus, string> = {
-      normal: 'UNAUFFÄLLIG',
-      niedrig: 'NIEDRIG',
-      hoch: 'ERHÖHT',
-      review: 'PRÜFEN'
-    };
-
-    return labels[status];
+    return this.bericht().template.statusLabels[status] ?? status;
   }
 
   /** Gibt eine Statusklasse zurück. */
@@ -231,12 +289,12 @@ export class BerichtePageComponent {
 
   /** Liefert einen fallback-sicheren Befundnamen. */
   public befundName(befund: PatientBefund | null): string {
-    return befund?.name ?? 'kein Befund gewählt';
+    return befund?.name ?? this.oberflaechenBericht().template.oberflaeche['keinBefund'] ?? '–';
   }
 
   /** Liefert einen lesbaren Seitenzähler. */
   public seiteLabel(index: number): string {
-    return `Seite ${index} / ${this.gesamtSeiten()}`;
+    return `${this.bericht().template.bericht['seitenlabel'] ?? ''} ${index} / ${this.gesamtSeiten()}`.trim();
   }
 
   /** Berechnet die Seitennummer der Ergebnisseite. */
@@ -266,6 +324,7 @@ export class BerichtePageComponent {
     }
 
     this.globiFlowApi.ladeBericht(befundId, patientId).subscribe((bericht: BerichtViewModel) => {
+      this.originalBericht.set(bericht);
       this.bericht.set(bericht);
       this.wissensbasisDetailsOffen.set(false);
     });

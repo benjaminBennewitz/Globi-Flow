@@ -114,8 +114,66 @@ export interface BerichtPruefEintrag {
   hinweis: string;
 }
 
+/** Metadaten einer lokalen maschinellen Übersetzung. */
+export interface BerichtUebersetzung {
+  /** Quellsprache. */
+  quelle: string;
+
+  /** Zielsprache. */
+  ziel: string;
+
+  /** Verwendete lokale Engine. */
+  engine: string;
+
+  /** Kennzeichnung einer nicht manuell geprüften Übersetzung. */
+  maschinell: boolean;
+}
+
+/** Sichtbare Texte der ärztlichen Berichtseite. */
+export interface BerichtOberflaecheTexte {
+  [key: string]: string;
+}
+
+/** Sichtbare Texte innerhalb des druckbaren Patientenberichts. */
+export interface BerichtDruckTexte {
+  [key: string]: string;
+}
+
+/** Verfügbare Zielsprache der lokalen Übersetzung. */
+export interface BerichtZielsprache {
+  /** ISO-Sprachcode. */
+  code: string;
+
+  /** Sichtbares Sprachlabel. */
+  label: string;
+}
+
+/** Vollständige, backendseitig gepflegte Berichtsvorlage. */
+export interface BerichtTemplate {
+  /** Aktuelle Sprache der Vorlage. */
+  sprache: string;
+
+  /** Unterstützte Zielsprachen. */
+  zielsprachen: BerichtZielsprache[];
+
+  /** Texte für Steuerung, Freigabe und Übersetzung. */
+  oberflaeche: BerichtOberflaecheTexte;
+
+  /** Texte innerhalb der Druckseiten. */
+  bericht: BerichtDruckTexte;
+
+  /** Sichtbare Statusbezeichnungen. */
+  statusLabels: Record<BerichtWertStatus, string>;
+
+  /** Sichtbare Prioritätsbezeichnungen. */
+  prioritaetLabels: Record<BerichtEmpfehlungPrioritaet, string>;
+}
+
 /** Druckfertiger Patientenbericht. */
 export interface BerichtViewModel {
+  /** Vollständige backendseitige Textvorlage. */
+  template: BerichtTemplate;
+
   /** Eindeutige Berichts-ID. */
   id: string;
 
@@ -175,4 +233,7 @@ export interface BerichtViewModel {
 
   /** Noch offene Reviewpunkte aus dem Backend. */
   offeneReviewEintraege?: BerichtPruefEintrag[];
+
+  /** Optionale Metadaten der Live-Übersetzung. */
+  uebersetzung?: BerichtUebersetzung;
 }

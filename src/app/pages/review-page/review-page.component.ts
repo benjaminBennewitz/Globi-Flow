@@ -11,6 +11,7 @@ import { PatientBefund } from '../../core/models/patient.model';
 import { PatientContextService } from '../../core/services/patient-context.service';
 import { GlobiFlowApiService } from '../../core/services/globi-flow-api.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { bereinigeSichereEingabe } from '../../core/security/sichere-eingabe.util';
 
 /** Filter der Review-Warteschlange. */
 type ReviewFilter = ReviewStatus | 'alle';
@@ -163,7 +164,9 @@ export class ReviewPageComponent {
   /** Aktualisiert ein Textfeld im lokalen Reviewzustand. */
   public textfeldSetzen(id: string, feld: ReviewTextFeld, event: Event): void {
     const eingabe = event.target as HTMLInputElement | HTMLTextAreaElement;
-    const wert = eingabe.value.normalize('NFKC').replace(/[<>`"'\\;]/g, '');
+    const typ = feld === 'laborwertKey' ? 'schluessel' : feld === 'korrigierteEinheit' ? 'einheit' : feld === 'kommentar' ? 'freitext' : 'name';
+    const maxLaenge = feld === 'kommentar' ? 500 : 100;
+    const wert = bereinigeSichereEingabe(eingabe.value, typ, maxLaenge);
     this.kandidatAktualisieren(id, { [feld]: wert } as Partial<ReviewKandidat>);
   }
 

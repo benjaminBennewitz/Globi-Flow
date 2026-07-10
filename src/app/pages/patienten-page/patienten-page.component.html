@@ -140,20 +140,20 @@
     <div class="gf-patienten-route__form">
       <label>
         <span>Anzeigename</span>
-        <input type="text" placeholder="z. B. Mara" [value]="neuerVorname()" (input)="vornameAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Mara" [value]="neuerVorname()" (input)="vornameAendern($event)">
       </label>
       <label>
         <span>Nachname</span>
-        <input type="text" placeholder="z. B. Hoffmann" [value]="neuerNachname()" (input)="nachnameAendern($event)">
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Hoffmann" [value]="neuerNachname()" (input)="nachnameAendern($event)">
       </label>
       <label>
         <span>Testpersonen-ID</span>
-        <input type="text" placeholder="wird sonst automatisch vergeben" [value]="neueNummer()"
+        <input type="text" maxlength="160" autocomplete="off" placeholder="wird sonst automatisch vergeben" [value]="neueNummer()"
           (input)="nummerAendern($event)">
       </label>
       <label>
         <span>Geburtsdatum</span>
-        <input type="text" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()"
+        <input type="text" maxlength="160" autocomplete="off" inputmode="numeric" placeholder="1984-04-18" [value]="neuesGeburtsdatum()"
           (input)="geburtsdatumAendern($event)">
       </label>
       <div class="gf-patienten-route__field gf-patienten-route__select-field">
@@ -177,17 +177,17 @@
       </div>
       <label>
         <span>Gewicht kg</span>
-        <input type="text" inputmode="decimal" placeholder="72" [value]="neuesGewicht()"
+        <input type="text" maxlength="160" autocomplete="off" inputmode="decimal" placeholder="72" [value]="neuesGewicht()"
           (input)="gewichtAendern($event)">
       </label>
       <label>
         <span>Größe cm</span>
-        <input type="text" inputmode="numeric" placeholder="168" [value]="neueGroesse()"
+        <input type="text" maxlength="160" autocomplete="off" inputmode="numeric" placeholder="168" [value]="neueGroesse()"
           (input)="groesseAendern($event)">
       </label>
       <label class="is-wide">
         <span>Lebensstil</span>
-        <textarea rows="2" placeholder="z. B. Büroarbeit, moderat aktiv, vegetarische Ernährung"
+        <textarea maxlength="4000" rows="2" placeholder="z. B. Büroarbeit, moderat aktiv, vegetarische Ernährung"
           [value]="neuerLebensstil()" (input)="lebensstilAendern($event)"></textarea>
       </label>
       <section class="gf-patienten-route__form-states is-wide" aria-label="Anamnese-Status">
@@ -206,7 +206,7 @@
       </section>
       <label class="is-wide">
         <span>Notiz</span>
-        <textarea rows="3" placeholder="Interne Notiz zu Testdaten" [value]="neueNotiz()"
+        <textarea maxlength="4000" rows="3" placeholder="Interne Notiz zu Testdaten" [value]="neueNotiz()"
           (input)="notizAendern($event)"></textarea>
       </label>
     </div>

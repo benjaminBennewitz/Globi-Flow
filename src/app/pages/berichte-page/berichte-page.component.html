@@ -4,54 +4,87 @@
   @let aktiverPatient = patient();
   @let aktiverBefund = befund();
   @let daten = bericht();
+  @let oberflaeche = oberflaechenBericht();
 
   <header class="gf-berichte-route__headline">
     <div>
-      <span class="gf-eyebrow">Druckfertiger Patientenbericht</span>
-      <h1 id="berichte-title">DIN-A4 Berichtsvorschau</h1>
-      <p>Freigegebene Laborwerte, Stammdaten, Wissensbasis-Texte und Hinweise als lesbarer Patientenbericht.</p>
+      <span class="gf-eyebrow">{{ oberflaeche.template.oberflaeche['eyebrow'] }}</span>
+      <h1 id="berichte-title">{{ oberflaeche.template.oberflaeche['seitentitel'] }}</h1>
+      <p>{{ oberflaeche.template.oberflaeche['seitenbeschreibung'] }}</p>
     </div>
 
     <div class="gf-berichte-route__headline-actions">
       <button class="gf-button gf-button--secondary" type="button" (click)="vorschauAktualisieren()">
         <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
-        Vorschau aktualisieren
+        {{ oberflaeche.template.oberflaeche['vorschauAktualisieren'] }}
       </button>
       <button class="gf-button gf-button--primary" type="button" [disabled]="!druckFreigegeben()" (click)="drucken()">
         <span class="material-symbols-outlined" aria-hidden="true">print</span>
-        Drucken
+        {{ oberflaeche.template.oberflaeche['drucken'] }}
       </button>
     </div>
   </header>
+
+  <section class="gf-berichte-route__translation gf-neu-card" [attr.aria-label]="oberflaeche.template.oberflaeche['uebersetzungAria']">
+    <div>
+      <span class="material-symbols-outlined" aria-hidden="true">translate</span>
+      <div>
+        <strong>{{ oberflaeche.template.oberflaeche['uebersetzungTitel'] }}</strong>
+        <small>{{ oberflaeche.template.oberflaeche['uebersetzungHinweis'] }}</small>
+      </div>
+    </div>
+
+    <div class="gf-berichte-route__language-list" role="group" [attr.aria-label]="oberflaeche.template.oberflaeche['zielspracheAria']">
+      @for (sprache of sprachen(); track sprache.code) {
+      <button type="button" [class.is-active]="zielSprache() === sprache.code" [attr.aria-pressed]="zielSprache() === sprache.code" (click)="zielSpracheSetzen(sprache.code)">
+        {{ sprache.label }}
+      </button>
+      }
+    </div>
+
+    <div class="gf-berichte-route__translation-actions">
+      @if (istUebersetzt()) {
+      <button class="gf-button gf-button--secondary" type="button" (click)="uebersetzungZuruecksetzen()">{{ oberflaeche.template.oberflaeche['deutschAnzeigen'] }}</button>
+      }
+      <button class="gf-button gf-button--primary" type="button" [disabled]="!druckFreigegeben() || uebersetzungLaeuft()" (click)="uebersetzungStarten()">
+        <span class="material-symbols-outlined" aria-hidden="true">translate</span>
+        {{ uebersetzungLaeuft() ? oberflaeche.template.oberflaeche['uebersetzungLaeuft'] : oberflaeche.template.oberflaeche['uebersetzen'] }}
+      </button>
+    </div>
+  </section>
+
+  @if (bericht().uebersetzung) {
+  <p class="gf-berichte-route__machine-note" role="status">{{ oberflaeche.template.oberflaeche['maschinenHinweis'] }} · {{ bericht().uebersetzung?.engine }} · {{ oberflaeche.template.oberflaeche['maschinenPruefung'] }}</p>
+  }
 
   @if (offeneReviewAnzahl() > 0) {
   <section class="gf-berichte-route__review-warning gf-neu-card" role="status">
     <span class="material-symbols-outlined" aria-hidden="true">lock</span>
     <div>
-      <strong>Finaler Druck noch gesperrt</strong>
-      <p>{{ offeneReviewAnzahl() }} Reviewpunkt(e) sind noch nicht freigegeben. Die Vorschau bleibt sichtbar, der finale Druck wird blockiert.</p>
+      <strong>{{ oberflaeche.template.oberflaeche['druckGesperrtTitel'] }}</strong>
+      <p>{{ offeneReviewAnzahl() }} {{ oberflaeche.template.oberflaeche['druckGesperrtText'] }}</p>
     </div>
   </section>
   }
 
-  <aside class="gf-berichte-route__controls gf-neu-card" aria-label="Berichtssteuerung">
+  <aside class="gf-berichte-route__controls gf-neu-card" [attr.aria-label]="oberflaeche.template.oberflaeche['steuerungAria']">
     <article>
-      <span>Patient</span>
+      <span>{{ oberflaeche.template.oberflaeche['patient'] }}</span>
       <strong>{{ aktiverPatient.name }}</strong>
       <small>{{ aktiverPatient.nummer }} · {{ aktiverPatient.geburtsdatum }}</small>
     </article>
     <article>
-      <span>Befund</span>
-      <strong>{{ aktiverBefund?.datum || 'kein Datum' }}</strong>
+      <span>{{ oberflaeche.template.oberflaeche['befund'] }}</span>
+      <strong>{{ aktiverBefund?.datum || oberflaeche.template.oberflaeche['keinDatum'] }}</strong>
       <small>{{ befundName(aktiverBefund) }}</small>
     </article>
     <article>
-      <span>Bericht</span>
+      <span>{{ oberflaeche.template.oberflaeche['bericht'] }}</span>
       <strong>{{ daten.version }}</strong>
-      <small>{{ daten.berichtsdatum }} · {{ daten.gesamtstatus }}</small>
+      <small>{{ oberflaeche.berichtsdatum }} · {{ oberflaeche.gesamtstatus }}</small>
     </article>
     <section class="gf-berichte-route__check-panel">
-      <h2>Freigabecheck</h2>
+      <h2>{{ oberflaeche.template.oberflaeche['freigabecheck'] }}</h2>
       <div class="gf-berichte-route__checks">
         @for (check of freigabeChecks(); track check.label) {
         <button class="gf-berichte-route__check" type="button" [class.is-ok]="check.ok" [class.is-actionable]="check.key === 'wissen' && !check.ok" [disabled]="check.key !== 'wissen' || check.ok" (click)="check.key === 'wissen' ? wissensbasisDetailsUmschalten() : null">
@@ -62,10 +95,10 @@
       </div>
 
       @if (wissensbasisDetailsOffen() && fehlendeWissensbasisTexte().length > 0) {
-      <div class="gf-berichte-route__knowledge-popover" role="dialog" aria-label="Fehlende Wissensbasis-Texte">
+      <div class="gf-berichte-route__knowledge-popover" role="dialog" [attr.aria-label]="oberflaeche.template.oberflaeche['fehlendeWissensbasisAria']">
         <header>
-          <strong>Fehlende Patiententexte</strong>
-          <button type="button" aria-label="Details schließen" (click)="wissensbasisDetailsUmschalten()">
+          <strong>{{ oberflaeche.template.oberflaeche['fehlendePatiententexte'] }}</strong>
+          <button type="button" [attr.aria-label]="oberflaeche.template.oberflaeche['detailsSchliessen']" (click)="wissensbasisDetailsUmschalten()">
             <span class="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
         </header>
@@ -83,39 +116,39 @@
     </section>
   </aside>
 
-  <section class="gf-berichte-route__preview" aria-label="Druckvorschau">
+  <section class="gf-berichte-route__preview" [attr.aria-label]="oberflaeche.template.oberflaeche['druckvorschauAria']">
     <article class="gf-berichte-route__page">
       <span class="gf-berichte-route__page-counter">{{ seiteLabel(1) }}</span>
       <header class="gf-berichte-route__report-header">
         <div>
-          <span>Patientenbericht</span>
-          <h2>Blutwerte verständlich zusammengefasst</h2>
-          <p>Bericht {{ daten.version }} · erstellt am {{ daten.berichtsdatum }}</p>
+          <span>{{ daten.template.bericht['berichtstyp'] }}</span>
+          <h2>{{ daten.template.bericht['haupttitel'] }}</h2>
+          <p>{{ daten.template.bericht['berichtLabel'] }} {{ daten.version }} · {{ daten.template.bericht['erstelltAm'] }} {{ daten.berichtsdatum }}</p>
         </div>
-        <figure class="gf-berichte-route__report-brand" aria-label="Globi Flow">
+        <figure class="gf-berichte-route__report-brand" [attr.aria-label]="daten.template.bericht['marke']">
           <img src="assets/img/globiflow-logo.webp" width="42" height="42" alt="" decoding="async">
-          <figcaption>Globi Flow</figcaption>
+          <figcaption>{{ daten.template.bericht['marke'] }}</figcaption>
         </figure>
       </header>
 
       <section class="gf-berichte-route__patient-grid">
         <article>
-          <span>Patient</span>
+          <span>{{ daten.template.bericht['patient'] }}</span>
           <strong>{{ aktiverPatient.name }}</strong>
           <small>{{ aktiverPatient.nummer }}</small>
         </article>
         <article>
-          <span>Geburtsdatum / Alter</span>
+          <span>{{ daten.template.bericht['geburtsdatumAlter'] }}</span>
           <strong>{{ aktiverPatient.geburtsdatum }}</strong>
-          <small>{{ alter(aktiverPatient) }} Jahre</small>
+          <small>{{ alter(aktiverPatient) }} {{ daten.template.bericht['jahre'] }}</small>
         </article>
         <article>
-          <span>Körperdaten</span>
+          <span>{{ daten.template.bericht['koerperdaten'] }}</span>
           <strong>{{ aktiverPatient.groesseCm || '–' }} cm · {{ aktiverPatient.gewichtKg || '–' }} kg</strong>
-          <small>BMI {{ bmi(aktiverPatient) }}</small>
+          <small>{{ daten.template.bericht['bmi'] }} {{ bmi(aktiverPatient) }}</small>
         </article>
         <article>
-          <span>Befund</span>
+          <span>{{ daten.template.bericht['befund'] }}</span>
           <strong>{{ aktiverBefund?.datum || '–' }}</strong>
           <small>{{ befundName(aktiverBefund) }}</small>
         </article>
@@ -123,30 +156,30 @@
 
       <section class="gf-berichte-route__summary">
         <div>
-          <span>Gesamtüberblick</span>
+          <span>{{ daten.template.bericht['gesamtueberblick'] }}</span>
           <h3>{{ daten.gesamtstatus }}</h3>
           <p>{{ daten.gesamttext }}</p>
         </div>
         <aside>
           <strong>{{ gesamtWerte() }}</strong>
-          <span>gesamt</span>
+          <span>{{ daten.template.bericht['gesamt'] }}</span>
           <strong>{{ daten.normaleWerte }}</strong>
-          <span>unauffällig</span>
+          <span>{{ daten.template.bericht['unauffaellig'] }}</span>
           <strong>{{ daten.auffaelligeWerte }}</strong>
-          <span>auffällig</span>
+          <span>{{ daten.template.bericht['auffaellig'] }}</span>
           <strong>{{ offeneReviewAnzahl() }}</strong>
-          <span>zu prüfen</span>
+          <span>{{ daten.template.bericht['zuPruefen'] }}</span>
         </aside>
       </section>
 
       <section class="gf-berichte-route__category-chart">
-        <h3>Wertgruppen im Überblick</h3>
+        <h3>{{ daten.template.bericht['wertgruppenUebersicht'] }}</h3>
         @for (kategorie of daten.kategorien; track kategorie.name) {
         @let gesamt = kategorieGesamt(kategorie);
         <article>
           <header>
             <strong>{{ kategorie.name }}</strong>
-            <small>{{ gesamt }} Werte</small>
+            <small>{{ gesamt }} {{ daten.template.bericht['werte'] }}</small>
           </header>
           <div>
             <span class="is-normal" [style.width.%]="kategorieAnteil(kategorie.normal, gesamt)"></span>
@@ -162,15 +195,15 @@
     <article class="gf-berichte-route__page gf-berichte-route__page--recommendations">
       <span class="gf-berichte-route__page-counter">{{ seiteLabel(2) }}</span>
       <header class="gf-berichte-route__page-title">
-        <span>Empfehlungen</span>
-        <h2>Hinweise für das Arztgespräch</h2>
-        <p>Die Hinweise helfen bei der Vorbereitung und ersetzen keine ärztliche Diagnose.</p>
+        <span>{{ daten.template.bericht['empfehlungen'] }}</span>
+        <h2>{{ daten.template.bericht['arztgespraechHinweise'] }}</h2>
+        <p>{{ daten.template.bericht['empfehlungenEinleitung'] }}</p>
       </header>
 
       <section class="gf-berichte-route__recommendations">
         @for (empfehlung of daten.empfehlungen; track empfehlung.id) {
         <article class="is-{{ empfehlung.prioritaet }}">
-          <span>{{ empfehlung.prioritaet }}</span>
+          <span>{{ daten.template.prioritaetLabels[empfehlung.prioritaet] }}</span>
           <strong>{{ empfehlung.titel }}</strong>
           <p>{{ empfehlung.text }}</p>
         </article>
@@ -183,9 +216,9 @@
     <article class="gf-berichte-route__page">
       <span class="gf-berichte-route__page-counter">{{ seiteLabel(ergebnisSeite($index)) }}</span>
       <header class="gf-berichte-route__page-title">
-        <span>Ergebnisse</span>
-        <h2>Laborwerte in verständlicher Form</h2>
-        <p>Die Marker zeigen das Ergebnis im Verhältnis zum jeweiligen Referenzbereich.</p>
+        <span>{{ daten.template.bericht['ergebnisse'] }}</span>
+        <h2>{{ daten.template.bericht['laborwerteTitel'] }}</h2>
+        <p>{{ daten.template.bericht['laborwerteEinleitung'] }}</p>
       </header>
 
       <section class="gf-berichte-route__value-list">
@@ -201,7 +234,7 @@
 
           <div class="gf-berichte-route__value-main">
             <strong>{{ wert.wert }} {{ wert.einheit }}</strong>
-            <small>Referenz: {{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
+            <small>{{ daten.template.bericht['referenz'] }}: {{ wert.referenzMin }} – {{ wert.referenzMax }} {{ wert.einheit }}</small>
           </div>
 
           <div class="gf-berichte-route__range" aria-hidden="true">
@@ -209,7 +242,7 @@
             <i [style.left.%]="markerPosition(wert)"></i>
           </div>
 
-          <p>{{ wert.erklaerung || 'Für diesen Wert ist noch kein Patiententext in der Wissensbasis hinterlegt.' }}</p>
+          <p>{{ wert.erklaerung || daten.template.bericht['fehlenderPatiententext'] }}</p>
           <small>{{ wert.hinweis }}</small>
         </article>
         }
@@ -221,13 +254,13 @@
     <article class="gf-berichte-route__page gf-berichte-route__page--questions">
       <span class="gf-berichte-route__page-counter">{{ seiteLabel(fragenSeite()) }}</span>
       <header class="gf-berichte-route__page-title">
-        <span>Gesprächsvorbereitung</span>
-        <h2>Fragen für das Arztgespräch</h2>
-        <p>Die Fragen beziehen sich auf die auffälligen Werte des aktuell ausgewählten Befunds.</p>
+        <span>{{ daten.template.bericht['gespraechsvorbereitung'] }}</span>
+        <h2>{{ daten.template.bericht['fragenTitel'] }}</h2>
+        <p>{{ daten.template.bericht['fragenEinleitung'] }}</p>
       </header>
 
       <section class="gf-berichte-route__questions gf-berichte-route__questions--large">
-        <h3>Fragen für das Arztgespräch</h3>
+        <h3>{{ daten.template.bericht['fragenTitel'] }}</h3>
         <ol>
           @for (frage of daten.fragen; track frage) {
           <li>{{ frage }}</li>
@@ -237,7 +270,7 @@
 
       @if (quellenSeiten().length === 0) {
       <footer class="gf-berichte-route__disclaimer gf-berichte-route__disclaimer--bottom">
-        <strong>Wichtiger Hinweis</strong>
+        <strong>{{ daten.template.bericht['wichtigerHinweis'] }}</strong>
         <p>{{ daten.disclaimer }}</p>
       </footer>
       }
@@ -248,19 +281,19 @@
     <article class="gf-berichte-route__page gf-berichte-route__page--sources">
       <span class="gf-berichte-route__page-counter">{{ seiteLabel(quellenSeitennummer($index)) }}</span>
       <header class="gf-berichte-route__page-title">
-        <span>Quellen und Wissensbasis</span>
-        <h2>Hinterlegte Wissensquellen</h2>
-        <p>Die Quellen zeigen, welche Wissensbasis-Texte für die patientenverständliche Erklärung verwendet wurden.</p>
+        <span>{{ daten.template.bericht['quellenBereich'] }}</span>
+        <h2>{{ daten.template.bericht['quellenTitel'] }}</h2>
+        <p>{{ daten.template.bericht['quellenEinleitung'] }}</p>
       </header>
 
       <section class="gf-berichte-route__sources">
-        <h3>Quellen und Wissensbasis</h3>
+        <h3>{{ daten.template.bericht['quellenBereich'] }}</h3>
         <div>
           @for (quelle of quellenTeilseite; track quelle.id) {
           <article>
             <span>{{ quelle.bereich }}</span>
             <strong>{{ quelle.titel }}</strong>
-            <small>Stand {{ quelle.stand }}</small>
+            <small>{{ daten.template.bericht['stand'] }} {{ quelle.stand }}</small>
           </article>
           }
         </div>
@@ -268,7 +301,7 @@
 
       @if ($last) {
       <footer class="gf-berichte-route__disclaimer gf-berichte-route__disclaimer--bottom">
-        <strong>Wichtiger Hinweis</strong>
+        <strong>{{ daten.template.bericht['wichtigerHinweis'] }}</strong>
         <p>{{ daten.disclaimer }}</p>
       </footer>
       }
@@ -279,13 +312,13 @@
     <article class="gf-berichte-route__page gf-berichte-route__page--closing">
       <span class="gf-berichte-route__page-counter">{{ seiteLabel(gesamtSeiten()) }}</span>
       <header class="gf-berichte-route__page-title">
-        <span>Abschluss</span>
-        <h2>Wichtiger Hinweis</h2>
-        <p>Für diesen Bericht sind keine zusätzlichen Fragen oder Quellen hinterlegt.</p>
+        <span>{{ daten.template.bericht['abschluss'] }}</span>
+        <h2>{{ daten.template.bericht['wichtigerHinweis'] }}</h2>
+        <p>{{ daten.template.bericht['abschlussEinleitung'] }}</p>
       </header>
 
       <footer class="gf-berichte-route__disclaimer gf-berichte-route__disclaimer--bottom">
-        <strong>Wichtiger Hinweis</strong>
+        <strong>{{ daten.template.bericht['wichtigerHinweis'] }}</strong>
         <p>{{ daten.disclaimer }}</p>
       </footer>
     </article>

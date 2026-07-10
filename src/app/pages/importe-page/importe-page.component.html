@@ -305,23 +305,23 @@
     <div class="gf-import-route__manual-form">
       <label>
         <span>Laborwert-Key</span>
-        <input type="text" [value]="manuellLaborwertKey()" (input)="manuellesFeldSetzen('key', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellLaborwertKey()" (input)="manuellesFeldSetzen('key', $event)">
       </label>
       <label>
         <span>Anzeigename</span>
-        <input type="text" [value]="manuellAnzeigename()" (input)="manuellesFeldSetzen('name', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellAnzeigename()" (input)="manuellesFeldSetzen('name', $event)">
       </label>
       <label>
         <span>Ergebnis</span>
-        <input type="text" [value]="manuellErgebnis()" (input)="manuellesFeldSetzen('ergebnis', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellErgebnis()" (input)="manuellesFeldSetzen('ergebnis', $event)">
       </label>
       <label>
         <span>Einheit</span>
-        <input type="text" [value]="manuellEinheit()" (input)="manuellesFeldSetzen('einheit', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellEinheit()" (input)="manuellesFeldSetzen('einheit', $event)">
       </label>
       <label>
         <span>Referenzbereich</span>
-        <input type="text" [value]="manuellReferenz()" (input)="manuellesFeldSetzen('referenz', $event)">
+        <input type="text" maxlength="160" autocomplete="off" [value]="manuellReferenz()" (input)="manuellesFeldSetzen('referenz', $event)">
       </label>
     </div>
 

@@ -12,6 +12,7 @@ import { PatientContextService } from '../../core/services/patient-context.servi
 import { ToastService } from '../../shared/services/toast.service';
 import { IconActionComponent } from '../../shared/components/icon-action/icon-action.component';
 import { SecureSearchComponent } from '../../shared/components/secure-search/secure-search.component';
+import { bereinigeSichereEingabe } from '../../core/security/sichere-eingabe.util';
 
 /** Sortieroptionen der Patientenliste. */
 type PatientenSortierung = 'aktualisiert' | 'review' | 'name';
@@ -165,17 +166,17 @@ export class PatientenPageComponent {
 
   /** Aktualisiert den Vornamen. */
   public vornameAendern(event: Event): void {
-    this.neuerVorname.set(this.eingabewert(event).slice(0, 40));
+    this.neuerVorname.set(bereinigeSichereEingabe(this.eingabewert(event), 'name', 40));
   }
 
   /** Aktualisiert den Nachnamen. */
   public nachnameAendern(event: Event): void {
-    this.neuerNachname.set(this.eingabewert(event).slice(0, 40));
+    this.neuerNachname.set(bereinigeSichereEingabe(this.eingabewert(event), 'name', 40));
   }
 
   /** Aktualisiert die Testpersonen-ID. */
   public nummerAendern(event: Event): void {
-    this.neueNummer.set(this.eingabewert(event).slice(0, 32));
+    this.neueNummer.set(bereinigeSichereEingabe(this.eingabewert(event), 'schluessel', 32));
   }
 
   /** Aktualisiert das Geburtsdatum. */
@@ -195,7 +196,7 @@ export class PatientenPageComponent {
 
   /** Aktualisiert den Lebensstil. */
   public lebensstilAendern(event: Event): void {
-    this.neuerLebensstil.set(this.eingabewert(event).slice(0, 140));
+    this.neuerLebensstil.set(bereinigeSichereEingabe(this.eingabewert(event), 'freitext', 140));
   }
 
   /** Schaltet Nichtraucherstatus für das Formular. */
@@ -231,7 +232,7 @@ export class PatientenPageComponent {
 
   /** Aktualisiert die Notiz. */
   public notizAendern(event: Event): void {
-    this.neueNotiz.set(this.eingabewert(event).slice(0, 180));
+    this.neueNotiz.set(bereinigeSichereEingabe(this.eingabewert(event), 'freitext', 180));
   }
 
   /** Speichert eine neue oder bestehende Testperson über die API und setzt sie optional aktiv. */

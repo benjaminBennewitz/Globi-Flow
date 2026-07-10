@@ -129,15 +129,15 @@
         <form class="gf-wissensbasis-route__form">
           <label>
             <span>Laborwert-Key</span>
-            <input type="text" [value]="form.laborwertKey" (input)="formularfeldSetzen('laborwertKey', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [value]="form.laborwertKey" (input)="formularfeldSetzen('laborwertKey', $event)">
           </label>
           <label>
             <span>Anzeigename</span>
-            <input type="text" [value]="form.anzeigename" (input)="formularfeldSetzen('anzeigename', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [value]="form.anzeigename" (input)="formularfeldSetzen('anzeigename', $event)">
           </label>
           <label>
             <span>Kategorie</span>
-            <input type="text" [value]="form.kategorie" (input)="formularfeldSetzen('kategorie', $event)">
+            <input type="text" maxlength="160" autocomplete="off" [value]="form.kategorie" (input)="formularfeldSetzen('kategorie', $event)">
           </label>
           <label class="gf-wissensbasis-route__color-field">
             <span>Diagrammfarbe</span>
@@ -155,45 +155,45 @@
 
           <label class="is-wide">
             <span>Patientenerklärung kurz</span>
-            <textarea rows="3" [value]="form.patientKurztext"
+            <textarea maxlength="4000" rows="3" [value]="form.patientKurztext"
               (input)="formularfeldSetzen('patientKurztext', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Patientenerklärung ausführlich</span>
-            <textarea rows="5" [value]="form.patientLangtext"
+            <textarea maxlength="4000" rows="5" [value]="form.patientLangtext"
               (input)="formularfeldSetzen('patientLangtext', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Arztinformation</span>
-            <textarea rows="3" [value]="form.arztinformation"
+            <textarea maxlength="4000" rows="3" [value]="form.arztinformation"
               (input)="formularfeldSetzen('arztinformation', $event)"></textarea>
           </label>
           <label>
             <span>Ursachen niedrig</span>
-            <textarea rows="4" [value]="form.ursachenNiedrig"
+            <textarea maxlength="4000" rows="4" [value]="form.ursachenNiedrig"
               (input)="formularfeldSetzen('ursachenNiedrig', $event)"></textarea>
           </label>
           <label>
             <span>Ursachen hoch</span>
-            <textarea rows="4" [value]="form.ursachenHoch"
+            <textarea maxlength="4000" rows="4" [value]="form.ursachenHoch"
               (input)="formularfeldSetzen('ursachenHoch', $event)"></textarea>
           </label>
           <label>
             <span>Einflussfaktoren</span>
-            <textarea rows="4" [value]="form.einflussfaktoren"
+            <textarea maxlength="4000" rows="4" [value]="form.einflussfaktoren"
               (input)="formularfeldSetzen('einflussfaktoren', $event)"></textarea>
           </label>
           <label>
             <span>Hinweise</span>
-            <textarea rows="4" [value]="form.hinweise" (input)="formularfeldSetzen('hinweise', $event)"></textarea>
+            <textarea maxlength="4000" rows="4" [value]="form.hinweise" (input)="formularfeldSetzen('hinweise', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Disclaimer</span>
-            <textarea rows="3" [value]="form.disclaimer" (input)="formularfeldSetzen('disclaimer', $event)"></textarea>
+            <textarea maxlength="4000" rows="3" [value]="form.disclaimer" (input)="formularfeldSetzen('disclaimer', $event)"></textarea>
           </label>
           <label class="is-wide">
             <span>Änderungsnotiz</span>
-            <input type="text" placeholder="z. B. Patiententext vereinfacht" [value]="form.aenderungsnotiz"
+            <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Patiententext vereinfacht" [value]="form.aenderungsnotiz"
               (input)="formularfeldSetzen('aenderungsnotiz', $event)">
           </label>
         </form>
@@ -235,7 +235,7 @@
 
           <div class="gf-wissensbasis-route__source-form">
             <div class="gf-wissensbasis-route__source-title-field">
-              <input type="text" placeholder="Quellentitel" [value]="quellenTitel()"
+              <input type="text" maxlength="160" autocomplete="off" placeholder="Quellentitel" [value]="quellenTitel()"
                 (focus)="quellenVorschlaegeOeffnen()" (input)="quellenFeldSetzen('titel', $event); quellenVorschlaegeOeffnen()">
 
               @if (quellenVorschlaegeOffen() && quellenVorschlaege().length) {
@@ -269,11 +269,11 @@
               }
             </div>
 
-            <input type="text" placeholder="Stand, z. B. 06.2026" [value]="quellenStand()"
+            <input type="text" maxlength="160" autocomplete="off" placeholder="Stand, z. B. 06.2026" [value]="quellenStand()"
               (input)="quellenFeldSetzen('stand', $event)" (blur)="quellenStandNormalisieren()">
-            <input type="text" placeholder="Referenz oder URL" [value]="quellenReferenz()"
+            <input type="text" maxlength="160" autocomplete="off" placeholder="Referenz oder URL" [value]="quellenReferenz()"
               (input)="quellenFeldSetzen('referenz', $event)">
-            <input type="text" placeholder="Interner Hinweis" [value]="quellenHinweis()"
+            <input type="text" maxlength="160" autocomplete="off" placeholder="Interner Hinweis" [value]="quellenHinweis()"
               (input)="quellenFeldSetzen('hinweis', $event)">
             <button class="gf-button gf-button--source-add" type="button" (click)="quelleHinzufuegen()">
               <span class="material-symbols-outlined" aria-hidden="true">add_link</span>
@@ -331,17 +331,17 @@
     <div class="gf-wissensbasis-route__create-form">
       <label>
         <span>Laborwert-Key</span>
-        <input type="text" placeholder="z. B. ldl_cholesterin" [value]="neuerLaborwertKey()"
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. ldl_cholesterin" [value]="neuerLaborwertKey()"
           (input)="anlageFeldSetzen('laborwertKey', $event)">
       </label>
       <label>
         <span>Anzeigename</span>
-        <input type="text" placeholder="z. B. LDL-Cholesterin" [value]="neuerAnzeigename()"
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. LDL-Cholesterin" [value]="neuerAnzeigename()"
           (input)="anlageFeldSetzen('anzeigename', $event)">
       </label>
       <label class="gf-wissensbasis-route__create-category-field">
         <span>Kategorie</span>
-        <input type="text" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
+        <input type="text" maxlength="160" autocomplete="off" placeholder="z. B. Fettstoffwechsel" [value]="neueKategorie()"
           (focus)="kategorieEingabeAktivSetzen(true)" (blur)="kategorieEingabeVerzoegertDeaktivieren()"
           (input)="anlageFeldSetzen('kategorie', $event)">
       </label>
