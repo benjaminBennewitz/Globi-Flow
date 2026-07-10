@@ -164,6 +164,14 @@
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.75fr);
   gap: var(--gf-space-4);
+  align-items: start;
+}
+
+.gf-import-route__column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--gf-space-4);
 }
 
 .gf-import-route__grid h2 {
@@ -186,7 +194,6 @@
 
 .gf-import-route__upload {
   display: grid;
-  grid-column: span 1;
   gap: var(--gf-space-4);
   min-height: 360px;
   align-content: center;
@@ -512,10 +519,6 @@
 /* ==========================================================================
    08   Historie
    ========================================================================== */
-
-.gf-import-route__history {
-  grid-column: span 1;
-}
 
 .gf-import-route__history nav {
   display: flex;
@@ -858,8 +861,11 @@
 }
 
 .gf-import-route__grid {
-  align-items: start;
   grid-template-columns: minmax(0, 1.28fr) minmax(320px, 0.72fr);
+  gap: var(--gf-space-3);
+}
+
+.gf-import-route__column {
   gap: var(--gf-space-3);
 }
 
@@ -1080,6 +1086,10 @@
   .gf-import-route__grid,
   .gf-import-route__kpis {
     grid-template-columns: 1fr;
+  }
+
+  .gf-import-route__column {
+    gap: var(--gf-space-3);
   }
 
   .gf-import-route__active-meta,
